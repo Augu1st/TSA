@@ -16,5 +16,9 @@
 
 ### 3.6
 开始搭建库存系统    
-创建 Inventory Compoennt 类 
+创建 Inventory Compoennt 类     
 创建 InventoryBase, SptialInventory, InventoryGrid 类    
+
+### 3.7
+在 InventoryGrid 中加入了 GridSlot     
+使用AI制作了 GridSlot 材质     
