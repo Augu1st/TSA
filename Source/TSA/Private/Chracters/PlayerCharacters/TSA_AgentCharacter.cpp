@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interaction/TSA_InteractComponent.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "TSA/TSA.h"
 
 
 // Sets default values

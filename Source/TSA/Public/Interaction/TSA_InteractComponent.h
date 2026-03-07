@@ -20,6 +20,7 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void PrimaryInteract();
 	AActor* GetInteractableActor() const { return CurrentActor;}
 	
 protected:

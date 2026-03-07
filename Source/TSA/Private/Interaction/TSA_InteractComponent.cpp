@@ -19,6 +19,15 @@ void UTSA_InteractComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	UpdateInteractPrompt();
 }
 
+void UTSA_InteractComponent::PrimaryInteract()
+{
+	if (!IsValid(CurrentActor)) return;
+	if (ITSA_InteractionInterface::Execute_GetInteractState(CurrentActor) == EInteractStates::Interactable)
+	{
+		ITSA_InteractionInterface::Execute_PrimaryInteract(CurrentActor,GetOwner());
+	}
+}
+
 void UTSA_InteractComponent::BeginPlay()
 {
 	Super::BeginPlay();

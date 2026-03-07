@@ -17,14 +17,14 @@ class TSA_API ATSA_AgentCharacter : public ATSA_CharacterBase
 
 public:
 	ATSA_AgentCharacter();
-	void InitMovement();
-	void InitCameraAndArm();
-	void InitInteractComponent();
-
+	
 protected:
 	virtual void BeginPlay() override;
 	
 private:
+	void InitMovement();
+	void InitCameraAndArm();
+	void InitInteractComponent();
 	
 	/* Camera */
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -38,7 +38,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Interaction")
 	TSubclassOf<UTSA_InteractComponent> InteractComponentClass;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "TSA|Interaction")
 	TObjectPtr<UTSA_InteractComponent> InteractComponent;
 	/* End of Interact Component */
 };

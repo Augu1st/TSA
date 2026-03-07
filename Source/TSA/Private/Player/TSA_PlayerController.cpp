@@ -1,18 +1,23 @@
 ﻿// Dark Trace Studio Works
 
-
 #include "Player/TSA_PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "UI/HUD/TSA_HUD.h"
 #include "GameFramework/Character.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "TSA/TSA.h"
+#include "Interaction/TSA_InteractComponent.h"
 
+ATSA_PlayerController::ATSA_PlayerController()
+{
+	InitHUD();
+	InitInventoryComponents();
+}
 
 void ATSA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	InitHUD();
 }
 
 void ATSA_PlayerController::SetupInputComponent()
@@ -35,6 +40,8 @@ void ATSA_PlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Completed,this,&ATSA_PlayerController::StopJumping);
 	
 	EnhancedInputComponent->BindAction(PrimaryInteractAction,ETriggerEvent::Started,this,&ATSA_PlayerController::PrimaryInteract);
+	
+	EnhancedInputComponent->BindAction(InventoryAction,ETriggerEvent::Started,this,&ATSA_PlayerController::InteractWithInventory);
 }
 
 void ATSA_PlayerController::InitHUD()
@@ -42,10 +49,18 @@ void ATSA_PlayerController::InitHUD()
 	if (GetHUD())
 	{
 		HUD = Cast<ATSA_HUD>(GetHUD());
-		if (!IsValid(HUD)) return;
 	}
 }
 
+void ATSA_PlayerController::InitInventoryComponents()
+{
+	if (InventoryComponentClass!= nullptr)
+	{
+		UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentClass is not set"), *GetName());
+		return;
+	}
+	MainInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("MainInventoryComp");
+}
 
 void ATSA_PlayerController::Move(const FInputActionValue& Value)
 {
@@ -77,7 +92,45 @@ void ATSA_PlayerController::StopJumping()
 	GetCharacter()->StopJumping();
 }
 
+
 void ATSA_PlayerController::PrimaryInteract()
 {
-	UE_LOG(LogTemp, Log, TEXT("Primary Interact"));
+	if (!IsValid(GetCharacter())) return;
+	UTSA_InteractComponent* InteractComponent = GetCharacter()->FindComponentByClass<UTSA_InteractComponent>();
+	
+	if (!IsValid(InteractComponent))
+	{
+		UE_LOG(LogTSA, Warning, TEXT("%s: Owning Character has no InteractComponent"), *GetName());
+		return;
+	}
+	InteractComponent->PrimaryInteract();
+}
+
+void ATSA_PlayerController::InteractWithInventory()
+{
+	if (!IsValid(MainInventoryComp)) return;
+	
+	MainInventoryComp->ToggleInventory();
+	if (MainInventoryComp->IsInventoryVisible())
+	{
+		SetCursorInputMode();
+	}
+	else
+	{
+		SetGameInputMode();
+	}
+}
+
+void ATSA_PlayerController::SetCursorInputMode()
+{
+	FInputModeGameAndUI InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = true;
+}
+
+void ATSA_PlayerController::SetGameInputMode()
+{
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = false;
 }

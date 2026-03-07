@@ -13,3 +13,8 @@
 ### 3.5 
 测试交互接口     
 实现物体轮廓高亮显示    
+
+### 3.6
+开始搭建库存系统    
+创建 Inventory Compoennt 类 
+创建 InventoryBase, SptialInventory, InventoryGrid 类    
