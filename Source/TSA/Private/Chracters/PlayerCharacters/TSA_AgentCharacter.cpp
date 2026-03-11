@@ -52,7 +52,6 @@ void ATSA_AgentCharacter::InitCameraAndArm()
 void ATSA_AgentCharacter::InitInteractComponent()
 {
 	InteractComponent = CreateDefaultSubobject<UTSA_InteractComponent>("InteractComponent");
-	InteractComponent->RegisterComponent();
 }
 
 void ATSA_AgentCharacter::BeginPlay()

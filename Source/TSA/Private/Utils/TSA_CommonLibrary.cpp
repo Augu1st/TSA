@@ -4,6 +4,7 @@
 #include "Utils/TSA_CommonLibrary.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "Interaction/TSA_InteractionInterface.h"
 
 TArray<AActor*> UTSA_CommonLibrary::FindInteractableActorsInRange(
@@ -30,3 +31,4 @@ TArray<AActor*> UTSA_CommonLibrary::FindInteractableActorsInRange(
 	}
 	return OverlappedActors;
 }
+

@@ -3,16 +3,24 @@
 #include "Player/TSA_PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "IDetailTreeNode.h"
 #include "UI/HUD/TSA_HUD.h"
 #include "GameFramework/Character.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "TSA/TSA.h"
 #include "Interaction/TSA_InteractComponent.h"
+#include "Items/Component/TSA_ItemComponent.h"
+#include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 
 ATSA_PlayerController::ATSA_PlayerController()
 {
 	InitHUD();
 	InitInventoryComponents();
+}
+
+void ATSA_PlayerController::TryPickupItem(UTSA_ItemComponent* ItemComponent)
+{
+	MainInventoryComp->TryAddItem(ItemComponent);
 }
 
 void ATSA_PlayerController::BeginPlay()
@@ -103,6 +111,7 @@ void ATSA_PlayerController::PrimaryInteract()
 		UE_LOG(LogTSA, Warning, TEXT("%s: Owning Character has no InteractComponent"), *GetName());
 		return;
 	}
+	
 	InteractComponent->PrimaryInteract();
 }
 
@@ -111,7 +120,7 @@ void ATSA_PlayerController::InteractWithInventory()
 	if (!IsValid(MainInventoryComp)) return;
 	
 	MainInventoryComp->ToggleInventory();
-	if (MainInventoryComp->IsInventoryVisible())
+	if (MainInventoryComp->IsInventoryOpen())
 	{
 		SetCursorInputMode();
 	}

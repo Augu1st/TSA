@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "TSA_PlayerController.generated.h"
 
+class UTSA_ItemComponent;
 class UTSA_InteractComponent;
 class UTSA_InventoryComponent;
 class ATSA_HUD;
@@ -22,6 +23,8 @@ class TSA_API ATSA_PlayerController : public APlayerController
 public:
 	ATSA_PlayerController();
 
+	UFUNCTION(BlueprintCallable)
+	void TryPickupItem(UTSA_ItemComponent*  ItemComponent);
 protected:
 	
 	virtual void BeginPlay() override;

@@ -15,7 +15,10 @@ public class TSA : ModuleRules
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput",
-			"UMG"
+			"UMG",
+			"NetCore",
+			"StructUtilsEditor",
+			"GameplayTags"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
