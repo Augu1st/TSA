@@ -8,6 +8,7 @@
 
 #include "TSA_InventoryGrid.generated.h"
 
+class UTSA_InventoryComponent;
 class UCanvasPanel;
 class UTSA_GridSlot;
 /**
@@ -19,28 +20,23 @@ class TSA_API UTSA_InventoryGrid : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void NativeOnInitialized() override;
+	virtual void NativeOnInitialized() override;
 	
+	UFUNCTION()
+	void AddItem(UTSA_InventoryItem* Item);
 	
-	ETSA_GridType GetGridType() const { return GridType; }
+	void InitializeGrid(UTSA_InventoryComponent* InventoryComponent);
+	void ConstructGrid(int32 Rows, int32 Columns);
 	
 private:
 	
-	void ConstructGrid();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"),  Category = "TSA|Inventory|Grid")
-	ETSA_GridType GridType = ETSA_GridType::General;
+	// Utils
+	TWeakObjectPtr<UTSA_InventoryComponent> OwnerComponent;
 	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 	
 	/* Grid Slots */
-	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
-	int32 Rows;
-	
-	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
-	int32 Columns;
-	
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
 	float SlotSize;
 	

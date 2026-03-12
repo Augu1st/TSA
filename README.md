@@ -17,7 +17,7 @@
 ### 3.6
 开始搭建库存系统    
 创建 Inventory Component     
-创建 InventoryBase, SptialInventory, InventoryGrid   
+创建 InventoryBase, SptialInventory, InventoryGrid    
 
 ### 3.7
 在 InventoryGrid 中加入了 GridSlot     
@@ -34,5 +34,9 @@
 ### 3.11
 定义全局ItemTag管理类     
 搭建物品数据配置架构：    
--利用Data Table 和 Data Asset 配置物品静态数据  
+-利用Data Table 和 Data Asset 配置物品静态数据    
 -ItemManifest 管理动态数据      
+
+### 3.12   
+重构了库存系统，分离了数据层和表现层      
+修改大量相关类的代码     

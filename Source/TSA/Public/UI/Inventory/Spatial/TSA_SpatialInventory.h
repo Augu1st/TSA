@@ -15,8 +15,15 @@ class TSA_API UTSA_SpatialInventory : public UTSA_InventoryBase
 {
 	GENERATED_BODY()
 	
-private:
+public:
 	
-	UPROPERTY(EditAnywhere, Category="TSA|Inventory")
-	TArray<TObjectPtr<UTSA_InventoryGrid>> InventoryGrids;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Equipment;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Prop;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_General;
+	
 };

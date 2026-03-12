@@ -18,11 +18,16 @@ class TSA_API UTSA_InventoryItem : public UObject
 	
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
 	
+	// Getters and Setters
 	void SetItemManifest(const FTSA_ItemManifestBase& InItemManifest);
+	const FTSA_ItemManifestBase& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifestBase>(); }
+	const FTSA_ItemManifestBase* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifestBase>(); }
+	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
 	
-	UFUNCTION(BlueprintCallable, Category="TSA|Item")
-	bool GetItemStaticData(struct FTSA_ItemDataRow& OutItemData) const;
+	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
+	// End of Getters and Setters
 	
 private:
 	UPROPERTY(VisibleAnywhere, meta = (BaseStruct = "/Script/TSA.TSA_ItmeManifestBase"), Replicated)

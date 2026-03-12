@@ -2,21 +2,34 @@
 
 
 #include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
-
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "UI/Inventory/GridSlots/TSA_GridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "Systems/InventorySystem/Utils/TSA_InventoryStatics.h"
 #include "Utils/TSA_WidgetUtils.h"
 
 void UTSA_InventoryGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	ConstructGrid();
 }
 
-void UTSA_InventoryGrid::ConstructGrid()
+void UTSA_InventoryGrid::AddItem(UTSA_InventoryItem* Item)
+{
+	
+}
+
+void UTSA_InventoryGrid::InitializeGrid(UTSA_InventoryComponent* InventoryComponent)
+{
+	OwnerComponent = InventoryComponent;
+	OwnerComponent->OnItemAdded.AddDynamic(this, &UTSA_InventoryGrid::AddItem);
+	ConstructGrid(InventoryComponent->GetRows(), InventoryComponent->GetColumns());
+	// TODO:显示库存物品
+}
+
+void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 {
 	GridSlots.Reserve(Rows * Columns);
 

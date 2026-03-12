@@ -15,5 +15,5 @@ class TSA_API UTSA_InventoryBase : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual FTSA_SlotAvailabilityResult HasRoomForItem(UTSA_ItemComponent* ItemComponent) const { return FTSA_SlotAvailabilityResult(); }
+	
 }; 

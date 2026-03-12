@@ -3,16 +3,17 @@
 
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 
+#include "TSA_GameplayTags.h"
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "UI/Inventory/TSA_InventoryBase.h"
-#include "Items/Component/TSA_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Utils/TSA_ItemUtils.h"
 
-UTSA_InventoryComponent::UTSA_InventoryComponent()
+UTSA_InventoryComponent::UTSA_InventoryComponent() : InventoryList(this)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	
 	SetIsReplicatedByDefault(true);
 	bReplicateUsingRegisteredSubObjectList = true;
 }
@@ -23,16 +24,16 @@ void UTSA_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(ThisClass,InventoryList);
 }
 
-void UTSA_InventoryComponent::TryAddItem(UTSA_ItemComponent* ItemComponent)
+bool UTSA_InventoryComponent::TryAddItem(UTSA_ItemComponent* ItemComponent)
 {
-	FTSA_SlotAvailabilityResult Result = GetInventoryMenu()->HasRoomForItem(ItemComponent);
+	FTSA_SlotAvailabilityResult Result = HasRoomForItem(ItemComponent);
 	
 	// 情况1： 背包已满
 	if (Result.TotalRoomToFill == 0)
 	{
 		UTSA_UIMessageSubsystem* MsgSys = UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner());
-		MsgSys->BroadcastUIMessage(FText::FromString("背包空间不足!"));// TODO: 文本映射
-		return;
+		MsgSys->BroadcastUIMessage(FText::FromString(TEXT("背包空间不足！")));
+		return  false;
 	}
 	
 	// 情况2： 背包已存在相同物品
@@ -45,12 +46,20 @@ void UTSA_InventoryComponent::TryAddItem(UTSA_ItemComponent* ItemComponent)
 	{
 		Server_AddNewItem(ItemComponent,Result.bStackable ? Result.TotalRoomToFill : 0);
 	}
-	
+	return true;
 }
 
 void UTSA_InventoryComponent::Server_AddNewItem_Implementation(UTSA_ItemComponent* ItemComponent, int32 StackCount)
 {
-	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+	const int32 EmptyIndex = InventoryList.FindFirstEmptySlot(MaxCapacity);
+	if (EmptyIndex == -1) return;
+	
+	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent,EmptyIndex);
+	
+	if (GetOwner()->GetNetMode() == ENetMode::NM_ListenServer || GetOwner()->GetNetMode() == ENetMode::NM_Standalone)
+	{
+		OnItemAdded.Broadcast(NewItem);
+	}
 }
 
 void UTSA_InventoryComponent::Server_AddStacksToItem_Implementation(UTSA_ItemComponent* ItemComponent, int32 StackCount,
@@ -67,23 +76,31 @@ void UTSA_InventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
-void UTSA_InventoryComponent::ToggleInventory()
+FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(UTSA_ItemComponent* ItemComponent)
 {
-	if (GetInventoryMenu())
-	{
-		if (bInventoryMenuOpen) InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
-		else InventoryMenu->SetVisibility(ESlateVisibility::Visible);
-		bInventoryMenuOpen = !bInventoryMenuOpen;
-	}
+	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItemComp(ItemComponent);
+	if (!MatchItemCategory(ItemCategory)) return FTSA_SlotAvailabilityResult();
+	
+	return FTSA_SlotAvailabilityResult();
 }
 
-UTSA_InventoryBase* UTSA_InventoryComponent::GetInventoryMenu()
+UTSA_InventoryItem* UTSA_InventoryComponent::GetItemAtIndex(int32 Index) const
 {
-	if (!IsValid(InventoryMenu))
+	return InventoryList.GetItemAtSlot(Index);
+}
+
+void UTSA_InventoryComponent::RequestMoveItem(int32 FromIndex, int32 ToIndex)
+{
+	// 如果是客户端，发送 RPC 给服务器
+	if (GetOwnerRole() < ROLE_Authority)
 	{
-		ConstructInventory();
+		Server_MoveItem(FromIndex, ToIndex);
 	}
-	return InventoryMenu;
+	else // 如果本身就是服务器，直接执行
+	{
+		InventoryList.MoveItem(FromIndex, ToIndex);
+		// 这里可以触发委托通知 UI 刷新
+	}
 }
 
 void UTSA_InventoryComponent::BeginPlay()
@@ -92,12 +109,16 @@ void UTSA_InventoryComponent::BeginPlay()
 	
 }
 
-void UTSA_InventoryComponent::ConstructInventory()
+bool UTSA_InventoryComponent::MatchItemCategory(FGameplayTag& ItemCategory) const
 {
-	if (!IsValid(InventoryMenuClass)) return;
-	InventoryMenu = CreateWidget<UTSA_InventoryBase>(GetOwner()->GetWorld(),InventoryMenuClass);
-	InventoryMenu->AddToViewport();
-	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+	if (InventoryCategory.MatchesTag(ItemTags::Category::General)) return true;
+	return InventoryCategory.MatchesTag(ItemCategory);
 }
+
+void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 FromIndex, int32 ToIndex)
+{
+	InventoryList.MoveItem(FromIndex, ToIndex);
+}
+
 
 

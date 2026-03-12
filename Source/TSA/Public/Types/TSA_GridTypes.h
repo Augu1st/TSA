@@ -5,7 +5,7 @@
 class UTSA_InventoryItem;
 
 UENUM()
-enum class ETSA_GridType : uint8
+enum class ETSA_GridCategory : uint8
 {
 	General,	// 通用
 	Equipment,	// 装备

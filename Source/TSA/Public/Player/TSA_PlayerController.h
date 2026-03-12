@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "TSA_PlayerController.generated.h"
 
+class UTSA_InventoryBase;
 class UTSA_ItemComponent;
 class UTSA_InteractComponent;
 class UTSA_InventoryComponent;
@@ -23,16 +24,20 @@ class TSA_API ATSA_PlayerController : public APlayerController
 public:
 	ATSA_PlayerController();
 
-	UFUNCTION(BlueprintCallable)
-	void TryPickupItem(UTSA_ItemComponent*  ItemComponent);
 protected:
-	
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	
+	// Inventory Menu
+	void InitializeInventoryMenu();
+	UTSA_InventoryBase* GetInventoryMenu();
+	void ToggleInventory();
+	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
+	// End of Inventory Menu
+	
 private:
 	void InitHUD();
-	void InitInventoryComponents();
+	void ConstructInventory();
 	
 	void PrimaryInteract();
 	void InteractWithInventory();
@@ -49,13 +54,15 @@ private:
 	TObjectPtr<ATSA_HUD> HUD;
 	/* */
 	
-	/* Inventory Components */
-	UPROPERTY(EditDefaultsOnly, Category = "TSA|Inventory")
-	TSubclassOf<UTSA_InventoryComponent> InventoryComponentClass;
+	/* Inventory Widget */
+	bool bInventoryMenuOpen = false;
 	
-	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
-	TObjectPtr<UTSA_InventoryComponent> MainInventoryComp;
-	/* End of Inventory Components */
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	TSubclassOf<UTSA_InventoryBase> InventoryMenuClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_InventoryBase> InventoryMenu;
+	/* End of Inventory Widget */
 	
 	
 	/* Input Context and Actions */

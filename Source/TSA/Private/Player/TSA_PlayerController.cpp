@@ -3,29 +3,28 @@
 #include "Player/TSA_PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "IDetailTreeNode.h"
+#include "TSA_GameplayTags.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "UI/HUD/TSA_HUD.h"
 #include "GameFramework/Character.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "TSA/TSA.h"
 #include "Interaction/TSA_InteractComponent.h"
-#include "Items/Component/TSA_ItemComponent.h"
-#include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
+#include "UI/Inventory/TSA_InventoryBase.h"
+#include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
+#include "UI/Inventory/Spatial/TSA_SpatialInventory.h"
 
 ATSA_PlayerController::ATSA_PlayerController()
 {
 	InitHUD();
-	InitInventoryComponents();
-}
-
-void ATSA_PlayerController::TryPickupItem(UTSA_ItemComponent* ItemComponent)
-{
-	MainInventoryComp->TryAddItem(ItemComponent);
+	
 }
 
 void ATSA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	InitializeInventoryMenu();
 }
 
 void ATSA_PlayerController::SetupInputComponent()
@@ -52,6 +51,39 @@ void ATSA_PlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InventoryAction,ETriggerEvent::Started,this,&ATSA_PlayerController::InteractWithInventory);
 }
 
+void ATSA_PlayerController::InitializeInventoryMenu()
+{
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetCharacter());
+	UTSA_InventoryComponent* EquipmentInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
+	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
+	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	
+	SpatialInventory->Grid_Equipment->InitializeGrid(EquipmentInventoryComp);
+	SpatialInventory->Grid_Prop->InitializeGrid(PropInventoryComp);
+	SpatialInventory->Grid_General->InitializeGrid(GeneralInventoryComp);
+}
+
+UTSA_InventoryBase* ATSA_PlayerController::GetInventoryMenu()
+{
+	if (!IsValid(InventoryMenu))
+	{
+		ConstructInventory();
+	}
+	return InventoryMenu;
+}
+
+void ATSA_PlayerController::ToggleInventory()
+{
+	if (GetInventoryMenu())
+	{
+		if (bInventoryMenuOpen) InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+		else InventoryMenu->SetVisibility(ESlateVisibility::Visible);
+		bInventoryMenuOpen = !bInventoryMenuOpen;
+	}
+}
+
 void ATSA_PlayerController::InitHUD()
 {
 	if (GetHUD())
@@ -60,14 +92,12 @@ void ATSA_PlayerController::InitHUD()
 	}
 }
 
-void ATSA_PlayerController::InitInventoryComponents()
+void ATSA_PlayerController::ConstructInventory()
 {
-	if (InventoryComponentClass!= nullptr)
-	{
-		UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentClass is not set"), *GetName());
-		return;
-	}
-	MainInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("MainInventoryComp");
+	if (!IsValid(InventoryMenuClass)) return;
+	InventoryMenu = CreateWidget<UTSA_InventoryBase>(GetWorld(),InventoryMenuClass);
+	InventoryMenu->AddToViewport();
+	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ATSA_PlayerController::Move(const FInputActionValue& Value)
@@ -117,10 +147,8 @@ void ATSA_PlayerController::PrimaryInteract()
 
 void ATSA_PlayerController::InteractWithInventory()
 {
-	if (!IsValid(MainInventoryComp)) return;
-	
-	MainInventoryComp->ToggleInventory();
-	if (MainInventoryComp->IsInventoryOpen())
+	ToggleInventory();
+	if (IsInventoryOpen())
 	{
 		SetCursorInputMode();
 	}

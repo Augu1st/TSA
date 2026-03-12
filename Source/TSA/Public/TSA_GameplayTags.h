@@ -7,6 +7,8 @@ namespace ItemTags
 {
 	namespace Category
 	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(General);
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment_Weapon);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment_Armor);
@@ -15,4 +17,6 @@ namespace ItemTags
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Collection);
 	}
+	
 }
+

@@ -16,8 +16,5 @@ void UTSA_ItemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(ThisClass,ItemManifest);
 }
 
-FTSA_ItemManifestBase UTSA_ItemComponent::GetItemManifest() const
-{
-	return ItemManifest.Get<FTSA_ItemManifestBase>();
-}
+
 

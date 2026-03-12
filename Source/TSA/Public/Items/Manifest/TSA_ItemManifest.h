@@ -18,13 +18,18 @@ struct FTSA_ItemManifestBase
 {
 	GENERATED_BODY()
 	
-	UTSA_InventoryItem* MakeManifest(UObject* NewOuter);
+	//获取静态数据
+	bool GetItemStaticData(FTSA_ItemDataRow& OutItemData) const;
+	
+	UTSA_InventoryItem* MakeManifest(UObject* NewOuter) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TSA|Item")
 	TObjectPtr<UTSA_ItemDataAsset> ItemDataAsset = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item", meta=(RowType="TSA_ItemDataRow"))
 	FDataTableRowHandle ItemDataHandle;
+	
+	int32 StackCount = 1;
 };
 
 // 2. 装备动态数据 

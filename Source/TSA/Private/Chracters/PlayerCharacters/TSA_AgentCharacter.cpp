@@ -1,14 +1,16 @@
 ﻿// Dark Trace Studio Works
 
-
+#include "TSA/TSA.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 
+#include "TSA_GameplayTags.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interaction/TSA_InteractComponent.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
-#include "TSA/TSA.h"
+#include "Items/Component/TSA_ItemComponent.h"
+#include "Utils/TSA_ItemUtils.h"
 
 
 // Sets default values
@@ -19,6 +21,33 @@ ATSA_AgentCharacter::ATSA_AgentCharacter()
 	InitMovement();
 	InitCameraAndArm();
 	InitInteractComponent();
+	InitInventoryComponents();
+}
+
+void ATSA_AgentCharacter::PickUpItem(UTSA_ItemComponent* ItemComponent)
+{
+	const FGameplayTag& ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItemComp(ItemComponent);
+	// 尝试在对应仓库添加
+	if (InventoryComponentMap.Contains(ItemCategory) && InventoryComponentMap[ItemCategory]->TryAddItem(ItemComponent)) return;
+	
+	// 尝试在通用仓库添加
+	if (InventoryComponentMap.Contains(ItemTags::Category::General))
+	{
+		if (InventoryComponentMap[ItemTags::Category::General]->TryAddItem(ItemComponent)) return;
+	}
+	
+	// 添加失败
+	UE_LOG(LogTSA, Warning, TEXT("%s : Failed to add item to inventory"), *GetName());
+}
+
+UTSA_InventoryComponent* ATSA_AgentCharacter::GetInventoryCompByCategory(const FGameplayTag& ItemCategory)
+{
+	if (InventoryComponentMap.Contains(ItemCategory) == false)
+	{
+		UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentMap does not contain %s"), *GetName(), *ItemCategory.ToString());
+		return nullptr;
+	}
+	return InventoryComponentMap[ItemCategory];
 }
 
 void ATSA_AgentCharacter::InitMovement()
@@ -54,10 +83,25 @@ void ATSA_AgentCharacter::InitInteractComponent()
 	InteractComponent = CreateDefaultSubobject<UTSA_InteractComponent>("InteractComponent");
 }
 
+void ATSA_AgentCharacter::InitInventoryComponents()
+{
+	if (InventoryComponentClass!= nullptr)
+	{
+		UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentClass is not set"), *GetName());
+		return;
+	}
+	
+	EquipmentInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("EquipmentInventory");
+	InventoryComponentMap.Add(ItemTags::Category::Equipment, EquipmentInventoryComp.Get());
+	PropInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("PropInventory");
+	InventoryComponentMap.Add(ItemTags::Category::Prop, PropInventoryComp.Get());
+	GeneralInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("GeneralInventory");
+	InventoryComponentMap.Add(ItemTags::Category::General, GeneralInventoryComp.Get());
+}
+
 void ATSA_AgentCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	
 }
 

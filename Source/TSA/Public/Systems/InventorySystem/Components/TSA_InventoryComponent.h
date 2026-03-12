@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "Systems/InventorySystem/FastArray/TSA_FastArray.h"
 #include "TSA_InventoryComponent.generated.h"
 
+struct FTSA_SlotAvailabilityResult;
 class UTSA_ItemComponent;
 class UTSA_InventoryBase;
 
@@ -23,7 +25,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
-	void TryAddItem(UTSA_ItemComponent* ItemComponent);
+	bool TryAddItem(UTSA_ItemComponent* ItemComponent);
 	
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(UTSA_ItemComponent* ItemComponent, int32 StackCount);
@@ -33,32 +35,49 @@ public:
 	
 	void AddRepSubObj(UObject* SubObj);
 	
-	void ToggleInventory();
-	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
+	FTSA_SlotAvailabilityResult HasRoomForItem(UTSA_ItemComponent* ItemComponent);
+	UTSA_InventoryItem* GetItemAtIndex(int32 Index) const;
 	
-	UTSA_InventoryBase* GetInventoryMenu();
+	// 供 UI 拖拽时调用 (请求服务器移动物品)
+	void RequestMoveItem(int32 FromIndex, int32 ToIndex);
 	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
 	FInventoryMessage NewMessage;
 	
+	const FGameplayTag& GetAcceptableItemCategory() const { return InventoryCategory; }
+	
+	int32 GetRows() const { return Rows; }
+	int32 GetColumns() const { return Columns; }
+	
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(Server, Reliable)
+	void Server_MoveItem(int32 FromIndex, int32 ToIndex);
 	
 private:
+	bool MatchItemCategory(FGameplayTag& ItemCategory) const;
 	
-	void ConstructInventory();
 	
 	UPROPERTY(Replicated)
 	FTSA_InventoryFastArray InventoryList;
 	
-	/* Inventory Widget */
-	bool bInventoryMenuOpen = false;
-	
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
-	TSubclassOf<UTSA_InventoryBase> InventoryMenuClass;
+	FGameplayTag InventoryCategory = FGameplayTag::EmptyTag;
 	
-	UPROPERTY()
-	TObjectPtr<UTSA_InventoryBase> InventoryMenu;
-	/* End of Inventory Widget */
+	// 列数
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	int32 Columns = 8;
+	
+	// 行数
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	int32 Rows = 4;
+	
+	// 背包最大容量
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	int32 MaxCapacity = 32;
+	
+	// 当前物品数量
+	int32 CurrentItemCount = 0;
 };
