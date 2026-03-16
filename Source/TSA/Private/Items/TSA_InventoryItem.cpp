@@ -3,7 +3,6 @@
 
 #include "Items/TSA_InventoryItem.h"
 #include "Net/UnrealNetwork.h"
-#include "TSA/TSA.h"
 
 void UTSA_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -13,8 +12,13 @@ void UTSA_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	
 }
 
-void UTSA_InventoryItem::SetItemManifest(const FTSA_ItemManifestBase& InItemManifest)
+void UTSA_InventoryItem::SetItemManifest(const FInstancedStruct& InManifestStruct)
 {
-	ItemManifest = FInstancedStruct::Make<FTSA_ItemManifestBase>(InItemManifest);
+	ItemManifest = InManifestStruct;
+}
+
+const FName& UTSA_InventoryItem::GetItemID()
+{
+	return GetItemManifest().ItemDataHandle.RowName;
 }
 

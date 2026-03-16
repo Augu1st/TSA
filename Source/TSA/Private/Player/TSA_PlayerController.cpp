@@ -7,9 +7,9 @@
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "UI/HUD/TSA_HUD.h"
 #include "GameFramework/Character.h"
-#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "TSA/TSA.h"
 #include "Interaction/TSA_InteractComponent.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "UI/Inventory/TSA_InventoryBase.h"
 #include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
 #include "UI/Inventory/Spatial/TSA_SpatialInventory.h"
@@ -18,6 +18,16 @@ ATSA_PlayerController::ATSA_PlayerController()
 {
 	InitHUD();
 	
+}
+
+void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory)
+{
+	CurrentContainer = ContainerInventory;
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	SpatialInventory->Grid_Container->InitializeGrid(ContainerInventory);
+	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Visible);
+	ToggleInventory();
 }
 
 void ATSA_PlayerController::BeginPlay()
@@ -55,14 +65,15 @@ void ATSA_PlayerController::InitializeInventoryMenu()
 {
 	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetCharacter());
 	UTSA_InventoryComponent* EquipmentInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
-	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
-	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
+	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Prop);
+	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::General);
 	
 	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
 	
 	SpatialInventory->Grid_Equipment->InitializeGrid(EquipmentInventoryComp);
 	SpatialInventory->Grid_Prop->InitializeGrid(PropInventoryComp);
 	SpatialInventory->Grid_General->InitializeGrid(GeneralInventoryComp);
+	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 UTSA_InventoryBase* ATSA_PlayerController::GetInventoryMenu()
@@ -78,9 +89,23 @@ void ATSA_PlayerController::ToggleInventory()
 {
 	if (GetInventoryMenu())
 	{
-		if (bInventoryMenuOpen) InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+		if (bInventoryMenuOpen)
+		{
+			InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+			ClearContainerGrid();
+		}
 		else InventoryMenu->SetVisibility(ESlateVisibility::Visible);
 		bInventoryMenuOpen = !bInventoryMenuOpen;
+	}
+}
+
+
+void ATSA_PlayerController::ClearContainerGrid()
+{
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	if (SpatialInventory)
+	{
+		SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

@@ -22,6 +22,7 @@ public:
 	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
 	
 	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
+	void PickUp();
 
 private:
 	UPROPERTY(Replicated,EditAnywhere,meta = ( BaseStruct="/Script/TSA.TSA_ItemManifestBase"), Category="TSA|Item")

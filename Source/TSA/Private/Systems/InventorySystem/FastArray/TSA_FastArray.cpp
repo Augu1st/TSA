@@ -4,6 +4,7 @@
 #include "Items/Component/TSA_ItemComponent.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "TSA/TSA.h"
+#include "Utils/TSA_ItemUtils.h"
 
 void FTSA_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
@@ -12,7 +13,25 @@ void FTSA_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedInd
     	
 	for (int32 Index : AddedIndices)
 	{
-		IC->OnItemAdded.Broadcast(Entries[Index].Item);
+		if (Entries[Index].Item != nullptr)
+		{
+			IC->OnItemAdded.Broadcast(Entries[Index].Item, Entries[Index].SlotIndex);
+		}
+	}
+}
+
+void FTSA_InventoryFastArray::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+	UTSA_InventoryComponent* IC = Cast<UTSA_InventoryComponent>(OwnerComponent);
+	if (!IsValid(IC)) return;
+
+	for (int32 Index : ChangedIndices)
+	{
+		// 当原本为空的指针，终于接收到服务器传来的 UObject 时，触发广播！
+		if (Entries[Index].Item != nullptr)
+		{
+			IC->OnItemAdded.Broadcast(Entries[Index].Item, Entries[Index].SlotIndex);
+		}
 	}
 }
 
@@ -23,55 +42,50 @@ void FTSA_InventoryFastArray::PreReplicatedRemove(const TArrayView<int32> Remove
     	
 	for (int32 Index : RemovedIndices)
 	{
-		IC->OnItemRemoved.Broadcast(Entries[Index].Item);
+		if (Entries[Index].Item != nullptr)
+		{
+			IC->OnItemRemoved.Broadcast(Entries[Index].Item,Entries[Index].SlotIndex);
+		}
 	}
 }
 
-UTSA_InventoryItem* FTSA_InventoryFastArray::AddEntry(const UTSA_ItemComponent* ItemComponent, int32 SlotIndex)
+UTSA_InventoryItem* FTSA_InventoryFastArray::AddEntry(const FInstancedStruct& ItemManifestStruct, int32 SlotIndex)
 {
-	if (!IsValid(ItemComponent))
-	{
-		return nullptr;
-	}
-	
+	// 1. 基础校验
 	check(OwnerComponent);
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	check(OwningActor->HasAuthority());
-	UTSA_InventoryComponent* IC = Cast<UTSA_InventoryComponent>(OwnerComponent);
-	if (!IsValid(IC)) return nullptr;
 
-	// 获取 Manifest 并检查其是否在蓝图中正确配置
-	const FTSA_ItemManifestBase* ManifestPtr = ItemComponent->GetItemManifestPtr();
-	if (!ManifestPtr)
+	// 2. 校验传入的 FInstancedStruct 是否有效 (是不是空的)
+	if (!ItemManifestStruct.IsValid())
 	{
-		UE_LOG(LogTSA, Warning, TEXT("AddEntry Failed: ItemComponent 没有配置有效的 ItemManifest！"));
 		return nullptr;
 	}
-	
+
+	// 3. 直接在这里创建 UObject (UTSA_InventoryItem)
+	// 使用 OwningActor 作为 Outer，方便后续的网络同步
+	UTSA_InventoryItem* NewItemObject = NewObject<UTSA_InventoryItem>(OwningActor, UTSA_InventoryItem::StaticClass());
+
+	// 4. 将完整的 FInstancedStruct 塞进 UObject
+	// 此时无论是装备的耐久度，还是道具的数量，都完美无损地传进去了！
+	NewItemObject->SetItemManifest(ItemManifestStruct);
+
+	// 5. 添加到 FastArray 数组中
 	FTSA_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.Item = ManifestPtr->MakeManifest(OwningActor);
+	NewEntry.Item = NewItemObject;
 	NewEntry.SlotIndex = SlotIndex;
 
-	IC->AddRepSubObj(NewEntry.Item);
-	
+	// 6. 注册网络同步子对象
+	UTSA_InventoryComponent* IC = Cast<UTSA_InventoryComponent>(OwnerComponent);
+	if (IsValid(IC))
+	{
+		IC->AddRepSubObj(NewEntry.Item);
+	}
+    
+	// 7. 标记 FastArray 脏了，触发网络同步
 	MarkItemDirty(NewEntry);
 
 	return NewEntry.Item;
-}
-
-UTSA_InventoryItem* FTSA_InventoryFastArray::AddEntry(UTSA_InventoryItem* Item, int32 SlotIndex)
-{
-	check(OwnerComponent);
-	AActor* OwningActor = OwnerComponent->GetOwner();
-	check(OwningActor->HasAuthority());
-
-	FTSA_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.Item = Item;
-	NewEntry.SlotIndex = SlotIndex;
-
-	MarkItemDirty(NewEntry);
-	
-	return Item;
 }
 
 void FTSA_InventoryFastArray::RemoveEntry(UTSA_InventoryItem* Item)
@@ -86,6 +100,7 @@ void FTSA_InventoryFastArray::RemoveEntry(UTSA_InventoryItem* Item)
 		}
 	}
 }
+
 
 UTSA_InventoryItem* FTSA_InventoryFastArray::GetItemAtSlot(int32 SlotIndex) const
 {
@@ -112,36 +127,24 @@ int32 FTSA_InventoryFastArray::FindFirstEmptySlot(int32 MaxCapacity) const
 	return -1; // 背包满了
 }
 
-bool FTSA_InventoryFastArray::MoveItem(int32 FromSlot, int32 ToSlot)
+TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAndSlotsByID(const FName& ItemID) const
 {
-	FTSA_InventoryEntry* SourceEntry = nullptr;
-	FTSA_InventoryEntry* TargetEntry = nullptr;
+	TArray<TTuple<UTSA_InventoryItem*, int32>> FoundResults;
+	
+	// 预分配内存，避免数组扩容开销
+	FoundResults.Reserve(Entries.Num());
 
-	// 1. 找到源格子和目标格子的 Entry
-	for (FTSA_InventoryEntry& Entry : Entries)
+	for (const FTSA_InventoryEntry& Entry : Entries)
 	{
-		if (Entry.SlotIndex == FromSlot) SourceEntry = &Entry;
-		else if (Entry.SlotIndex == ToSlot) TargetEntry = &Entry;
+		if (!Entry.Item) continue;
+		
+		const FTSA_ItemManifestBase& Manifest = Entry.Item->GetItemManifest();
+		if (Manifest.ItemDataHandle.RowName == ItemID)
+		{
+			// Emplace 直接在数组内存中构造 TTuple，连拷贝构造函数都省了！(极致优化)
+			FoundResults.Emplace(Entry.Item, Entry.SlotIndex);
+		}
 	}
 
-	if (!SourceEntry) return false; // 源格子没东西，移个寂寞
-
-	// 2. 如果目标格子有东西，执行【交换】
-	if (TargetEntry)
-	{
-		SourceEntry->SlotIndex = ToSlot;
-		TargetEntry->SlotIndex = FromSlot;
-        
-		// 【关键】Fast Array 必须手动标记 Dirty，服务器才会把位置变化同步给客户端！
-		MarkItemDirty(*SourceEntry);
-		MarkItemDirty(*TargetEntry);
-	}
-	// 3. 如果目标格子是空的，直接【移动】
-	else
-	{
-		SourceEntry->SlotIndex = ToSlot;
-		MarkItemDirty(*SourceEntry);
-	}
-
-	return true;
+	return FoundResults;
 }

@@ -16,7 +16,6 @@ class TSA_API UTSA_SpatialInventory : public UTSA_InventoryBase
 	GENERATED_BODY()
 	
 public:
-	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTSA_InventoryGrid> Grid_Equipment;
 	
@@ -26,4 +25,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTSA_InventoryGrid> Grid_General;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Container;
 };

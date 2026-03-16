@@ -5,9 +5,29 @@
 
 #include "TSA_FastArray.generated.h"
 
+struct FInstancedStruct;
+struct FTSA_ItemManifestBase;
 class UTSA_ItemComponent;
 class UTSA_InventoryItem;
 class UTSA_InventoryComponent;
+
+USTRUCT(BlueprintType)
+struct FTSA_ItemSearchResult
+{
+	GENERATED_BODY()
+
+	// 找到的物品指针
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Search")
+	UTSA_InventoryItem* Item = nullptr;
+
+	// 它所在的格子索引
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Search")
+	int32 SlotIndex = -1;
+	
+	// 方便 Emplace 构造
+	FTSA_ItemSearchResult() {}
+	FTSA_ItemSearchResult(UTSA_InventoryItem* InItem, int32 InSlotIndex) : Item(InItem), SlotIndex(InSlotIndex) {}
+};
 
 // A single item in an inventory
 USTRUCT(BLueprintType)
@@ -43,6 +63,7 @@ public:
 	
 	// FFastArraySerializer contract
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	// End of FFastArraySerializer contract
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
@@ -50,16 +71,17 @@ public:
 		return FastArrayDeltaSerialize<FTSA_InventoryEntry, FTSA_InventoryFastArray>(Entries, DeltaParams, *this);
 	}
 	
-	UTSA_InventoryItem* AddEntry(const UTSA_ItemComponent* ItemComponent, int32 SlotIndex);
-	UTSA_InventoryItem* AddEntry(UTSA_InventoryItem* Item, int32 SlotIndex);
+	UTSA_InventoryItem* AddEntry(const FInstancedStruct& ItemManifestStruct, int32 SlotIndex);
 	void RemoveEntry(UTSA_InventoryItem* Item);
+	const TArray<FTSA_InventoryEntry>& GetEntries() const { return Entries; }
 	
 	// 获取指定格子里的物品
 	UTSA_InventoryItem* GetItemAtSlot(int32 SlotIndex) const;
 	// 寻找第一个空位（需要传入背包总容量）
 	int32 FindFirstEmptySlot(int32 MaxCapacity) const;
-	// 移动或交换物品位置
-	bool MoveItem(int32 FromSlot, int32 ToSlot);
+	// 寻找所有相同物品
+	TArray<TTuple<UTSA_InventoryItem*, int32>> FindItemsAndSlotsByID(const FName& ItemID) const;
+	
 	
 private:
 	friend UTSA_InventoryComponent;

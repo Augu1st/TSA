@@ -27,11 +27,13 @@ public:
 	static bool GetItemStaticDataFromItem(UTSA_InventoryItem*  Item, FTSA_ItemDataRow& OutItemData);
 	
 	UFUNCTION(BlueprintCallable, Category = "TSA|Item")
+	static FGameplayTag GetItemCategoryFromManifest(const FTSA_ItemManifestBase& Manifest);
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Item")
 	static FGameplayTag GetItemCategoryFromItem(UTSA_InventoryItem* Item);
     	
 	UFUNCTION(BlueprintCallable, Category = "TSA|Item")
 	static FGameplayTag GetItemCategoryFromItemComp(UTSA_ItemComponent* ItemComponent);
 	
-private:
-	static bool GetItemStaticFromManifest(const FTSA_ItemManifestBase& Manifest, FTSA_ItemDataRow& OutItemData);
+	static bool GetItemDataFromManifest(const FTSA_ItemManifestBase& Manifest, FTSA_ItemDataRow& OutItemData);
 };

@@ -20,3 +20,7 @@ namespace ItemTags
 	
 }
 
+namespace ItemBonds
+{
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MartialSaint);
+}

@@ -15,3 +15,8 @@ namespace ItemTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Collection,"Item.Category.Collection","收集品根标签");
 	}
 }
+
+namespace ItemBonds
+{
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MartialSaint,"Item.Bond.MartialSaint","羁绊-武圣")
+}

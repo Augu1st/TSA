@@ -4,6 +4,7 @@
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 
 #include "TSA_GameplayTags.h"
+#include "Items/TSA_InventoryItem.h"
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "UI/Inventory/TSA_InventoryBase.h"
@@ -24,48 +25,61 @@ void UTSA_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(ThisClass,InventoryList);
 }
 
-bool UTSA_InventoryComponent::TryAddItem(UTSA_ItemComponent* ItemComponent)
+bool UTSA_InventoryComponent::TryAddItem(FInstancedStruct& ItemManifestStruct)
 {
-	FTSA_SlotAvailabilityResult Result = HasRoomForItem(ItemComponent);
 	
-	// 情况1： 背包已满
+	FTSA_SlotAvailabilityResult Result = HasRoomForItem(ItemManifestStruct);
+	
+	// 背包已满
 	if (Result.TotalRoomToFill == 0)
 	{
-		UTSA_UIMessageSubsystem* MsgSys = UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner());
-		MsgSys->BroadcastUIMessage(FText::FromString(TEXT("背包空间不足！")));
-		return  false;
+		Client_ShowMessage(FText::FromString(TEXT("背包空间不足！")));
+		return false;
 	}
 	
-	// 情况2： 背包已存在相同物品
-	if (Result.Item.IsValid() && Result.bStackable)
+	// 添加物品
+	for (FTSA_SlotAvailability& SlotAvailability : Result.SlotAvailabilities)
 	{
-		Server_AddStacksToItem(ItemComponent,Result.TotalRoomToFill,Result.Remainder);
+		if (SlotAvailability.bItemAtIndex)
+		{
+			AddStacksToItem(ItemManifestStruct,SlotAvailability.AmountToFill,SlotAvailability.Index);
+		}
+		else
+		{
+			AddNewItem(ItemManifestStruct,SlotAvailability.Index);
+		}
 	}
-	// 情况3： 背包无相同物品 或 物品不可堆叠
-	else
-	{
-		Server_AddNewItem(ItemComponent,Result.bStackable ? Result.TotalRoomToFill : 0);
-	}
+
 	return true;
 }
 
-void UTSA_InventoryComponent::Server_AddNewItem_Implementation(UTSA_ItemComponent* ItemComponent, int32 StackCount)
+
+void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
-	const int32 EmptyIndex = InventoryList.FindFirstEmptySlot(MaxCapacity);
-	if (EmptyIndex == -1) return;
+	if (SlotIndex == -1) return;
 	
-	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent,EmptyIndex);
+	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemManifestStruct,SlotIndex);
+	ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>().StackCount = 0;
+	CurrentItemCount++;
 	
-	if (GetOwner()->GetNetMode() == ENetMode::NM_ListenServer || GetOwner()->GetNetMode() == ENetMode::NM_Standalone)
+	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
 	{
-		OnItemAdded.Broadcast(NewItem);
+		OnItemAdded.Broadcast(NewItem, SlotIndex);	
 	}
 }
 
-void UTSA_InventoryComponent::Server_AddStacksToItem_Implementation(UTSA_ItemComponent* ItemComponent, int32 StackCount,
-	int32 Remainder)
+void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack,int32 SlotIndex)
 {
+	FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>();
+	ItemManifest.StackCount -= AddToStack;
 	
+	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
+	Item->GetItemManifestMutable().StackCount += AddToStack;
+	
+	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
+	{
+		OnItemChanged.Broadcast(Item,SlotIndex);
+	}
 }
 
 void UTSA_InventoryComponent::AddRepSubObj(UObject* SubObj)
@@ -76,12 +90,56 @@ void UTSA_InventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
-FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(UTSA_ItemComponent* ItemComponent)
+FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(const FInstancedStruct& ItemManifestStruct)
 {
-	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItemComp(ItemComponent);
+	const FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifestBase>();
+	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromManifest(ItemManifest);
 	if (!MatchItemCategory(ItemCategory)) return FTSA_SlotAvailabilityResult();
 	
-	return FTSA_SlotAvailabilityResult();
+	FTSA_ItemDataRow ItemDataRow;
+	if (!UTSA_ItemUtils::GetItemDataFromManifest(ItemManifest, ItemDataRow)) return FTSA_SlotAvailabilityResult();
+	
+	FTSA_SlotAvailabilityResult Result;
+	Result.bStackable = ItemDataRow.bStackable;
+	Result.TotalRoomToFill = 0;
+	Result.Remainder = ItemManifest.StackCount;
+	
+	// 找到物品数据
+	TArray<TTuple<UTSA_InventoryItem*, int32>> ExistingEntries = InventoryList.FindItemsAndSlotsByID(ItemManifest.ItemDataHandle.RowName);
+	
+	// 1.不可叠加 或 不存在相同物品 直接找空位
+	if (!ItemDataRow.bStackable || ExistingEntries.IsEmpty())
+	{
+		TryAddLeftItemToEmptySlot(Result,ItemManifest.StackCount);
+		return Result;
+	}
+	// 2.往相同物品上叠加
+	for (auto Entry : ExistingEntries)
+	{ 
+		if (Result.Remainder == 0) return Result;
+		int32 RoomToFill = ItemDataRow.MaxStackCount - Entry.Get<0>()->GetItemManifest().StackCount;
+		if (RoomToFill <= 0) continue;
+		RoomToFill = FMath::Min(RoomToFill, Result.Remainder);
+		Result.TotalRoomToFill += RoomToFill;
+		Result.Remainder -= RoomToFill;
+		Result.SlotAvailabilities.Emplace(Entry.Get<1>(),RoomToFill,true);
+	}
+	// 3.如果还有，就找空位放下
+	if (Result.Remainder > 0)
+	{
+		TryAddLeftItemToEmptySlot(Result,Result.Remainder);
+		return Result;
+	}
+	return Result;
+}
+
+void UTSA_InventoryComponent::TryAddLeftItemToEmptySlot(FTSA_SlotAvailabilityResult& Result, int32 StackToAdd)
+{
+	int32 EmptyIndex = InventoryList.FindFirstEmptySlot(MaxCapacity);
+	if (EmptyIndex == -1) return;
+	Result.TotalRoomToFill += StackToAdd;
+	Result.Remainder -= StackToAdd;
+	Result.SlotAvailabilities.Emplace(EmptyIndex,StackToAdd,false);
 }
 
 UTSA_InventoryItem* UTSA_InventoryComponent::GetItemAtIndex(int32 Index) const
@@ -89,17 +147,23 @@ UTSA_InventoryItem* UTSA_InventoryComponent::GetItemAtIndex(int32 Index) const
 	return InventoryList.GetItemAtSlot(Index);
 }
 
-void UTSA_InventoryComponent::RequestMoveItem(int32 FromIndex, int32 ToIndex)
+TArray<FTSA_ItemSearchResult> UTSA_InventoryComponent::GetAllItemEntries()
 {
-	// 如果是客户端，发送 RPC 给服务器
-	if (GetOwnerRole() < ROLE_Authority)
+	TArray<FTSA_ItemSearchResult> ItemEntries;
+	for (const FTSA_InventoryEntry& Entry : InventoryList.GetEntries())
 	{
-		Server_MoveItem(FromIndex, ToIndex);
+		ItemEntries.Emplace(Entry.Item,Entry.SlotIndex);
 	}
-	else // 如果本身就是服务器，直接执行
+	return ItemEntries;
+}
+
+
+void UTSA_InventoryComponent::Client_ShowMessage_Implementation(const FText& Message)
+{
+	// 只有收到 RPC 的那个客户端，才会执行这段代码！
+	if (UTSA_UIMessageSubsystem* MsgSys = UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner()))
 	{
-		InventoryList.MoveItem(FromIndex, ToIndex);
-		// 这里可以触发委托通知 UI 刷新
+		MsgSys->BroadcastUIMessage(Message);
 	}
 }
 
@@ -113,11 +177,6 @@ bool UTSA_InventoryComponent::MatchItemCategory(FGameplayTag& ItemCategory) cons
 {
 	if (InventoryCategory.MatchesTag(ItemTags::Category::General)) return true;
 	return InventoryCategory.MatchesTag(ItemCategory);
-}
-
-void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 FromIndex, int32 ToIndex)
-{
-	InventoryList.MoveItem(FromIndex, ToIndex);
 }
 
 

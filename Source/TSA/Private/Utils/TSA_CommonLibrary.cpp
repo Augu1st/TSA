@@ -3,6 +3,7 @@
 
 #include "Utils/TSA_CommonLibrary.h"
 
+#include "Interaction/TSA_InteractableActor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "Interaction/TSA_InteractionInterface.h"
@@ -24,7 +25,7 @@ TArray<AActor*> UTSA_CommonLibrary::FindInteractableActorsInRange(
 	
 	for (AActor* Actor : OverlappedActors)
 	{
-		if (!Actor->Implements<UTSA_InteractionInterface>())
+		if (!Actor->Implements<UTSA_InteractionInterface>() && !Cast<ATSA_InteractableActor>(Actor))
 		{
 			OverlappedActors.Remove(Actor);
 		}

@@ -14,7 +14,7 @@ class UTSA_InteractionInterface : public UInterface
 };
 
 UENUM()
-enum class EInteractStates :uint8
+enum class ETSA_InteractState :uint8
 {
 	None,
 	Uninteractable,
@@ -30,7 +30,7 @@ class TSA_API ITSA_InteractionInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PrimaryInteract(AActor* Caller);
+	void PrimaryInteract(APlayerController* Interactor);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ShowHint();
@@ -45,5 +45,5 @@ public:
 	void HidePrompt();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	EInteractStates GetInteractState();
+	ETSA_InteractState GetInteractState();
 };

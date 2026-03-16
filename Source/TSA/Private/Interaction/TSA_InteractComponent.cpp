@@ -3,6 +3,7 @@
 
 #include "Interaction/TSA_InteractComponent.h"
 
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Utils/TSA_CommonLibrary.h"
 
 
@@ -22,9 +23,9 @@ void UTSA_InteractComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UTSA_InteractComponent::PrimaryInteract()
 {
 	if (!IsValid(CurrentActor)) return;
-	if (ITSA_InteractionInterface::Execute_GetInteractState(CurrentActor) == EInteractStates::Interactable)
+	if (ITSA_InteractionInterface::Execute_GetInteractState(CurrentActor) == ETSA_InteractState::Interactable)
 	{
-		ITSA_InteractionInterface::Execute_PrimaryInteract(CurrentActor,GetOwner());
+		ITSA_InteractionInterface::Execute_PrimaryInteract(CurrentActor,GetWorld()->GetFirstPlayerController());
 	}
 }
 

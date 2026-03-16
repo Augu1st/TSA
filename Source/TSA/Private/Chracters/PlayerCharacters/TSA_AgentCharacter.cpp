@@ -1,15 +1,14 @@
 ﻿// Dark Trace Studio Works
 
-#include "TSA/TSA.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
-
+#include "TSA/TSA.h"
 #include "TSA_GameplayTags.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interaction/TSA_InteractComponent.h"
-#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "Items/Component/TSA_ItemComponent.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "Utils/TSA_ItemUtils.h"
 
 
@@ -27,17 +26,24 @@ ATSA_AgentCharacter::ATSA_AgentCharacter()
 void ATSA_AgentCharacter::PickUpItem(UTSA_ItemComponent* ItemComponent)
 {
 	const FGameplayTag& ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItemComp(ItemComponent);
+	FInstancedStruct& ItemManifestStruct = ItemComponent->GetItemManifestStruct();
 	// 尝试在对应仓库添加
-	if (InventoryComponentMap.Contains(ItemCategory) && InventoryComponentMap[ItemCategory]->TryAddItem(ItemComponent)) return;
+	if (InventoryComponentMap.Contains(ItemCategory) && InventoryComponentMap[ItemCategory]->TryAddItem(ItemManifestStruct))
+	{
+		if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) ItemComponent->PickUp();
+		return;
+	}
 	
 	// 尝试在通用仓库添加
 	if (InventoryComponentMap.Contains(ItemTags::Category::General))
 	{
-		if (InventoryComponentMap[ItemTags::Category::General]->TryAddItem(ItemComponent)) return;
+		if (InventoryComponentMap[ItemTags::Category::General]->TryAddItem(ItemManifestStruct))
+		{
+			if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) ItemComponent->PickUp();
+			return;
+		}
 	}
 	
-	// 添加失败
-	UE_LOG(LogTSA, Warning, TEXT("%s : Failed to add item to inventory"), *GetName());
 }
 
 UTSA_InventoryComponent* ATSA_AgentCharacter::GetInventoryCompByCategory(const FGameplayTag& ItemCategory)
@@ -85,16 +91,13 @@ void ATSA_AgentCharacter::InitInteractComponent()
 
 void ATSA_AgentCharacter::InitInventoryComponents()
 {
-	if (InventoryComponentClass!= nullptr)
-	{
-		UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentClass is not set"), *GetName());
-		return;
-	}
 	
 	EquipmentInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("EquipmentInventory");
 	InventoryComponentMap.Add(ItemTags::Category::Equipment, EquipmentInventoryComp.Get());
+	
 	PropInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("PropInventory");
 	InventoryComponentMap.Add(ItemTags::Category::Prop, PropInventoryComp.Get());
+	
 	GeneralInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("GeneralInventory");
 	InventoryComponentMap.Add(ItemTags::Category::General, GeneralInventoryComp.Get());
 }

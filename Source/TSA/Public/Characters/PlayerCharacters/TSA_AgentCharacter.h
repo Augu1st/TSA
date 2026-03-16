@@ -53,10 +53,7 @@ private:
 	
 	/* Inventory Components */
 	UPROPERTY(VisibleAnywhere)
-	TMap<FGameplayTag, UTSA_InventoryComponent*> InventoryComponentMap;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "TSA|Inventory")
-	TSubclassOf<UTSA_InventoryComponent> InventoryComponentClass;
+	TMap<FGameplayTag, TObjectPtr<UTSA_InventoryComponent>> InventoryComponentMap;
 	
 	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> EquipmentInventoryComp;

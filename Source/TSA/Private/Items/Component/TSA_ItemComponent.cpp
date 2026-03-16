@@ -16,5 +16,10 @@ void UTSA_ItemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(ThisClass,ItemManifest);
 }
 
+void UTSA_ItemComponent::PickUp()
+{
+	GetOwner()->Destroy();
+}
+
 
 

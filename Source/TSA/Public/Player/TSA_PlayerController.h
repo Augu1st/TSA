@@ -23,7 +23,9 @@ class TSA_API ATSA_PlayerController : public APlayerController
 	
 public:
 	ATSA_PlayerController();
-
+	
+	void OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -33,6 +35,7 @@ protected:
 	UTSA_InventoryBase* GetInventoryMenu();
 	void ToggleInventory();
 	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
+	void ClearContainerGrid();
 	// End of Inventory Menu
 	
 private:
@@ -53,6 +56,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<ATSA_HUD> HUD;
 	/* */
+	
+	UPROPERTY()
+	TWeakObjectPtr<UTSA_InventoryComponent> CurrentContainer;
 	
 	/* Inventory Widget */
 	bool bInventoryMenuOpen = false;

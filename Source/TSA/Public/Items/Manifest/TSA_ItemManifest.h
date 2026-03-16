@@ -18,17 +18,17 @@ struct FTSA_ItemManifestBase
 {
 	GENERATED_BODY()
 	
-	//获取静态数据
-	bool GetItemStaticData(FTSA_ItemDataRow& OutItemData) const;
-	
-	UTSA_InventoryItem* MakeManifest(UObject* NewOuter) const;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TSA|Item")
-	TObjectPtr<UTSA_ItemDataAsset> ItemDataAsset = nullptr;
+	FTSA_ItemManifestBase() {}
+	FTSA_ItemManifestBase(const FTSA_ItemManifestBase& InData) = default;
+	FTSA_ItemManifestBase& operator=(const FTSA_ItemManifestBase& InData) = default;
+	FTSA_ItemManifestBase(FTSA_ItemManifestBase&&) = default;
+	FTSA_ItemManifestBase& operator=(FTSA_ItemManifestBase&&) = default;
+	virtual ~FTSA_ItemManifestBase() = default;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item", meta=(RowType="TSA_ItemDataRow"))
 	FDataTableRowHandle ItemDataHandle;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item")
 	int32 StackCount = 1;
 };
 

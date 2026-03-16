@@ -8,6 +8,8 @@
 
 #include "TSA_InventoryGrid.generated.h"
 
+struct FTSA_ItemDataRow;
+class UTSA_SlottedItem;
 class UTSA_InventoryComponent;
 class UCanvasPanel;
 class UTSA_GridSlot;
@@ -22,15 +24,21 @@ class TSA_API UTSA_InventoryGrid : public UUserWidget
 public:
 	virtual void NativeOnInitialized() override;
 	
-	UFUNCTION()
-	void AddItem(UTSA_InventoryItem* Item);
-	
 	void InitializeGrid(UTSA_InventoryComponent* InventoryComponent);
 	void ConstructGrid(int32 Rows, int32 Columns);
 	
-private:
+	UFUNCTION()
+	void AddItemToIndex(UTSA_InventoryItem* Item, int32 SlotIndex);
 	
-	// Utils
+	UFUNCTION()
+	void UpdateItemAtIndex(UTSA_InventoryItem* Item, int32 SlotIndex);
+	
+	void SetSlottedItemImage(UTSA_InventoryItem* Item, UTSA_SlottedItem* SlottedItem);
+
+private:
+	void SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
+	void AddSlottedItemToCanvas(int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
+	
 	TWeakObjectPtr<UTSA_InventoryComponent> OwnerComponent;
 	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
@@ -41,9 +49,20 @@ private:
 	float SlotSize;
 	
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
+	float SlotPadding;
+	
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
 	TSubclassOf<UTSA_GridSlot> GridSlotClass;
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UTSA_GridSlot>> GridSlots;  
 	/* End of Grid Slots */
+	
+	/* Slotted Item */
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UTSA_SlottedItem>> SlottedItems;
+	
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
+	TSubclassOf<UTSA_SlottedItem> SlottedItemClass;
+	/* End of Slotted Item */
 };

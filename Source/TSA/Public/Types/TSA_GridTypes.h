@@ -4,15 +4,6 @@
 
 class UTSA_InventoryItem;
 
-UENUM()
-enum class ETSA_GridCategory : uint8
-{
-	General,	// 通用
-	Equipment,	// 装备
-	Prop,		// 道具
-	Collection	// 收集品
-};
-
 USTRUCT()
 struct FTSA_SlotAvailability
 {
