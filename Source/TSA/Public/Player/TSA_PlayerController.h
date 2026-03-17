@@ -57,6 +57,7 @@ private:
 	TObjectPtr<ATSA_HUD> HUD;
 	/* */
 	
+	/* 当前已打开的容器 */
 	UPROPERTY()
 	TWeakObjectPtr<UTSA_InventoryComponent> CurrentContainer;
 	

@@ -30,8 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
 	bool TryAddItem(FInstancedStruct& ItemManifestStruct);
 	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestMoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
+	
 	void AddNewItem(FInstancedStruct& ItemManifestStruct, int32 SlotIndex);
 	void AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack, int32 SlotIndex);
+	void RemoveItem(UTSA_InventoryItem* Item,int32 SlotIndex);
 	
 	void AddRepSubObj(UObject* SubObj);
 	
@@ -55,7 +59,10 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_MoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
+	
 private:
 	bool MatchItemCategory(FGameplayTag& ItemCategory) const;
 	

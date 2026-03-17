@@ -32,11 +32,11 @@ void UTSA_InventoryGrid::InitializeGrid(UTSA_InventoryComponent* InventoryCompon
 	OwnerComponent = InventoryComponent;
 	OwnerComponent->OnItemAdded.AddDynamic(this, &UTSA_InventoryGrid::AddItemToIndex);
 	OwnerComponent->OnItemChanged.AddDynamic(this, &UTSA_InventoryGrid::UpdateItemAtIndex);
+	OwnerComponent->OnItemRemoved.AddDynamic(this, &UTSA_InventoryGrid::RemoveItemFromIndex);
 	
-	ConstructGrid(InventoryComponent->GetRows(), InventoryComponent->GetColumns());
+	ConstructGrid(OwnerComponent->GetRows(), OwnerComponent->GetColumns());
 	
-	// TODO:显示库存物品
-	const TArray<FTSA_ItemSearchResult>& ItemEntries = InventoryComponent->GetAllItemEntries();
+	const TArray<FTSA_ItemSearchResult>& ItemEntries = OwnerComponent->GetAllItemEntries();
 	for (int32 i = 0; i < ItemEntries.Num(); ++i)
 	{
 		AddItemToIndex(ItemEntries[i].Item, ItemEntries[i].SlotIndex);
@@ -53,10 +53,9 @@ void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 		{
 			UTSA_GridSlot* GridSlot = CreateWidget<UTSA_GridSlot>(this, GridSlotClass);
 			CanvasPanel->AddChild(GridSlot);
+			GridSlot->InitSlot(this,UTSA_WidgetUtils::GetIndexFromPosition(FIntPoint(i,j), Columns));
 			
 			FIntPoint SlotPos = FIntPoint(i, j) * SlotSize;
-			GridSlot->SetSlotIndex(UTSA_WidgetUtils::GetIndexFromPosition(SlotPos, Columns));
-			
 			UCanvasPanelSlot* GridCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(GridSlot);
 			GridCPS->SetSize(FVector2D(SlotSize - SlotPadding * 2));
 			
@@ -65,6 +64,27 @@ void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 			GridSlots.Add(GridSlot);
 		}
 	}
+}
+
+void UTSA_InventoryGrid::ClearGrid()
+{
+	// 解除监听
+	if (!OwnerComponent.IsValid())
+	{
+		UE_LOG(LogTSA, Error, TEXT("%s: OwnerComponent is not valid"), *GetName());
+		return;
+	}
+	OwnerComponent->OnItemAdded.RemoveDynamic(this, &UTSA_InventoryGrid::AddItemToIndex);
+	OwnerComponent->OnItemChanged.RemoveDynamic(this, &UTSA_InventoryGrid::UpdateItemAtIndex);
+	OwnerComponent->OnItemRemoved.RemoveDynamic(this, &UTSA_InventoryGrid::RemoveItemFromIndex);
+	OwnerComponent = nullptr;
+	
+	// 清理Slotted Item
+	for (auto& GridSlot : GridSlots)
+	{
+		GridSlot->ClearItemWidget();
+	}
+	GridSlots.Empty();
 }
 
 void UTSA_InventoryGrid::AddItemToIndex(UTSA_InventoryItem* Item, int32 SlotIndex)
@@ -77,7 +97,9 @@ void UTSA_InventoryGrid::AddItemToIndex(UTSA_InventoryItem* Item, int32 SlotInde
 	
 	UTSA_SlottedItem* SlottedItem = CreateWidget<UTSA_SlottedItem>(GetOwningPlayer(), SlottedItemClass);
 	SetupSlottedItem(Item,SlotIndex,SlottedItem);
-	AddSlottedItemToCanvas(SlotIndex, SlottedItem);
+	
+	GridSlots[SlotIndex]->SetItemWidget(SlottedItem);
+	
 	SlottedItems.Add(SlotIndex, SlottedItem);
 	GridSlots[SlotIndex]->SetGridSlotState(ETSA_GridSlotState::Occupied);
 }
@@ -86,6 +108,12 @@ void UTSA_InventoryGrid::UpdateItemAtIndex(UTSA_InventoryItem* Item, int32 SlotI
 {
 	UTSA_SlottedItem* SlottedItem = SlottedItems[SlotIndex];
 	SlottedItem->UpdateStackCount(Item->GetItemManifest().StackCount);
+}
+
+void UTSA_InventoryGrid::RemoveItemFromIndex(UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	GridSlots[SlotIndex]->ClearItemWidget();
+	SlottedItems.Remove(SlotIndex);
 }
 
 void UTSA_InventoryGrid::SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex,UTSA_SlottedItem* SlottedItem)
@@ -111,12 +139,8 @@ void UTSA_InventoryGrid::SetSlottedItemImage(UTSA_InventoryItem* Item, UTSA_Slot
 	SlottedItem->SetImageBrush(Brush);
 }
 
-void UTSA_InventoryGrid::AddSlottedItemToCanvas(int32 SlotIndex, UTSA_SlottedItem* SlottedItem)
+UTSA_InventoryComponent* UTSA_InventoryGrid::GetOwnerComponent() const
 {
-	CanvasPanel->AddChild(SlottedItem);
-	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlottedItem);
-	CanvasSlot->SetSize(FVector2D(SlotSize - SlotPadding*2));
-	const FVector2D DrawPos = UTSA_WidgetUtils::GetPositionFromIndex(SlotIndex, OwnerComponent->GetColumns()) * SlotSize;
-	const FVector2D DrawPosWithPadding = DrawPos + FVector2D(SlotPadding);
-	CanvasSlot->SetPosition(DrawPosWithPadding);
+	return OwnerComponent.Get();
 }
+

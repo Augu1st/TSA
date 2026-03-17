@@ -53,10 +53,31 @@ bool UTSA_InventoryComponent::TryAddItem(FInstancedStruct& ItemManifestStruct)
 	return true;
 }
 
+void UTSA_InventoryComponent::RequestMoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex)
+{
+	// 1. 基础的安全防线 (UI 层防抖)
+	if (SourceIndex < 0 || TargetIndex < 0 || TargetComp == nullptr) return;
+
+	// 2. 无意义操作拦截 (拿起来原地放下)
+	if (this == TargetComp && SourceIndex == TargetIndex) return;
+
+	// 3. 网络权限路由
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		// 如果我本身就是服务器 (比如你是 Host，或者是单机游戏)，直接执行内部的 Server 实现逻辑
+		Server_MoveItem_Implementation(SourceIndex, TargetComp, TargetIndex);
+	}
+	else
+	{
+		// 如果我是普通客户端，向服务器发送 RPC 请求！
+		Server_MoveItem(SourceIndex, TargetComp, TargetIndex);
+	}
+}
+
 
 void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
-	if (SlotIndex == -1) return;
+	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
 	
 	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemManifestStruct,SlotIndex);
 	ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>().StackCount = 0;
@@ -70,6 +91,8 @@ void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,in
 
 void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack,int32 SlotIndex)
 {
+	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
+	
 	FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>();
 	ItemManifest.StackCount -= AddToStack;
 	
@@ -79,6 +102,18 @@ void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStru
 	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
 	{
 		OnItemChanged.Broadcast(Item,SlotIndex);
+	}
+}
+
+void UTSA_InventoryComponent::RemoveItem(UTSA_InventoryItem* Item,int32 SlotIndex)
+{
+	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
+	
+	InventoryList.RemoveEntry(Item);
+	CurrentItemCount--;
+	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
+	{
+		OnItemRemoved.Broadcast(Item, SlotIndex);	
 	}
 }
 
@@ -94,6 +129,7 @@ FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(const FInsta
 {
 	const FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifestBase>();
 	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromManifest(ItemManifest);
+	// 物品类别不匹配直接返回空结果
 	if (!MatchItemCategory(ItemCategory)) return FTSA_SlotAvailabilityResult();
 	
 	FTSA_ItemDataRow ItemDataRow;
@@ -171,6 +207,94 @@ void UTSA_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
+	int32 TargetIndex)
+{
+	UTSA_InventoryItem* SourceItem = GetItemAtIndex(SourceIndex);
+	if (!SourceItem) return;
+	
+	FInstancedStruct PayloadManifest = SourceItem->GetItemManifestStruct();
+	
+	// 看看目标格子原来有没有东西
+	UTSA_InventoryItem* TargetItem = TargetComp->GetItemAtIndex(TargetIndex);
+
+	if (TargetItem == nullptr)
+	{
+		// 情况 A：目标格子是空的 (最常见)
+		// 1. 检查目标组件是否允许放入这个物品 (类型过滤，比如武器栏不能放药水)
+		FTSA_SlotAvailabilityResult TargetResult = TargetComp->HasRoomForItem(PayloadManifest);
+		
+		// 注意：这里的 TargetResult.TotalRoomToFill 其实代表了目标组件能接纳这个物品的总容量
+		if (TargetResult.TotalRoomToFill > 0)
+		{
+			// 2. 目标组件同意接收！直接在目标指定的格子里生成物品
+			TargetComp->AddNewItem(PayloadManifest, TargetIndex);
+			
+			// 3. 既然货物已经安全抵达，从我这里彻底销毁源物品！
+			RemoveItem(SourceItem, SourceIndex);
+		}
+		else
+		{
+			Client_ShowMessage(FText::FromString(TEXT("无法将该物品放入目标位置！")));
+		}
+	}
+	else
+	{
+		// ----------------------------------------
+		// 情况 B：目标格子已经有东西了 (堆叠或交换)
+		// ----------------------------------------
+		
+		// 提取目标物品的数据
+		FInstancedStruct TargetManifest = TargetItem->GetItemManifestStruct();
+		const FTSA_ItemManifestBase& PayloadBase = PayloadManifest.Get<FTSA_ItemManifestBase>();
+		const FTSA_ItemManifestBase& TargetBase = TargetManifest.Get<FTSA_ItemManifestBase>();
+
+		// 1. 尝试堆叠 (同种物品，且都是可堆叠的)
+		if (PayloadBase.ItemDataHandle == TargetBase.ItemDataHandle /* 这里假设你有判断物品ID是否相同的逻辑 */)
+		{
+			FTSA_ItemDataRow TargetDataRow;
+			if (!UTSA_ItemUtils::GetItemDataFromManifest(TargetBase, TargetDataRow)) return;
+			int32 MaxStackCount = TargetDataRow.MaxStackCount;
+			int32 AddStack = FMath::Min(PayloadBase.StackCount, MaxStackCount - TargetBase.StackCount);
+			if (AddStack <= 0) return; 
+			
+			if (AddStack == PayloadBase.StackCount) RemoveItem(SourceItem, SourceIndex);
+			else AddStacksToItem(TargetManifest, -AddStack, SourceIndex);
+			TargetComp->AddStacksToItem(PayloadManifest, AddStack, TargetIndex);
+		}
+		// 2. 尝试交换位置 (Swap)
+		else
+		{
+			// 先检查互相是否能接受对方的物品类型
+			FTSA_SlotAvailabilityResult SwapTest1 = TargetComp->HasRoomForItem(PayloadManifest);
+			FTSA_SlotAvailabilityResult SwapTest2 = this->HasRoomForItem(TargetManifest);
+
+			if (SwapTest1.TotalRoomToFill > 0 && SwapTest2.TotalRoomToFill > 0)
+			{
+				// 互相删掉旧的
+				this->RemoveItem(SourceItem, SourceIndex);
+				TargetComp->RemoveItem(TargetItem, TargetIndex);
+
+				// 互相在新位置生成对方的物品！
+				TargetComp->AddNewItem(PayloadManifest, TargetIndex);
+				this->AddNewItem(TargetManifest, SourceIndex);
+			}
+			else
+			{
+				Client_ShowMessage(FText::FromString(TEXT("物品类型不匹配，无法交换！")));
+			}
+		}
+	}
+}
+
+bool UTSA_InventoryComponent::Server_MoveItem_Validate(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
+	int32 TargetIndex)
+{
+	// 外挂可能会传一个空指针或者越界的 Index 过来，这里必须拦截！
+	if (SourceIndex < 0 || TargetIndex < 0 || TargetComp == nullptr) return false;
+	return true;
 }
 
 bool UTSA_InventoryComponent::MatchItemCategory(FGameplayTag& ItemCategory) const

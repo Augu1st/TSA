@@ -17,17 +17,20 @@
 ATSA_PlayerController::ATSA_PlayerController()
 {
 	InitHUD();
-	
 }
 
 void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory)
 {
+	// 如果已经打开了容器，直接返回
+	if (CurrentContainer.IsValid()) return;
+	
 	CurrentContainer = ContainerInventory;
 	
 	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
 	SpatialInventory->Grid_Container->InitializeGrid(ContainerInventory);
 	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Visible);
-	ToggleInventory();
+	
+	InteractWithInventory();
 }
 
 void ATSA_PlayerController::BeginPlay()
@@ -102,11 +105,14 @@ void ATSA_PlayerController::ToggleInventory()
 
 void ATSA_PlayerController::ClearContainerGrid()
 {
-	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
-	if (SpatialInventory)
+	if (!CurrentContainer.IsValid()) return;
+	
+	if (UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu()))
 	{
 		SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
+		SpatialInventory->Grid_Container->ClearGrid();
 	}
+	CurrentContainer = nullptr;
 }
 
 void ATSA_PlayerController::InitHUD()
@@ -173,19 +179,34 @@ void ATSA_PlayerController::PrimaryInteract()
 void ATSA_PlayerController::InteractWithInventory()
 {
 	ToggleInventory();
+	
+	// 获取交互组件
+	UTSA_InteractComponent* InteractComp = nullptr;
+	if (IsValid(GetCharacter()))
+	{
+		InteractComp = GetCharacter()->FindComponentByClass<UTSA_InteractComponent>();
+	}
+	
 	if (IsInventoryOpen())
 	{
 		SetCursorInputMode();
+		if (IsValid(InteractComp)) InteractComp->SetInteractionEnabled(false);
 	}
 	else
 	{
 		SetGameInputMode();
+		if (IsValid(InteractComp)) InteractComp->SetInteractionEnabled(true);
 	}
 }
 
 void ATSA_PlayerController::SetCursorInputMode()
 {
 	FInputModeGameAndUI InputMode;
+	// 不锁定鼠标在屏幕内（PC游戏标准配置）
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	// 捕获鼠标时不要隐藏它
+	InputMode.SetHideCursorDuringCapture(false); 
+	
 	SetInputMode(InputMode);
 	bShowMouseCursor = true;
 }

@@ -63,8 +63,7 @@ UTSA_InventoryItem* FTSA_InventoryFastArray::AddEntry(const FInstancedStruct& It
 	}
 
 	// 3. 直接在这里创建 UObject (UTSA_InventoryItem)
-	// 使用 OwningActor 作为 Outer，方便后续的网络同步
-	UTSA_InventoryItem* NewItemObject = NewObject<UTSA_InventoryItem>(OwningActor, UTSA_InventoryItem::StaticClass());
+	UTSA_InventoryItem* NewItemObject = NewObject<UTSA_InventoryItem>(OwnerComponent, UTSA_InventoryItem::StaticClass());
 
 	// 4. 将完整的 FInstancedStruct 塞进 UObject
 	// 此时无论是装备的耐久度，还是道具的数量，都完美无损地传进去了！

@@ -33,13 +33,22 @@ void ATSA_Container::PrimaryInteract_Implementation(APlayerController* Interacto
 void ATSA_Container::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 void ATSA_Container::SpawnItems()
 {
-	if (!ItemPool.IsValid())
+	if (ItemPool.IsNull())
 	{
-		UE_LOG(LogTSA, Error, TEXT("%s:ItemPool is not valid"), *GetName());
+		UE_LOG(LogTSA, Error, TEXT("%s:ItemPool is not configured in Blueprint!"), *GetName());
+		return;
+	}
+	
+	// 将软引用同步加载到内存中！(这步是魔法)
+	UTSA_RandomItemPool* LoadedPool = ItemPool.LoadSynchronous();
+	if (!IsValid(LoadedPool))
+	{
+		UE_LOG(LogTSA, Error, TEXT("%s: Failed to load ItemPool into memory!"), *GetName());
 		return;
 	}
 	
@@ -47,17 +56,17 @@ void ATSA_Container::SpawnItems()
 	for (int32 i = 0; i < ItemCount; ++i)
 	{
 		// 每次循环只负责调用单次生成流水线
-		GenerateSingleItem();
+		GenerateSingleItem(LoadedPool);
 	}
 }
 
-void ATSA_Container::GenerateSingleItem()
+void ATSA_Container::GenerateSingleItem(UTSA_RandomItemPool* LoadedPool)
 {
 	FDataTableRowHandle ResultHandle;
 	int32 ResultQuantity;
 		
 	// 第一步：从奖池中抽奖，获得身份证(Handle)和数量
-	if (!ItemPool->RollItemFromTables(ResultHandle, ResultQuantity))
+	if (!LoadedPool->RollItemFromTables(ResultHandle, ResultQuantity))
 	{
 		return; // 没抽中或奖池为空，直接跳过
 	}
@@ -100,9 +109,7 @@ FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& 
 		FTSA_EquipmentManifest EquipManifest;
 		EquipManifest.ItemDataHandle = Handle;
 		EquipManifest.StackCount = Quantity;
-		// 如果你的装备有随机耐久度，可以在这里扩展：
-		// EquipManifest.Durability = FMath::RandRange(50.0f, 100.0f);
-        
+		
 		return FInstancedStruct::Make(EquipManifest);
 	}
     

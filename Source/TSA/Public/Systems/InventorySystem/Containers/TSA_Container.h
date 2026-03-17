@@ -31,7 +31,7 @@ protected:
 private:
 	
 	// 负责执行单次物品生成的完整流水线
-	void GenerateSingleItem();
+	void GenerateSingleItem(UTSA_RandomItemPool* LoadedPool);
 
 	// 辅助函数：根据 Handle 去 Data Table 中查出静态数据
 	FTSA_ItemDataRow* GetItemStaticData(const FDataTableRowHandle& Handle) const;

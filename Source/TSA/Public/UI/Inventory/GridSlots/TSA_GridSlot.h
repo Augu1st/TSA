@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "TSA_GridSlot.generated.h"
 
+class UTSA_InventoryGrid;
+class UTSA_SlottedItem;
 class UTSA_InventoryItem;
 class UImage;
 
@@ -24,20 +26,44 @@ class TSA_API UTSA_GridSlot : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	void InitSlot(UTSA_InventoryGrid* InGrid, int32 InSlotIndex);
+	
+	UTSA_InventoryGrid* GetParentGrid() const { return ParentGrid.Get(); }
+	
 	int32 GetSlotIndex() const { return SlotIndex; }
 	void SetSlotIndex(const int32 Index) { SlotIndex = Index; }
 	
 	ETSA_GridSlotState GetGridSlotState() const { return GridSlotState; }
 	void SetGridSlotState(ETSA_GridSlotState State);
 	
-private:
+	void SetItemWidget(UTSA_SlottedItem* InItemWidget);
+	void ClearItemWidget();
+	bool IsEmpty() const { return CurrentItemWidget == nullptr; }
 	
+	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex;
 	
+protected:
+	// 当一个包裹在我的区域内被松开时触发
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+private:
+	
 	/* Widgets */
+	// UMG 中用来装物品的容器
+	UPROPERTY(meta=(BindWidget))
+	class UOverlay* ItemContainer;
+	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
-	/* End of Widgets */
+	/* End of Widgets */	
+	
+	TWeakObjectPtr<UTSA_InventoryGrid> ParentGrid;
+	
+	
+	
+	UPROPERTY()
+	UTSA_SlottedItem* CurrentItemWidget = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category="TSA|Inventory")
 	FSlateBrush Brush_Unoccupied;

@@ -20,10 +20,6 @@ class TSA_API UTSA_SlottedItem : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	/*virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& MouseEvent) override;*/
-	
 	bool IsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bStackable) { bIsStackable = bStackable; }
 	
@@ -38,8 +34,14 @@ public:
 	
 	void UpdateStackCount(int32 StackCount);
 
+	
+protected:
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	// 当鼠标开始拖动时，创建包裹并返回。
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	
 private:
-
+	
 	void SetBackgroundByRarity(ETSA_ItemRarity Rarity);
 	
 	UPROPERTY(meta = (BindWidget))

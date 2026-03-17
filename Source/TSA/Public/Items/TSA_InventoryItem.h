@@ -8,6 +8,7 @@
 
 #include "TSA_InventoryItem.generated.h"
 
+class UTSA_InventoryComponent;
 /**
  * 
  */
@@ -25,8 +26,10 @@ public:
 	const FTSA_ItemManifestBase& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifestBase>(); }
 	const FTSA_ItemManifestBase* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifestBase>(); }
 	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
-	
 	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
+	
+	UFUNCTION(BlueprintPure, Category = "TSA|Inventory")
+	UTSA_InventoryComponent* GetOwningInventoryComponent() const;
 	// End of Getters and Setters
 	
 	const FName& GetItemID();

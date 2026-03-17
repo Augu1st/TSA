@@ -19,9 +19,14 @@ public:
 	UTSA_InteractComponent();
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	void PrimaryInteract();
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Interaction")
 	AActor* GetInteractableActor() const { return CurrentActor;}
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Interaction")
+	void SetInteractionEnabled(bool bEnabled);
 	
 protected:
 	virtual void BeginPlay() override;

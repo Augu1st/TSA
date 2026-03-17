@@ -26,6 +26,7 @@ public:
 	
 	void InitializeGrid(UTSA_InventoryComponent* InventoryComponent);
 	void ConstructGrid(int32 Rows, int32 Columns);
+	void ClearGrid();
 	
 	UFUNCTION()
 	void AddItemToIndex(UTSA_InventoryItem* Item, int32 SlotIndex);
@@ -33,11 +34,14 @@ public:
 	UFUNCTION()
 	void UpdateItemAtIndex(UTSA_InventoryItem* Item, int32 SlotIndex);
 	
+	UFUNCTION()
+	void RemoveItemFromIndex(UTSA_InventoryItem* Item, int32 SlotIndex);
+	
 	void SetSlottedItemImage(UTSA_InventoryItem* Item, UTSA_SlottedItem* SlottedItem);
 
+	UTSA_InventoryComponent* GetOwnerComponent() const;
 private:
 	void SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
-	void AddSlottedItemToCanvas(int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
 	
 	TWeakObjectPtr<UTSA_InventoryComponent> OwnerComponent;
 	

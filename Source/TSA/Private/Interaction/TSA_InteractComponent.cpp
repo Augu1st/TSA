@@ -29,6 +29,26 @@ void UTSA_InteractComponent::PrimaryInteract()
 	}
 }
 
+void UTSA_InteractComponent::SetInteractionEnabled(bool bEnabled)
+{
+	if (bEnabled == IsComponentTickEnabled()) return;
+	
+	SetComponentTickEnabled(bEnabled);
+	
+	if (!bEnabled)
+	{
+		if (IsValid(CurrentActor))
+		{
+			ITSA_InteractionInterface::Execute_HidePrompt(CurrentActor);
+		}
+		ShowInteractableActorsHint(false);
+		
+		InteractableActors.Empty();
+		CurrentActor = nullptr;
+		LastActor = nullptr;
+	}
+}
+
 void UTSA_InteractComponent::BeginPlay()
 {
 	Super::BeginPlay();
