@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interaction/TSA_InteractComponent.h"
+#include "Items/TSA_InventoryItem.h"
 #include "Items/Component/TSA_ItemComponent.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "Utils/TSA_ItemUtils.h"
@@ -40,10 +41,27 @@ void ATSA_AgentCharacter::PickUpItem(UTSA_ItemComponent* ItemComponent)
 		if (InventoryComponentMap[ItemTags::Category::General]->TryAddItem(ItemManifestStruct))
 		{
 			if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) ItemComponent->PickUp();
-			return;
 		}
 	}
+}
+
+void ATSA_AgentCharacter::PickUpItemInInventory(UTSA_InventoryItem* Item)
+{
+	if (!IsValid(Item)) return;
 	
+	const FGameplayTag& ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItem(Item);
+	FInstancedStruct& ItemManifestStruct = Item->GetItemManifestStruct();
+	// 尝试在对应仓库添加
+	if (InventoryComponentMap.Contains(ItemCategory))
+	{
+		InventoryComponentMap[ItemCategory]->TryAddItem(ItemManifestStruct);
+		if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) return;
+	}
+	// 尝试在通用仓库添加
+	if (InventoryComponentMap.Contains(ItemTags::Category::General))
+	{
+		InventoryComponentMap[ItemTags::Category::General]->TryAddItem(ItemManifestStruct);
+	}
 }
 
 UTSA_InventoryComponent* ATSA_AgentCharacter::GetInventoryCompByCategory(const FGameplayTag& ItemCategory)

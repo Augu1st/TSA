@@ -7,6 +7,8 @@
 #include "Characters/TSA_CharacterBase.h"
 #include "TSA_AgentCharacter.generated.h"
 
+class UTSA_InventoryItem;
+struct FInstancedStruct;
 class UTSA_ItemComponent;
 class UTSA_InventoryComponent;
 class UTSA_InteractComponent;
@@ -23,6 +25,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void PickUpItem(UTSA_ItemComponent* ItemComponent);
+	
+	UFUNCTION(BlueprintCallable)
+	void PickUpItemInInventory(UTSA_InventoryItem* Item);
 	
 	UTSA_InventoryComponent* GetInventoryCompByCategory(const FGameplayTag& ItemCategory);
 	

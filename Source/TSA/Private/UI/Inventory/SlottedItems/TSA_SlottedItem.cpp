@@ -3,13 +3,17 @@
 
 #include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
 
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
+#include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Items/TSA_InventoryItem.h"
 #include "UI/Inventory/SlottedItems/TSA_ItemDragDropOp.h"
 #include "Utils/TSA_ItemUtils.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h"
+
 
 void UTSA_SlottedItem::SetImageBrush(const FSlateBrush& Brush) const
 {
@@ -23,21 +27,30 @@ void UTSA_SlottedItem::SetInventoryItem(UTSA_InventoryItem* Item)
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, ItemDataRow);
 	const FInstancedStruct& ItemManifestStruct = Item->GetItemManifestStruct();
 	
+	// 设置背景
 	ETSA_ItemRarity Rarity = ItemDataRow.Rarity;
 	SetBackgroundByRarity(Rarity);
 	
+	// 设置堆叠数量
 	bIsStackable = ItemDataRow.bStackable;
 	if (bIsStackable)
 	{	
 		MaxStackCount = ItemDataRow.MaxStackCount;
-		int StackCount = ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount;
-		UpdateStackCount(StackCount);
+		UpdateStackCount(ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount);
 		Text_StackCount->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		Text_StackCount->SetVisibility(ESlateVisibility::Collapsed);
 	}
+	
+	// 创建物品详情
+	if (ItemDetailsWidgetClass && !ItemDetailsWidget)
+	{
+		ItemDetailsWidget = CreateWidget<UTSA_ItemDetailsWidget>(GetOwningPlayer(), ItemDetailsWidgetClass);
+	}
+	// 更新物品详情
+	if (ItemDetailsWidget) ItemDetailsWidget->SetUpItemDetails(ItemManifestStruct);
 	
 }
 
@@ -49,18 +62,22 @@ void UTSA_SlottedItem::UpdateStackCount(int32 StackCount)
 
 FReply UTSA_SlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	
-	// 只响应左键拖拽
+	SetToolTip(nullptr);
+	// 响应左键拖拽
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
 		// 如果左键按住并且鼠标发生了位移，请调用 NativeOnDragDetected
 		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
 	}
+	// 响应右键
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		
+	}
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-void UTSA_SlottedItem::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
-	UDragDropOperation*& OutOperation)
+void UTSA_SlottedItem::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,UDragDropOperation*& OutOperation)
 {
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 	
@@ -70,7 +87,7 @@ void UTSA_SlottedItem::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	
 	// 2. 填写发货单信息 (从自身获取)
 	// 假设你有一个方法能拿到所在的背包组件 (比如在初始化时存进来的，或者通过 GetTypedOuter 向上找)
-	DragDropOp->SourceInventory = InventoryItem.Get()->GetOwningInventoryComponent();
+	DragDropOp->SourceInventory = GetOwningInventoryComponent();
 	DragDropOp->SourceSlotIndex = SlotIndex;
 	DragDropOp->PayloadItem = InventoryItem.Get();
 
@@ -86,10 +103,49 @@ void UTSA_SlottedItem::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	OutOperation = DragDropOp;
 }
 
+FReply UTSA_SlottedItem::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		if (GetOwningInventoryComponent())
+		{
+			GetOwningInventoryComponent()->SendItemToPlayer(InventoryItem.Get());
+		}
+	}
+	return FReply::Handled();
+}
+
+void UTSA_SlottedItem::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	
+	GetWorld()->GetTimerManager().SetTimer(ItemDetailsTimerHandle, this, &UTSA_SlottedItem::ShowItemDetails, ItemDetailsDelay, false);
+}
+
+void UTSA_SlottedItem::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+	
+	// 1. 如果鼠标提前移走了，取消倒计时
+	GetWorld()->GetTimerManager().ClearTimer(ItemDetailsTimerHandle);
+	
+	// 2. 瞬间清空 Tooltip，让面板立刻消失
+	SetToolTip(nullptr);
+}
+
+void UTSA_SlottedItem::ShowItemDetails()
+{
+	if (ItemDetailsWidget)
+	{
+		SetToolTip(ItemDetailsWidget);
+	}
+}
+
+
 void UTSA_SlottedItem::SetBackgroundByRarity(ETSA_ItemRarity Rarity)
 {
 	FSlateBrush Brush = Brush_Background;
-	
+	// TODO: 修改稀有度背景显示逻辑
 	switch (Rarity)
 	{
 		case ETSA_ItemRarity::None:
@@ -115,6 +171,7 @@ void UTSA_SlottedItem::SetBackgroundByRarity(ETSA_ItemRarity Rarity)
 			break;
 		case ETSA_ItemRarity::Unique:
 			Brush = Brush_Colorful;
+			break;
 		case ETSA_ItemRarity::Destruction:
 			Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.4f);
 			break;
@@ -122,4 +179,10 @@ void UTSA_SlottedItem::SetBackgroundByRarity(ETSA_ItemRarity Rarity)
 			break;
 	}
 	Image_Background->SetBrush(Brush);
+}
+
+UTSA_InventoryComponent* UTSA_SlottedItem::GetOwningInventoryComponent() const
+{
+	if (!InventoryItem.IsValid()) return nullptr;
+	return InventoryItem.Get()->GetOwningInventoryComponent();
 }

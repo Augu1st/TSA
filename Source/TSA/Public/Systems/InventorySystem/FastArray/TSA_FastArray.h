@@ -80,7 +80,9 @@ public:
 	// 寻找第一个空位（需要传入背包总容量）
 	int32 FindFirstEmptySlot(int32 MaxCapacity) const;
 	// 寻找所有相同物品
-	TArray<TTuple<UTSA_InventoryItem*, int32>> FindItemsAndSlotsByID(const FName& ItemID) const;
+	TArray<TTuple<UTSA_InventoryItem*, int32>> FindItemsAndSlotsByHandle(const FDataTableRowHandle& ItemHandle) const;
+	// 获取物品在背包中的索引
+	int32 GetItemIndex(UTSA_InventoryItem* Item) const;
 	
 	
 private:

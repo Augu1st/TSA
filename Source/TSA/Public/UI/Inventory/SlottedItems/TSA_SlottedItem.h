@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "TSA_SlottedItem.generated.h"
 
+class UTSA_ItemDetailsWidget;
+class UTSA_InventoryComponent;
 enum class ETSA_ItemRarity : uint8;
 class UTSA_InventoryItem;
 class UImage;
@@ -35,14 +37,19 @@ public:
 	void UpdateStackCount(int32 StackCount);
 
 	
+
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	// 当鼠标开始拖动时，创建包裹并返回。
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	
+	void ShowItemDetails();
 private:
-	
 	void SetBackgroundByRarity(ETSA_ItemRarity Rarity);
+	UTSA_InventoryComponent* GetOwningInventoryComponent() const;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_Icon;
@@ -63,4 +70,17 @@ private:
 	int32 SlotIndex;
 	bool bIsStackable{false};
 	int32 MaxStackCount = 1;
+	
+	/* Item Details */
+	UPROPERTY(EditAnywhere, Category="TSA|Item Details")
+	TSubclassOf<UUserWidget> ItemDetailsWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_ItemDetailsWidget> ItemDetailsWidget;
+	
+	UPROPERTY(EditAnywhere, Category="TSA|Item Details")
+	float ItemDetailsDelay = 0.5f;
+	
+	FTimerHandle ItemDetailsTimerHandle;
+	/* End of Item Details*/
 };

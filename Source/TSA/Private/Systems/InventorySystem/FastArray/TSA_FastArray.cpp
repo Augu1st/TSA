@@ -126,7 +126,7 @@ int32 FTSA_InventoryFastArray::FindFirstEmptySlot(int32 MaxCapacity) const
 	return -1; // 背包满了
 }
 
-TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAndSlotsByID(const FName& ItemID) const
+TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAndSlotsByHandle(const FDataTableRowHandle& ItemHandle) const
 {
 	TArray<TTuple<UTSA_InventoryItem*, int32>> FoundResults;
 	
@@ -138,7 +138,8 @@ TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAnd
 		if (!Entry.Item) continue;
 		
 		const FTSA_ItemManifestBase& Manifest = Entry.Item->GetItemManifest();
-		if (Manifest.ItemDataHandle.RowName == ItemID)
+		if (Manifest.ItemDataHandle.DataTable == ItemHandle.DataTable && 
+			Manifest.ItemDataHandle.RowName == ItemHandle.RowName)
 		{
 			// Emplace 直接在数组内存中构造 TTuple，连拷贝构造函数都省了！(极致优化)
 			FoundResults.Emplace(Entry.Item, Entry.SlotIndex);
@@ -146,4 +147,16 @@ TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAnd
 	}
 
 	return FoundResults;
+}
+
+int32 FTSA_InventoryFastArray::GetItemIndex(UTSA_InventoryItem* Item) const
+{
+	for (int32 i = 0; i < Entries.Num(); ++i)
+	{
+		if (Entries[i].Item == Item)
+		{
+			return Entries[i].SlotIndex;
+		}
+	}
+	return -1;
 }

@@ -27,11 +27,6 @@ void UTSA_HUDWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	UTSA_InventoryComponent* InventoryComponent = UTSA_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
-	if (IsValid(InventoryComponent))
-	{
-		InventoryComponent->NewMessage.AddDynamic(this,&UTSA_HUDWidget::OnNewMessage);
-	}
 }
 
 void UTSA_HUDWidget::OnNewMessage(const FText& Message)

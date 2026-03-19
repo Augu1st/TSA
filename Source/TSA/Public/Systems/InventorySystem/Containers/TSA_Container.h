@@ -6,7 +6,6 @@
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "Interaction/TSA_InteractableActor.h"
-#include "Interaction/TSA_InteractionInterface.h"
 #include "StructUtils/InstancedStruct.h"
 #include "TSA_Container.generated.h"
 

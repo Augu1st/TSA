@@ -4,6 +4,8 @@
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 
 #include "TSA_GameplayTags.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
+#include "GameFramework/Character.h"
 #include "Items/TSA_InventoryItem.h"
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
@@ -74,11 +76,24 @@ void UTSA_InventoryComponent::RequestMoveItem(int32 SourceIndex, UTSA_InventoryC
 	}
 }
 
+void UTSA_InventoryComponent::SendItemToPlayer(UTSA_InventoryItem* Item)
+{
+	ACharacter* Player = Cast<ACharacter>(GetOwner());
+	if (Player && Player->IsPlayerControlled()) return;
+	
+	ATSA_AgentCharacter* PlayerCharacter = Cast<ATSA_AgentCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (PlayerCharacter) PlayerCharacter->PickUpItemInInventory(Item);
+	FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
+	if (ItemManifest.StackCount == 0)
+	{
+		RemoveItem(Item,InventoryList.GetItemIndex(Item));
+	}
+}
+
 
 void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
 	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
-	
 	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemManifestStruct,SlotIndex);
 	ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>().StackCount = 0;
 	CurrentItemCount++;
@@ -92,12 +107,11 @@ void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,in
 void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack,int32 SlotIndex)
 {
 	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
+	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
+	Item->GetItemManifestMutable().StackCount += AddToStack;
 	
 	FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>();
 	ItemManifest.StackCount -= AddToStack;
-	
-	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
-	Item->GetItemManifestMutable().StackCount += AddToStack;
 	
 	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
 	{
@@ -141,7 +155,7 @@ FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(const FInsta
 	Result.Remainder = ItemManifest.StackCount;
 	
 	// 找到物品数据
-	TArray<TTuple<UTSA_InventoryItem*, int32>> ExistingEntries = InventoryList.FindItemsAndSlotsByID(ItemManifest.ItemDataHandle.RowName);
+	TArray<TTuple<UTSA_InventoryItem*, int32>> ExistingEntries = InventoryList.FindItemsAndSlotsByHandle(ItemManifest.ItemDataHandle);
 	
 	// 1.不可叠加 或 不存在相同物品 直接找空位
 	if (!ItemDataRow.bStackable || ExistingEntries.IsEmpty())
@@ -207,6 +221,7 @@ void UTSA_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MaxCapacity = FMath::Min(MaxCapacity,Rows*Columns);
 }
 
 void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,

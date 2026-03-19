@@ -65,7 +65,7 @@ bool UTSA_RandomItemPool::RollItemFromTables(FDataTableRowHandle& OutItemHandle,
 		
 		if (PickedRowData->bStackable) // 可堆叠
 		{
-			OutQuantity = FMath::RandRange(1, PickedRowData->MaxStackCount); // 随机数量
+			OutQuantity = FMath::RandRange(1, PickedRowData->MaxStackCount/2); // 随机数量
 		}
 		else // 不可堆叠
 		{

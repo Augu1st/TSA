@@ -16,7 +16,6 @@ class UTSA_ItemComponent;
 class UTSA_InventoryBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryItemChange, UTSA_InventoryItem*, Item, int32, SlotIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryMessage, const FText&,  Message);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class TSA_API UTSA_InventoryComponent : public UActorComponent
@@ -33,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
 	void RequestMoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
 	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
+	void SendItemToPlayer(UTSA_InventoryItem* Item);
+	
 	void AddNewItem(FInstancedStruct& ItemManifestStruct, int32 SlotIndex);
 	void AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack, int32 SlotIndex);
 	void RemoveItem(UTSA_InventoryItem* Item,int32 SlotIndex);
@@ -41,22 +43,19 @@ public:
 	
 	FTSA_SlotAvailabilityResult HasRoomForItem(const FInstancedStruct& ItemManifestStruct);
 	void TryAddLeftItemToEmptySlot(FTSA_SlotAvailabilityResult& Result, int32 StackToAdd);
-	
 	UTSA_InventoryItem* GetItemAtIndex(int32 Index) const;
 	TArray<FTSA_ItemSearchResult> GetAllItemEntries();
-	
-	UFUNCTION(Client, Reliable)
-	void Client_ShowMessage(const FText& Message);
-	
 	const FGameplayTag& GetInventoryCategory() const { return InventoryCategory; }
 	int32 GetRows() const { return Rows; }
 	int32 GetColumns() const { return Columns; }
 	
+	UFUNCTION(Client, Reliable)
+	void Client_ShowMessage(const FText& Message);
+	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
 	FInventoryItemChange OnItemChanged;
-	FInventoryMessage NewMessage;
-	
+
 protected:
 	virtual void BeginPlay() override;
 	

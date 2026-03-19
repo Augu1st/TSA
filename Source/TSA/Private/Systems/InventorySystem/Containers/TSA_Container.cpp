@@ -63,7 +63,7 @@ void ATSA_Container::SpawnItems()
 void ATSA_Container::GenerateSingleItem(UTSA_RandomItemPool* LoadedPool)
 {
 	FDataTableRowHandle ResultHandle;
-	int32 ResultQuantity;
+	int32 ResultQuantity = 0;
 		
 	// 第一步：从奖池中抽奖，获得身份证(Handle)和数量
 	if (!LoadedPool->RollItemFromTables(ResultHandle, ResultQuantity))
@@ -100,8 +100,7 @@ FTSA_ItemDataRow* ATSA_Container::GetItemStaticData(const FDataTableRowHandle& H
 	return Handle.DataTable->FindRow<FTSA_ItemDataRow>(Handle.RowName, ContextString);
 }
 
-FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& Handle, int32 Quantity,
-	const FGameplayTag& CategoryTag) const
+FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& Handle, int32 Quantity,const FGameplayTag& CategoryTag) const
 {
 	// 情况A：是装备 (包括 Weapon, Armor 等所有子标签)
 	if (CategoryTag.MatchesTag(ItemTags::Category::Equipment))
@@ -114,7 +113,7 @@ FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& 
 	}
     
 	// 情况B：是道具
-	else if (CategoryTag.MatchesTag(ItemTags::Category::Prop))
+	if (CategoryTag.MatchesTag(ItemTags::Category::Prop))
 	{
 		FTSA_PropManifest PropManifest;
 		PropManifest.ItemDataHandle = Handle;
@@ -124,7 +123,7 @@ FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& 
 	}
     
 	// 情况C：是收集品
-	else if (CategoryTag.MatchesTag(ItemTags::Category::Collection))
+	if (CategoryTag.MatchesTag(ItemTags::Category::Collection))
 	{
 		FTSA_CollectionManifest CollectionManifest;
 		CollectionManifest.ItemDataHandle = Handle;
@@ -136,13 +135,12 @@ FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& 
 	}
     
 	// 情况D：通用保底处理 (如果 Tag 没配，或者配的是 General)
-	else
-	{
-		FTSA_ItemManifestBase BaseManifest;
-		BaseManifest.ItemDataHandle = Handle;
-		BaseManifest.StackCount = Quantity;
+	
+	FTSA_ItemManifestBase BaseManifest;
+	BaseManifest.ItemDataHandle = Handle;
+	BaseManifest.StackCount = Quantity;
         
-		return FInstancedStruct::Make(BaseManifest);
-	}
+	return FInstancedStruct::Make(BaseManifest);
+	
 }
 
