@@ -67,7 +67,7 @@ struct FTSA_ItemDataRow : public FTableRowBase
 };
 
 USTRUCT(BlueprintType)
-struct FTSA_ItemTrait
+struct FTSA_ItemTrait // 特质
 {
 	GENERATED_BODY()
 

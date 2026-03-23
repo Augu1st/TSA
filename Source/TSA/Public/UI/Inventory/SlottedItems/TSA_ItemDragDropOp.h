@@ -28,4 +28,7 @@ public:
 	// 被拖拽的物品数据 (用于显示或快速获取信息)
 	UPROPERTY(BlueprintReadOnly, Category = "DragDrop")
 	TWeakObjectPtr<UTSA_InventoryItem> PayloadItem;
+	
+protected:
+	virtual void DragCancelled_Implementation(const FPointerEvent& PointerEvent) override;
 };

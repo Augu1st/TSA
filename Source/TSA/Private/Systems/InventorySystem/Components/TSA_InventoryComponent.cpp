@@ -7,10 +7,13 @@
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "GameFramework/Character.h"
 #include "Items/TSA_InventoryItem.h"
+#include "Items/TSA_ItemActor.h"
+#include "Items/Component/TSA_ItemComponent.h"
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "UI/Inventory/TSA_InventoryBase.h"
 #include "Net/UnrealNetwork.h"
+#include "Utils/TSA_CommonLibrary.h"
 #include "Utils/TSA_ItemUtils.h"
 
 UTSA_InventoryComponent::UTSA_InventoryComponent() : InventoryList(this)
@@ -90,6 +93,20 @@ void UTSA_InventoryComponent::SendItemToPlayer(UTSA_InventoryItem* Item)
 	}
 }
 
+void UTSA_InventoryComponent::RequestDropItemIntoWorld(int32 SlotIndex)
+{
+	if (SlotIndex < 0) return;
+	
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		Server_DropItemIntoWorld_Implementation(SlotIndex);
+	}
+	else
+	{
+		Server_DropItemIntoWorld(SlotIndex);
+	}
+}
+
 
 void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
@@ -102,6 +119,7 @@ void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,in
 	{
 		OnItemAdded.Broadcast(NewItem, SlotIndex);	
 	}
+	else Client_AddItem(NewItem, SlotIndex);
 }
 
 void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack,int32 SlotIndex)
@@ -224,8 +242,13 @@ void UTSA_InventoryComponent::BeginPlay()
 	MaxCapacity = FMath::Min(MaxCapacity,Rows*Columns);
 }
 
+void UTSA_InventoryComponent::Client_AddItem_Implementation(UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	OnItemAdded.Broadcast(Item, SlotIndex);
+}
+
 void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
-	int32 TargetIndex)
+                                                             int32 TargetIndex)
 {
 	UTSA_InventoryItem* SourceItem = GetItemAtIndex(SourceIndex);
 	if (!SourceItem) return;
@@ -307,12 +330,45 @@ void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, 
 bool UTSA_InventoryComponent::Server_MoveItem_Validate(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
 	int32 TargetIndex)
 {
-	// 外挂可能会传一个空指针或者越界的 Index 过来，这里必须拦截！
 	if (SourceIndex < 0 || TargetIndex < 0 || TargetComp == nullptr) return false;
 	return true;
 }
 
-bool UTSA_InventoryComponent::MatchItemCategory(FGameplayTag& ItemCategory) const
+void UTSA_InventoryComponent::Server_DropItemIntoWorld_Implementation(int32 SlotIndex)
+{
+	UTSA_InventoryItem* ItemToDrop = GetItemAtIndex(SlotIndex);
+	if (!ItemToDrop) return;
+	
+	FInstancedStruct ManifestToDrop = ItemToDrop->GetItemManifestStruct();
+
+	// 计算生成位置
+	AActor* OwningActor = GetWorld()->GetFirstPlayerController()->GetPawn();
+	FVector SpawnLocation = UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(OwningActor,300.f,50.f);
+	FRotator SpawnRotation = OwningActor->GetActorRotation();
+
+	// 4. 在 3D 世界中生成掉落物 Actor
+	if (ItemActorClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		
+		AActor* DroppedActor = GetWorld()->SpawnActor<ATSA_ItemActor>(ItemActorClass, SpawnLocation, SpawnRotation, SpawnParams);
+		if (UTSA_ItemComponent* ItemComp = DroppedActor->FindComponentByClass<UTSA_ItemComponent>())
+		{
+			ItemComp->SetItemManifest(ManifestToDrop);
+		}
+	}
+
+	// 6. 从背包里彻底删除该物品！
+	RemoveItem(ItemToDrop, SlotIndex);
+}
+
+bool UTSA_InventoryComponent::Server_DropItemIntoWorld_Validate(int32 SlotIndex)
+{
+	return SlotIndex >= 0;
+}
+
+bool UTSA_InventoryComponent::MatchItemCategory(const FGameplayTag& ItemCategory) const
 {
 	if (InventoryCategory.MatchesTag(ItemTags::Category::General)) return true;
 	return InventoryCategory.MatchesTag(ItemCategory);

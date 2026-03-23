@@ -8,6 +8,7 @@
 #include "Systems/InventorySystem/FastArray/TSA_FastArray.h"
 #include "TSA_InventoryComponent.generated.h"
 
+class ATSA_ItemActor;
 struct FInstancedStruct;
 struct FTSA_ItemManifestBase;
 struct FTSA_ItemDataRow;
@@ -35,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
 	void SendItemToPlayer(UTSA_InventoryItem* Item);
 	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestDropItemIntoWorld(int32 SlotIndex);
+	
 	void AddNewItem(FInstancedStruct& ItemManifestStruct, int32 SlotIndex);
 	void AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack, int32 SlotIndex);
 	void RemoveItem(UTSA_InventoryItem* Item,int32 SlotIndex);
@@ -46,6 +50,7 @@ public:
 	UTSA_InventoryItem* GetItemAtIndex(int32 Index) const;
 	TArray<FTSA_ItemSearchResult> GetAllItemEntries();
 	const FGameplayTag& GetInventoryCategory() const { return InventoryCategory; }
+	bool MatchItemCategory(const FGameplayTag& ItemCategory) const;
 	int32 GetRows() const { return Rows; }
 	int32 GetColumns() const { return Columns; }
 	
@@ -62,9 +67,13 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_MoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
 	
-private:
-	bool MatchItemCategory(FGameplayTag& ItemCategory) const;
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_DropItemIntoWorld(int32 SlotIndex);
 	
+	UFUNCTION(Client, Reliable)
+	void Client_AddItem(UTSA_InventoryItem*  Item, int32 SlotIndex);
+	
+private:
 	UPROPERTY(Replicated)
 	FTSA_InventoryFastArray InventoryList;
 	
@@ -85,4 +94,7 @@ private:
 	
 	// 当前物品数量(所占槽位)
 	int32 CurrentItemCount = 0;
+	
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	TSubclassOf<ATSA_ItemActor> ItemActorClass; 
 };

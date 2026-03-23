@@ -60,6 +60,34 @@ void UTSA_GridSlot::ClearItemWidget()
 	SetGridSlotState(ETSA_GridSlotState::Unoccupied);
 }
 
+void UTSA_GridSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	
+	PlayCursorInAnimation();
+}
+
+void UTSA_GridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+	
+	PlayCursorOutAnimation();
+}
+
+void UTSA_GridSlot::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
+	
+	PlayCursorInAnimation();
+}
+
+void UTSA_GridSlot::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
+	
+	PlayCursorOutAnimation();
+}
+
 bool UTSA_GridSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,UDragDropOperation* InOperation)
 {
 	// 1. 检查扔下来的包裹是不是我们的“物品快递”
@@ -83,7 +111,7 @@ bool UTSA_GridSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 	// 如果源和目标是同一个背包的同一个格子，也就是拿起来又原地放下，直接取消。
 	if (SourceComp == TargetComp && SourceIndex == TargetIndex)
 	{
-		return true; // 返回 true 表示“我处理了这个事件，虽然什么都没做，但引擎你别管了”
+		return true;
 	}
 
 	// 如果其中一个组件为空，说明出了 bug，取消

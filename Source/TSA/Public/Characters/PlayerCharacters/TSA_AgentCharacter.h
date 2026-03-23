@@ -22,6 +22,9 @@ class TSA_API ATSA_AgentCharacter : public ATSA_CharacterBase
 
 public:
 	ATSA_AgentCharacter();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;	
 	
 	UFUNCTION(BlueprintCallable)
 	void PickUpItem(UTSA_ItemComponent* ItemComponent);
@@ -31,14 +34,16 @@ public:
 	
 	UTSA_InventoryComponent* GetInventoryCompByCategory(const FGameplayTag& ItemCategory);
 	
+
 protected:
 	virtual void BeginPlay() override;
-	
+
 private:
 	void InitMovement();
 	void InitCameraAndArm();
 	void InitInteractComponent();
 	void InitInventoryComponents();
+	void InitAbilitySystemInfo();
 	
 	/* Camera */
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -58,15 +63,15 @@ private:
 	
 	/* Inventory Components */
 	UPROPERTY(VisibleAnywhere)
-	TMap<FGameplayTag, TObjectPtr<UTSA_InventoryComponent>> InventoryComponentMap;
+	TArray<TObjectPtr<UTSA_InventoryComponent>> InventoryComponents;
 	
-	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> EquipmentInventoryComp;
 	
-	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> PropInventoryComp;
 	
-	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> GeneralInventoryComp;
 	/* End of Inventory Components */
 };

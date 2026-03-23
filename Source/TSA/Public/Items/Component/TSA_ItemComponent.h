@@ -17,12 +17,13 @@ public:
 	UTSA_ItemComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	void PickUp();
 	const FTSA_ItemManifestBase& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifestBase>(); }
 	const FTSA_ItemManifestBase* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifestBase>(); }
 	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
 	
 	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
-	void PickUp();
+	void SetItemManifest(const FInstancedStruct& InData) { ItemManifest = InData;}
 
 private:
 	UPROPERTY(Replicated,EditAnywhere,meta = ( BaseStruct="/Script/TSA.TSA_ItemManifestBase"), Category="TSA|Item")

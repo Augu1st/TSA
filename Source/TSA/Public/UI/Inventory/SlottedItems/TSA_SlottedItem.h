@@ -36,8 +36,6 @@ public:
 	
 	void UpdateStackCount(int32 StackCount);
 
-	
-
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	// 当鼠标开始拖动时，创建包裹并返回。
@@ -45,6 +43,14 @@ protected:
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayCursorInAnimation();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayCursorOutAnimation();
 	
 	void ShowItemDetails();
 private:
@@ -83,4 +89,6 @@ private:
 	
 	FTimerHandle ItemDetailsTimerHandle;
 	/* End of Item Details*/
+	
+	
 };

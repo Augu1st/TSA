@@ -29,6 +29,7 @@ void UTSA_InventoryGrid::InitializeGrid(UTSA_InventoryComponent* InventoryCompon
 		UE_LOG(LogTSA, Error, TEXT("%s: InventoryComponent is not valid"), *GetName());
 		return;
 	}
+	
 	OwnerComponent = InventoryComponent;
 	OwnerComponent->OnItemAdded.AddDynamic(this, &UTSA_InventoryGrid::AddItemToIndex);
 	OwnerComponent->OnItemChanged.AddDynamic(this, &UTSA_InventoryGrid::UpdateItemAtIndex);
@@ -53,14 +54,13 @@ void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 		{
 			UTSA_GridSlot* GridSlot = CreateWidget<UTSA_GridSlot>(this, GridSlotClass);
 			CanvasPanel->AddChild(GridSlot);
+			UWidget* a = this;
 			GridSlot->InitSlot(this,UTSA_WidgetUtils::GetIndexFromPosition(FIntPoint(i,j), Columns));
 			
 			FIntPoint SlotPos = FIntPoint(i, j) * SlotSize;
 			UCanvasPanelSlot* GridCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(GridSlot);
 			GridCPS->SetSize(FVector2D(SlotSize - SlotPadding * 2));
-			
 			GridCPS->SetPosition(SlotPos + FIntPoint(SlotPadding));
-			
 			GridSlots.Add(GridSlot);
 		}
 	}

@@ -44,8 +44,20 @@ public:
 	int32 SlotIndex;
 	
 protected:
-	// 当一个包裹在我的区域内被松开时触发
+	
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+	
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayCursorInAnimation();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayCursorOutAnimation();
 	
 private:
 	

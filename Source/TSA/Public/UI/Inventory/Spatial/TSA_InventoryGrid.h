@@ -40,12 +40,13 @@ public:
 	void SetSlottedItemImage(UTSA_InventoryItem* Item, UTSA_SlottedItem* SlottedItem);
 
 	UTSA_InventoryComponent* GetOwnerComponent() const;
+
 private:
 	void SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
 	
 	TWeakObjectPtr<UTSA_InventoryComponent> OwnerComponent;
 	
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 	
 	/* Grid Slots */

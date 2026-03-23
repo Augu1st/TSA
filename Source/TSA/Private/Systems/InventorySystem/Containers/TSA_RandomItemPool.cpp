@@ -6,10 +6,8 @@
 bool UTSA_RandomItemPool::RollItemFromTables(FDataTableRowHandle& OutItemHandle, int32& OutQuantity) const
 {
 	if (RarityTables.IsEmpty()) return false;
-
-	// ==========================================
+	
 	// 阶段一：根据权重，决定抽中哪一张 Data Table
-	// ==========================================
 	int32 TotalWeight = 0;
 	for (const FTSA_RarityTableEntry& Entry : RarityTables)
 	{
@@ -40,9 +38,8 @@ bool UTSA_RandomItemPool::RollItemFromTables(FDataTableRowHandle& OutItemHandle,
 
 	if (!SelectedEntry || !SelectedEntry->RarityDataTable) return false;
 
-	// ==========================================
+	
 	// 阶段二：在抽中的 Data Table 内，等概率盲抽一个物品
-	// ==========================================
     
 	// 1. 获取这张表里所有行的名字 (Row Names)
 	TArray<FName> RowNames = SelectedEntry->RarityDataTable->GetRowNames();

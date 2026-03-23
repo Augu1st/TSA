@@ -25,7 +25,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void SpawnItems();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	virtual void Server_SpawnItems();
 	
 private:
 	
@@ -48,7 +51,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
 	int32 MaxItemCount = 4;
 	
-	UPROPERTY(VisibleAnywhere, Category = "TSA|Inventory")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> InventoryComponent;
 	
 	bool bIsSpawned = false;

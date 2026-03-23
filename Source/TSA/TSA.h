@@ -5,3 +5,4 @@
 #include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTSA, Log, All)
+#define ECC_Item ECC_GameTraceChannel1

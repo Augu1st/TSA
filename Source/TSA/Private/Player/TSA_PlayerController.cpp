@@ -17,6 +17,7 @@
 ATSA_PlayerController::ATSA_PlayerController()
 {
 	InitHUD();
+	ConstructInventory();
 }
 
 void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory)
@@ -30,6 +31,9 @@ void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* Cont
 	SpatialInventory->Grid_Container->InitializeGrid(ContainerInventory);
 	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Visible);
 	
+	APlayerController* PC = SpatialInventory->GetOwningPlayer();
+	ULocalPlayer* LocalPlayer = SpatialInventory->GetOwningLocalPlayer();
+	
 	InteractWithInventory();
 }
 
@@ -37,7 +41,12 @@ void ATSA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	InitializeInventoryMenu();
+}
+
+void ATSA_PlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	
 }
 
 void ATSA_PlayerController::SetupInputComponent()
@@ -92,12 +101,21 @@ void ATSA_PlayerController::ToggleInventory()
 {
 	if (GetInventoryMenu())
 	{
+		if (!bInitInventoryMenu)
+		{
+			InitializeInventoryMenu();
+			bInitInventoryMenu = true;
+		}
 		if (bInventoryMenuOpen)
 		{
 			InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 			ClearContainerGrid();
+			
 		}
-		else InventoryMenu->SetVisibility(ESlateVisibility::Visible);
+		else
+		{
+			InventoryMenu->SetVisibility(ESlateVisibility::Visible);
+		}
 		bInventoryMenuOpen = !bInventoryMenuOpen;
 	}
 }
@@ -126,7 +144,7 @@ void ATSA_PlayerController::InitHUD()
 void ATSA_PlayerController::ConstructInventory()
 {
 	if (!IsValid(InventoryMenuClass)) return;
-	InventoryMenu = CreateWidget<UTSA_InventoryBase>(GetWorld(),InventoryMenuClass);
+	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
 	InventoryMenu->AddToViewport();
 	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 }

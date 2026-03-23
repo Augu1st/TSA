@@ -86,16 +86,14 @@ void UTSA_SlottedItem::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	UTSA_ItemDragDropOp* DragDropOp = NewObject<UTSA_ItemDragDropOp>(this);
 	
 	// 2. 填写发货单信息 (从自身获取)
-	// 假设你有一个方法能拿到所在的背包组件 (比如在初始化时存进来的，或者通过 GetTypedOuter 向上找)
 	DragDropOp->SourceInventory = GetOwningInventoryComponent();
 	DragDropOp->SourceSlotIndex = SlotIndex;
 	DragDropOp->PayloadItem = InventoryItem.Get();
 
 	// 3. 设置拖拽时的鼠标视觉效果 (DefaultDragVisual)
-	// 通常我们会创建一个专门的简单 Widget (只有一张图片)，或者直接把这个 SlottedItem 自己当成拖拽影像
-	
 	Image_Icon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	DragDropOp->DefaultDragVisual = Image_Icon; 
+	DragDropOp->DefaultDragVisual->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	
 	DragDropOp->Pivot = EDragPivot::CenterCenter; 
 
@@ -120,17 +118,33 @@ void UTSA_SlottedItem::NativeOnMouseEnter(const FGeometry& InGeometry, const FPo
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 	
 	GetWorld()->GetTimerManager().SetTimer(ItemDetailsTimerHandle, this, &UTSA_SlottedItem::ShowItemDetails, ItemDetailsDelay, false);
+	
+	PlayCursorInAnimation();
 }
 
 void UTSA_SlottedItem::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 	
-	// 1. 如果鼠标提前移走了，取消倒计时
+	// 取消显示物品详情
 	GetWorld()->GetTimerManager().ClearTimer(ItemDetailsTimerHandle);
-	
-	// 2. 瞬间清空 Tooltip，让面板立刻消失
 	SetToolTip(nullptr);
+	
+	PlayCursorOutAnimation();
+}
+
+void UTSA_SlottedItem::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
+	
+	PlayCursorInAnimation();
+}
+
+void UTSA_SlottedItem::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
+	
+	PlayCursorOutAnimation();
 }
 
 void UTSA_SlottedItem::ShowItemDetails()

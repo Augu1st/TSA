@@ -8,12 +8,14 @@
 #include "Systems/InventorySystem/Containers/TSA_RandomItemPool.h"
 #include "TSA/TSA.h"
 #include "TSA_GameplayTags.h"
+#include "Net/UnrealNetwork.h"
 #include "Player/TSA_PlayerController.h"
 
 
 ATSA_Container::ATSA_Container()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	SetReplicates(true);
 	
 	InventoryComponent = CreateDefaultSubobject<UTSA_InventoryComponent>(TEXT("InventoryComponent"));
 }
@@ -23,8 +25,8 @@ void ATSA_Container::PrimaryInteract_Implementation(APlayerController* Interacto
 	ATSA_PlayerController* PlayerController = Cast<ATSA_PlayerController>(Interactor);
 	if (!IsValid(PlayerController)) return;
 	if (!bIsSpawned)
-	{
-		SpawnItems();
+	{	
+		Server_SpawnItems();
 		bIsSpawned = true;
 	}
 	PlayerController->OpenContainerInventory(InventoryComponent);
@@ -36,7 +38,13 @@ void ATSA_Container::BeginPlay()
 	
 }
 
-void ATSA_Container::SpawnItems()
+void ATSA_Container::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATSA_Container, InventoryComponent);
+}
+
+void ATSA_Container::Server_SpawnItems_Implementation()
 {
 	if (ItemPool.IsNull())
 	{
@@ -75,7 +83,7 @@ void ATSA_Container::GenerateSingleItem(UTSA_RandomItemPool* LoadedPool)
 	FTSA_ItemDataRow* RowData = GetItemStaticData(ResultHandle);
 	if (!RowData)
 	{
-		return; // 表里查无此物（可能策划配错表了）
+		return; // 表里查无此物
 	}
 
 	// 第三步：将 Handle、数量 和 查到的分类Tag 交给工厂，生成对应的动态数据外壳

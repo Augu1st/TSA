@@ -26,12 +26,14 @@ public:
 	
 	void OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory);
 	
+	void InitializeInventoryMenu();
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
 	virtual void SetupInputComponent() override;
 	
 	// Inventory Menu
-	void InitializeInventoryMenu();
+	
 	UTSA_InventoryBase* GetInventoryMenu();
 	void ToggleInventory();
 	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
@@ -69,6 +71,8 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UTSA_InventoryBase> InventoryMenu;
+	
+	bool bInitInventoryMenu = false;
 	/* End of Inventory Widget */
 	
 	

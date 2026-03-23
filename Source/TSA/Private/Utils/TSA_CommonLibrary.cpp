@@ -33,3 +33,34 @@ TArray<AActor*> UTSA_CommonLibrary::FindInteractableActorsInRange(
 	return OverlappedActors;
 }
 
+FVector UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(const AActor* PlayerActor, float TraceDistance, float Radius)
+{
+	if (!PlayerActor) return FVector::ZeroVector;
+
+	FVector Start = PlayerActor->GetActorLocation();
+	// 获取半径内随机点
+	float RandX = FMath::FRandRange(-Radius, Radius);
+	float RandY = FMath::FRandRange(-Radius, Radius);
+	Start += FVector(RandX, RandY, 0);
+	FVector End = Start - FVector(0, 0, TraceDistance);
+    
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(PlayerActor); 
+	
+	bool bHit = PlayerActor->GetWorld()->LineTraceSingleByChannel(
+		HitResult, 
+		Start, 
+		End, 
+		ECC_Visibility, 
+		Params
+	);
+
+	if (bHit)
+	{
+		return HitResult.Location;
+	}
+	
+	return Start - FVector(0, 0, PlayerActor->GetSimpleCollisionHalfHeight());
+}
+

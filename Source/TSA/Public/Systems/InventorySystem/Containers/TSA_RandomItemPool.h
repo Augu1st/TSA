@@ -36,6 +36,4 @@ public:
 	// 配置表和对应的权重
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loot Settings")
 	TArray<FTSA_RarityTableEntry> RarityTables;
-	
-	
 };

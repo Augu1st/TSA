@@ -9,3 +9,8 @@ ATSA_CharacterBase::ATSA_CharacterBase()
 
 }
 
+UAbilitySystemComponent* ATSA_CharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+

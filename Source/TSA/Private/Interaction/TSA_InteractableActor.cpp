@@ -70,7 +70,8 @@ void ATSA_InteractableActor::InitStaticMeshComp()
 {
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	StaticMeshComp->SetupAttachment(RootComponent);
-	StaticMeshComp->SetCollisionObjectType(ECC_GameTraceChannel9);
+	StaticMeshComp->SetCollisionObjectType(ECC_Item);
+	StaticMeshComp->SetRenderCustomDepth(true);
 }
 
 void ATSA_InteractableActor::InitInteractWidgetComp()

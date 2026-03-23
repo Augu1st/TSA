@@ -54,8 +54,7 @@ UTSA_InventoryItem* FTSA_InventoryFastArray::AddEntry(const FInstancedStruct& It
 	// 1. 基础校验
 	check(OwnerComponent);
 	AActor* OwningActor = OwnerComponent->GetOwner();
-	check(OwningActor->HasAuthority());
-
+	
 	// 2. 校验传入的 FInstancedStruct 是否有效 (是不是空的)
 	if (!ItemManifestStruct.IsValid())
 	{

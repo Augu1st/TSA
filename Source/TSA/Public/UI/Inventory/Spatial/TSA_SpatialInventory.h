@@ -6,6 +6,7 @@
 #include "UI/Inventory/TSA_InventoryBase.h"
 #include "TSA_SpatialInventory.generated.h"
 
+class UCanvasPanel;
 class UTSA_InventoryGrid;
 /**
  * 
