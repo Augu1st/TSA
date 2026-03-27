@@ -5,6 +5,7 @@
 
 #include "Components/Image.h"
 #include "Components/Overlay.h"
+#include "Player/TSA_PlayerController.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "UI/Inventory/SlottedItems/TSA_ItemDragDropOp.h"
 #include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
@@ -120,14 +121,13 @@ bool UTSA_GridSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 		return false; 
 	}
 
-	// 5. 【核心步骤】：通知服务器进行真正的物理转移！
-	// UI 的任务到此结束！UI 绝对不要自己去修改里面的图片或数据！
-	// 让发起方的组件（或者玩家控制器）发一个 RPC。
+	// 5. 【核心步骤】：通知服务器进行真正的物理转移
+	ATSA_PlayerController* PC = Cast<ATSA_PlayerController>(GetOwningPlayer());
+	if (PC)
+	{
+		// 委托拥有网络权限的 Controller 去发 RPC
+		PC->RequestMoveItem(SourceComp, SourceIndex, TargetComp, TargetIndex);
+	}
 	
-	// 这里假设你在 InventoryComponent 里写了一个请求转移的函数 (客户端会转成 Server RPC)
-	SourceComp->RequestMoveItem(SourceIndex, TargetComp, TargetIndex);
-
-	// 返回 true 告诉引擎：“包裹我已经签收了，拖拽操作圆满结束！”
 	return true; 
-	
 }

@@ -15,7 +15,7 @@
 ATSA_Container::ATSA_Container()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates = true;
 	
 	InventoryComponent = CreateDefaultSubobject<UTSA_InventoryComponent>(TEXT("InventoryComponent"));
 }
@@ -24,18 +24,23 @@ void ATSA_Container::PrimaryInteract_Implementation(APlayerController* Interacto
 {
 	ATSA_PlayerController* PlayerController = Cast<ATSA_PlayerController>(Interactor);
 	if (!IsValid(PlayerController)) return;
-	if (!bIsSpawned)
-	{	
-		Server_SpawnItems();
-		bIsSpawned = true;
+	
+	if (PlayerController->IsLocalController())
+	{
+		PlayerController->OpenContainerInventory(InventoryComponent);
 	}
-	PlayerController->OpenContainerInventory(InventoryComponent);
 }
 
 void ATSA_Container::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// 服务器开局生成物品
+	if (HasAuthority())
+	{
+		Server_SpawnItems_Implementation();
+		bIsSpawned =  true;
+	}
 }
 
 void ATSA_Container::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

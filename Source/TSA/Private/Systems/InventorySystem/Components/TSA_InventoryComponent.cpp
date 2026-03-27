@@ -58,56 +58,6 @@ bool UTSA_InventoryComponent::TryAddItem(FInstancedStruct& ItemManifestStruct)
 	return true;
 }
 
-void UTSA_InventoryComponent::RequestMoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex)
-{
-	// 1. 基础的安全防线 (UI 层防抖)
-	if (SourceIndex < 0 || TargetIndex < 0 || TargetComp == nullptr) return;
-
-	// 2. 无意义操作拦截 (拿起来原地放下)
-	if (this == TargetComp && SourceIndex == TargetIndex) return;
-
-	// 3. 网络权限路由
-	if (GetOwnerRole() == ROLE_Authority)
-	{
-		// 如果我本身就是服务器 (比如你是 Host，或者是单机游戏)，直接执行内部的 Server 实现逻辑
-		Server_MoveItem_Implementation(SourceIndex, TargetComp, TargetIndex);
-	}
-	else
-	{
-		// 如果我是普通客户端，向服务器发送 RPC 请求！
-		Server_MoveItem(SourceIndex, TargetComp, TargetIndex);
-	}
-}
-
-void UTSA_InventoryComponent::SendItemToPlayer(UTSA_InventoryItem* Item)
-{
-	ACharacter* Player = Cast<ACharacter>(GetOwner());
-	if (Player && Player->IsPlayerControlled()) return;
-	
-	ATSA_AgentCharacter* PlayerCharacter = Cast<ATSA_AgentCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (PlayerCharacter) PlayerCharacter->PickUpItemInInventory(Item);
-	FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
-	if (ItemManifest.StackCount == 0)
-	{
-		RemoveItem(Item,InventoryList.GetItemIndex(Item));
-	}
-}
-
-void UTSA_InventoryComponent::RequestDropItemIntoWorld(int32 SlotIndex)
-{
-	if (SlotIndex < 0) return;
-	
-	if (GetOwnerRole() == ROLE_Authority)
-	{
-		Server_DropItemIntoWorld_Implementation(SlotIndex);
-	}
-	else
-	{
-		Server_DropItemIntoWorld(SlotIndex);
-	}
-}
-
-
 void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
 	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
@@ -119,7 +69,6 @@ void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,in
 	{
 		OnItemAdded.Broadcast(NewItem, SlotIndex);	
 	}
-	else Client_AddItem(NewItem, SlotIndex);
 }
 
 void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack,int32 SlotIndex)
@@ -130,6 +79,9 @@ void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStru
 	
 	FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>();
 	ItemManifest.StackCount -= AddToStack;
+	
+	// 🌟 核心修复：告诉网络系统，这个格子的数据变了！赶快发给客户端！
+	InventoryList.MarkItemDirtyByPtr(Item);
 	
 	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
 	{
@@ -242,12 +194,7 @@ void UTSA_InventoryComponent::BeginPlay()
 	MaxCapacity = FMath::Min(MaxCapacity,Rows*Columns);
 }
 
-void UTSA_InventoryComponent::Client_AddItem_Implementation(UTSA_InventoryItem* Item, int32 SlotIndex)
-{
-	OnItemAdded.Broadcast(Item, SlotIndex);
-}
-
-void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
+void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
                                                              int32 TargetIndex)
 {
 	UTSA_InventoryItem* SourceItem = GetItemAtIndex(SourceIndex);
@@ -327,23 +274,18 @@ void UTSA_InventoryComponent::Server_MoveItem_Implementation(int32 SourceIndex, 
 	}
 }
 
-bool UTSA_InventoryComponent::Server_MoveItem_Validate(int32 SourceIndex, UTSA_InventoryComponent* TargetComp,
-	int32 TargetIndex)
+void UTSA_InventoryComponent::DropItemIntoWorld(int32 SlotIndex)
 {
-	if (SourceIndex < 0 || TargetIndex < 0 || TargetComp == nullptr) return false;
-	return true;
-}
-
-void UTSA_InventoryComponent::Server_DropItemIntoWorld_Implementation(int32 SlotIndex)
-{
+	if (GetOwnerRole()!= ROLE_Authority) return;
+	
 	UTSA_InventoryItem* ItemToDrop = GetItemAtIndex(SlotIndex);
 	if (!ItemToDrop) return;
 	
 	FInstancedStruct ManifestToDrop = ItemToDrop->GetItemManifestStruct();
 
 	// 计算生成位置
-	AActor* OwningActor = GetWorld()->GetFirstPlayerController()->GetPawn();
-	FVector SpawnLocation = UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(OwningActor,300.f,50.f);
+	AActor* OwningActor = GetOwner();
+	FVector SpawnLocation = UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(OwningActor,300.f,100.f);
 	FRotator SpawnRotation = OwningActor->GetActorRotation();
 
 	// 4. 在 3D 世界中生成掉落物 Actor
@@ -357,16 +299,13 @@ void UTSA_InventoryComponent::Server_DropItemIntoWorld_Implementation(int32 Slot
 		{
 			ItemComp->SetItemManifest(ManifestToDrop);
 		}
+		UE_LOG(LogTemp, Log, TEXT("Dropped Item: %s"), *ItemToDrop->GetName());
 	}
 
 	// 6. 从背包里彻底删除该物品！
 	RemoveItem(ItemToDrop, SlotIndex);
 }
 
-bool UTSA_InventoryComponent::Server_DropItemIntoWorld_Validate(int32 SlotIndex)
-{
-	return SlotIndex >= 0;
-}
 
 bool UTSA_InventoryComponent::MatchItemCategory(const FGameplayTag& ItemCategory) const
 {

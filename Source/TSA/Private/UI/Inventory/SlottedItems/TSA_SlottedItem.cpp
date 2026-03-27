@@ -8,7 +8,9 @@
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
+#include "GameFramework/Character.h"
 #include "Items/TSA_InventoryItem.h"
+#include "Player/TSA_PlayerController.h"
 #include "UI/Inventory/SlottedItems/TSA_ItemDragDropOp.h"
 #include "Utils/TSA_ItemUtils.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
@@ -105,9 +107,13 @@ FReply UTSA_SlottedItem::NativeOnMouseButtonDoubleClick(const FGeometry& InGeome
 {
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		if (GetOwningInventoryComponent())
+		if (UTSA_InventoryComponent* Inventory = GetOwningInventoryComponent())
 		{
-			GetOwningInventoryComponent()->SendItemToPlayer(InventoryItem.Get());
+			ACharacter* Player = Cast<ACharacter>(Inventory->GetOwner());
+			if (Player && Player->IsPlayerControlled()) return FReply::Handled();
+			
+			ATSA_PlayerController* PlayerController = Cast<ATSA_PlayerController>(GetWorld()->GetFirstPlayerController());
+			PlayerController->RequestAutoAddItem(Inventory,SlotIndex);
 		}
 	}
 	return FReply::Handled();

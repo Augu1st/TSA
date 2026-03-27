@@ -5,13 +5,15 @@
 
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Items/Component/TSA_ItemComponent.h"
+#include "Player/TSA_PlayerController.h"
 
 
 ATSA_ItemActor::ATSA_ItemActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	InitItemComponent();
+	bReplicates = true;
 	
+	InitItemComponent();
 	StaticMeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	StaticMeshComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 }
@@ -24,9 +26,9 @@ void ATSA_ItemActor::InitItemComponent()
 void ATSA_ItemActor::PrimaryInteract_Implementation(APlayerController* Interactor)
 {
 	if (!Interactor) return;
-	ATSA_AgentCharacter* PlayerCharacter = Cast<ATSA_AgentCharacter>(Interactor->GetPawn());
-	if (PlayerCharacter)
+	ATSA_PlayerController* PC = Cast<ATSA_PlayerController>(Interactor);
+	if (PC)
 	{
-		PlayerCharacter->PickUpItem(ItemComponent);
+		PC->RequestPickUpItem(ItemComponent);
 	}
 }

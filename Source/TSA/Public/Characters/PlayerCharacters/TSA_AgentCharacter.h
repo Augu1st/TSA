@@ -26,6 +26,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;	
 	
+	virtual void Tick(float DeltaSeconds) override;
+	
 	UFUNCTION(BlueprintCallable)
 	void PickUpItem(UTSA_ItemComponent* ItemComponent);
 	
@@ -38,7 +40,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
+	void UpdateLookAtMouse();
 	void InitMovement();
 	void InitCameraAndArm();
 	void InitInteractComponent();

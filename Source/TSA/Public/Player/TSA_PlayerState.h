@@ -8,7 +8,10 @@
 #include "GameFramework/PlayerState.h"
 #include "TSA_PlayerState.generated.h"
 
-class UTSA_HealthAttributeSet;
+class UTSA_ResourceAttributeSet;
+class UTSA_CoreAttributeSet;
+class UTSA_CombatAttributeSet;
+class UTSA_VitalAttributeSet;
 class UAbilitySystemComponent;
 /**
  * 
@@ -31,7 +34,16 @@ protected:
 	
 	/* Attribute Sets*/
 	UPROPERTY()
-	TObjectPtr<UTSA_HealthAttributeSet> HealthSet;
+	TObjectPtr<UTSA_VitalAttributeSet> HealthSet;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_CombatAttributeSet> CombatSet;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_CoreAttributeSet> CoreSet;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_ResourceAttributeSet> ResourceSet;
 	/* End of Attribute Sets*/
 	
 private:

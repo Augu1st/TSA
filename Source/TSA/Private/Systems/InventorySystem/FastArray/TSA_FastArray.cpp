@@ -30,7 +30,7 @@ void FTSA_InventoryFastArray::PostReplicatedChange(const TArrayView<int32> Chang
 		// 当原本为空的指针，终于接收到服务器传来的 UObject 时，触发广播！
 		if (Entries[Index].Item != nullptr)
 		{
-			IC->OnItemAdded.Broadcast(Entries[Index].Item, Entries[Index].SlotIndex);
+			IC->OnItemChanged.Broadcast(Entries[Index].Item, Entries[Index].SlotIndex);
 		}
 	}
 }
@@ -42,10 +42,7 @@ void FTSA_InventoryFastArray::PreReplicatedRemove(const TArrayView<int32> Remove
     	
 	for (int32 Index : RemovedIndices)
 	{
-		if (Entries[Index].Item != nullptr)
-		{
-			IC->OnItemRemoved.Broadcast(Entries[Index].Item,Entries[Index].SlotIndex);
-		}
+		IC->OnItemRemoved.Broadcast(Entries[Index].Item,Entries[Index].SlotIndex);
 	}
 }
 
@@ -99,6 +96,18 @@ void FTSA_InventoryFastArray::RemoveEntry(UTSA_InventoryItem* Item)
 	}
 }
 
+
+void FTSA_InventoryFastArray::MarkItemDirtyByPtr(UTSA_InventoryItem* Item)
+{
+	for (FTSA_InventoryEntry& Entry : Entries)
+	{
+		if (Entry.Item == Item)
+		{
+			MarkItemDirty(Entry); // 引擎底层函数，强制同步此项
+			return;
+		}
+	}
+}
 
 UTSA_InventoryItem* FTSA_InventoryFastArray::GetItemAtSlot(int32 SlotIndex) const
 {

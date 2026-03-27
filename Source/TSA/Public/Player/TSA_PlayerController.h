@@ -25,14 +25,37 @@ public:
 	ATSA_PlayerController();
 	
 	void OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory);
+
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestPickUpItem(UTSA_ItemComponent* ItemComponent);
 	
-	void InitializeInventoryMenu();
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestAutoAddItem(UTSA_InventoryComponent* SourceComp, int32 SourceIndex);
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestMoveItem(UTSA_InventoryComponent* SourceComp, int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
+	void RequestDropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnRep_PlayerState() override;
 	virtual void SetupInputComponent() override;
 	
 	// Inventory Menu
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_PickUpItem(UTSA_ItemComponent* ItemComponent);
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_AutoAddItem(UTSA_InventoryComponent* SourceComp, int32 SourceIndex);
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_MoveItem(UTSA_InventoryComponent* SourceComp, int32 SourceIndex, UTSA_InventoryComponent* TargetComp, int32 TargetIndex);
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_DropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
 	
 	UTSA_InventoryBase* GetInventoryMenu();
 	void ToggleInventory();
@@ -46,6 +69,7 @@ private:
 	
 	void PrimaryInteract();
 	void InteractWithInventory();
+	void InitializeInventoryMenu();
 	
 	void Move(const FInputActionValue& Value);
 	void Jump();

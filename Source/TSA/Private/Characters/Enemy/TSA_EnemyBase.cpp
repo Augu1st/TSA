@@ -3,7 +3,7 @@
 
 #include "Characters/Enemy/TSA_EnemyBase.h"
 
-#include "AbilitySystem/AttributeSets/TSA_HealthAttributeSet.h"
+#include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 
 
@@ -29,7 +29,7 @@ void ATSA_EnemyBase::InitASC()
 
 void ATSA_EnemyBase::InitAttributeSets()
 {
-	HealthSet = CreateDefaultSubobject<UTSA_HealthAttributeSet>("HealthSet");
+	HealthSet = CreateDefaultSubobject<UTSA_VitalAttributeSet>("HealthSet");
 }
 
 

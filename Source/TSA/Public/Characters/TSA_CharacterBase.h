@@ -7,7 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "TSA_CharacterBase.generated.h"
 
-class UTSA_HealthAttributeSet;
+class UTSA_VitalAttributeSet;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -27,7 +27,7 @@ protected:
 	
 	/* Attribute Sets */
 	UPROPERTY()
-	TObjectPtr<UTSA_HealthAttributeSet> HealthSet;
+	TObjectPtr<UTSA_VitalAttributeSet> HealthSet;
 	
 	/* End of Attribute Sets */
 };
