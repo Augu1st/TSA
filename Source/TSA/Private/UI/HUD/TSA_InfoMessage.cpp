@@ -1,7 +1,7 @@
 ﻿// Dark Trace Studio Works
 
 
-#include "TSA_InfoMessage.h"
+#include "UI/HUD/TSA_InfoMessage.h"
 #include "Components/TextBlock.h"
 
 void UTSA_InfoMessage::NativeOnInitialized()
@@ -13,7 +13,7 @@ void UTSA_InfoMessage::NativeOnInitialized()
 
 void UTSA_InfoMessage::ShowMessage_Implementation()
 {
-	SetVisibility(ESlateVisibility::Visible);
+	SetVisibility(ESlateVisibility::HitTestInvisible);
 	bIsMessageActive = true;
 }
 

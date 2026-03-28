@@ -43,6 +43,7 @@ void ATSA_AgentCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	
 	InitAbilitySystemInfo();
+	InitAttributes();
 }
 
 void ATSA_AgentCharacter::OnRep_PlayerState()
@@ -195,4 +196,20 @@ void ATSA_AgentCharacter::InitAbilitySystemInfo()
 	check(PS);
 	PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
 	AbilitySystemComponent = PS->GetAbilitySystemComponent();
+}
+
+void ATSA_AgentCharacter::InitAttributes()
+{
+	if (!GetPlayerState() || !IsValid(AbilitySystemComponent)) return;
+	for (auto EffectClass : InitAttributeGEClasses)
+	{
+		if (EffectClass) // 检查有效性
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1, AbilitySystemComponent->MakeEffectContext());
+			if (EffectSpecHandle.IsValid())
+			{
+				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+			}
+		}
+	}
 }

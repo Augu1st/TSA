@@ -31,7 +31,7 @@ void ATSA_PlayerState::InitASC()
 
 void ATSA_PlayerState::InitAttributeSets()
 {
-	HealthSet = CreateDefaultSubobject<UTSA_VitalAttributeSet>(TEXT("HealthSet"));
+	VitalSet = CreateDefaultSubobject<UTSA_VitalAttributeSet>(TEXT("HealthSet"));
 	CombatSet = CreateDefaultSubobject<UTSA_CombatAttributeSet>(TEXT("CombatSet"));
 	CoreSet = CreateDefaultSubobject<UTSA_CoreAttributeSet>(TEXT("CoreSet"));
 	ResourceSet = CreateDefaultSubobject<UTSA_ResourceAttributeSet>(TEXT("ResourceSet"));

@@ -29,7 +29,7 @@ void ATSA_EnemyBase::InitASC()
 
 void ATSA_EnemyBase::InitAttributeSets()
 {
-	HealthSet = CreateDefaultSubobject<UTSA_VitalAttributeSet>("HealthSet");
+	VitalSet = CreateDefaultSubobject<UTSA_VitalAttributeSet>("HealthSet");
 }
 
 

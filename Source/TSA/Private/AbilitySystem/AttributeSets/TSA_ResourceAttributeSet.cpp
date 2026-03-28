@@ -7,10 +7,12 @@
 
 UTSA_ResourceAttributeSet::UTSA_ResourceAttributeSet()
 {
-	InitEnergy(0.f);
-	InitMaxEnergy(1000.f);
+	InitEnergy(200.f);
+	InitMaxEnergy(200.f);
+	InitEnergyNetFlow(0.f);
 	InitMatter(0.f);
 	InitMaxMatter(100.f);
+	InitMatterNetFlow(0.f);
 	
 	InitConversionRate(50.f);
 	InitConversionSpeed(100.f);
@@ -26,8 +28,10 @@ void UTSA_ResourceAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, Energy, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, EnergyNetFlow, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, Matter, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, MaxMatter, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, MatterNetFlow, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, ConversionRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, ConversionSpeed, COND_None, REPNOTIFY_Always);
@@ -49,6 +53,11 @@ void UTSA_ResourceAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& Ol
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, MaxEnergy, OldMaxEnergy);
 }
 
+void UTSA_ResourceAttributeSet::OnRep_EnergyNetFlow(const FGameplayAttributeData& OldEnergyNetFlow)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, EnergyNetFlow, OldEnergyNetFlow);
+}
+
 void UTSA_ResourceAttributeSet::OnRep_Matter(const FGameplayAttributeData& OldMatter)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, Matter, OldMatter);
@@ -57,6 +66,11 @@ void UTSA_ResourceAttributeSet::OnRep_Matter(const FGameplayAttributeData& OldMa
 void UTSA_ResourceAttributeSet::OnRep_MaxMatter(const FGameplayAttributeData& OldMaxMatter)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, MaxMatter, OldMaxMatter);
+}
+
+void UTSA_ResourceAttributeSet::OnRep_MatterNetFlow(const FGameplayAttributeData& OldMatterNetFlow)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, MatterNetFlow, OldMatterNetFlow);
 }
 
 void UTSA_ResourceAttributeSet::OnRep_ConversionRate(const FGameplayAttributeData& OldConversionRate)

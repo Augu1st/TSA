@@ -38,6 +38,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
 	void RequestDropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
 	
+	void ToggleAttributeMenu();
+	void ToggleInventory();
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -58,13 +60,11 @@ protected:
 	void Server_DropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
 	
 	UTSA_InventoryBase* GetInventoryMenu();
-	void ToggleInventory();
 	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
 	void ClearContainerGrid();
 	// End of Inventory Menu
 	
 private:
-	void InitHUD();
 	void ConstructInventory();
 	
 	void PrimaryInteract();
@@ -118,6 +118,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Inventory")
 	TObjectPtr<UInputAction> InventoryAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "TSA|Attribute")
+	TObjectPtr<UInputAction> AttributeMenuAction;
 	/* */
 	
 };

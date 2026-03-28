@@ -34,7 +34,7 @@ protected:
 	
 	/* Attribute Sets*/
 	UPROPERTY()
-	TObjectPtr<UTSA_VitalAttributeSet> HealthSet;
+	TObjectPtr<UTSA_VitalAttributeSet> VitalSet;
 	
 	UPROPERTY()
 	TObjectPtr<UTSA_CombatAttributeSet> CombatSet;

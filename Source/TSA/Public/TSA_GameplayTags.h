@@ -31,6 +31,57 @@ namespace ItemTags
 	
 }
 
+namespace AttributeTags
+{
+	// Vital Attributes
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Health);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxHealth);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(HealthNetFlow);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Armor);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxArmor);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ArmorNetFlow);
+	// End of Vital Attributes
+	
+	// Core Attributes
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Mastery);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Reaction);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Calculation);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Observation);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Tenacity);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resonance);
+	// End of Core Attributes
+	
+	// Combat Attributes
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(CritRate);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(CritDamage);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(DodgeRate);
+	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Sturdy);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Toughness);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Stable);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Reflect);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Insulate_E);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Insulate_H);
+	// End of Combat Attributes
+	
+	// Resource Attributes
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Energy);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxEnergy);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyNetFlow);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Matter);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxMatter);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MatterNetFlow);
+	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConversionRate);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConversionSpeed);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PrintSpeed);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PrintPower);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PropUseSpeed);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PropUseEfficiency);
+	// End of Resource Attributes
+	
+}
+
 namespace CombatTags
 {
 	namespace Attack
@@ -39,11 +90,7 @@ namespace CombatTags
 	}
 }
 
-namespace AttributeTags
-{
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Health);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Armor);
-}
+
 
 namespace ItemBonds
 {

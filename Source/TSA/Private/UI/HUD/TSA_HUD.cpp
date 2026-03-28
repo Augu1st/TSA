@@ -5,16 +5,20 @@
 
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
-#include "Player/TSA_PlayerController.h"
 #include "Player/TSA_PlayerState.h"
+#include "UI/AttributeMenu/TSA_AttributeMenuController.h"
+#include "UI/AttributeMenu/TSA_AttributeMenu.h"
 #include "UI/HUD/TSA_HUDWidget.h"
 
+
+ATSA_HUD::ATSA_HUD()
+{
+}
 
 void ATSA_HUD::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	CreateHUDWidget();
+
 }
 
 void ATSA_HUD::CreateHUDWidget()
@@ -30,22 +34,77 @@ void ATSA_HUD::CreateHUDWidget()
 
 void ATSA_HUD::InitAttributesBindings()
 {
+	
 	APlayerController* PC = GetOwningPlayerController();
 	if (!PC) return;
 
 	ATSA_PlayerState* PS = PC->GetPlayerState<ATSA_PlayerState>();
 	if (!PS) return;
 
-	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-	if (!ASC) return;
+	ASC = Cast<UTSA_AbilitySystemComponent>(PS->GetAbilitySystemComponent());
+	if (!ASC.IsValid()) return;
 	
-	for (const FTSA_AttributeWithTag& Info : AttributeInfoAsset->AttributeInformation)
+	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(Info.Attribute).AddUObject(
 			this,
 			&ATSA_HUD::OnAnyAttributeChange,
 			Info.AttributeTag
 		);
+	}
+	CreateHUDWidget();
+	BroadcastInitAttributes();
+	GetAttributeMenu();
+	GetAttributeMenuController()->BroadcastInitAttributes(ASC.Get());
+}
+
+void ATSA_HUD::BroadcastInitAttributes()
+{
+	if (!ASC.IsValid()) return;
+	
+	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
+	{
+		float Value = ASC->GetNumericAttribute(Info.Attribute);
+		OnAttributeChanged.Broadcast(Info.AttributeTag, Value);
+	}
+}
+
+UTSA_AttributeMenuController* ATSA_HUD::GetAttributeMenuController()
+{
+	if (!AttributeMenuController)
+	{
+		AttributeMenuController = NewObject<UTSA_AttributeMenuController>(this,AttributeMenuControllerClass,TEXT("AttributeMenuController"));
+		if (ASC.IsValid())
+		{
+			AttributeMenuController->InitAttributesBindings(ASC.Get());
+		}
+	}
+	return AttributeMenuController;
+}
+
+UTSA_AttributeMenu* ATSA_HUD::GetAttributeMenu()
+{
+	if (!AttributeMenu)
+	{
+		AttributeMenu = CreateWidget<UTSA_AttributeMenu>(GetWorld(), AttributeMenuClass);
+		AttributeMenu->AddToViewport(5);
+		AttributeMenu->SetVisibility(ESlateVisibility::Collapsed);
+		AttributeMenu->InitAttributeMenu(GetAttributeMenuController());
+	}
+	return AttributeMenu;
+}
+
+void ATSA_HUD::ToggleAttributeMenu()
+{
+	if (!bAttributeMenuOpen)
+	{
+		GetAttributeMenu()->SetVisibility(ESlateVisibility::Visible);
+		bAttributeMenuOpen = true;
+	}
+	else
+	{
+		GetAttributeMenu()->SetVisibility(ESlateVisibility::Collapsed);
+		bAttributeMenuOpen = false;
 	}
 }
 

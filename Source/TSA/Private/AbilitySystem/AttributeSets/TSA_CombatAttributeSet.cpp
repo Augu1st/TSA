@@ -10,7 +10,6 @@ UTSA_CombatAttributeSet::UTSA_CombatAttributeSet()
 	InitCritDamage(125.f);
 	InitCritRate(0.f);
 	
-	InitDodgeRate(0.f);
 	InitResist_Sturdy(0.f);
 	InitResist_Toughness(0.f);
 	InitResist_Stable(0.f);
@@ -26,7 +25,6 @@ void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, CritRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, CritDamage, COND_None, REPNOTIFY_Always);
 	
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, DodgeRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Sturdy, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Toughness, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Stable, COND_None, REPNOTIFY_Always);
@@ -43,11 +41,6 @@ void UTSA_CombatAttributeSet::OnRep_CritRate(const FGameplayAttributeData& OldCr
 void UTSA_CombatAttributeSet::OnRep_CritDamage(const FGameplayAttributeData& OldCritDamage)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, CritDamage, OldCritDamage);
-}
-
-void UTSA_CombatAttributeSet::OnRep_DodgeRate(const FGameplayAttributeData& OldDodgeRate)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, DodgeRate, OldDodgeRate);
 }
 
 void UTSA_CombatAttributeSet::OnRep_Resist_Sturdy(const FGameplayAttributeData& OldResist_Sturdy)

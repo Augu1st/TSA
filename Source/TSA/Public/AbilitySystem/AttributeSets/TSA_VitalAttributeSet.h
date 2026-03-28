@@ -31,11 +31,18 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, MaxHealth)
 	
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_HealthNetFlow)
+	FGameplayAttributeData HealthNetFlow;// 生命值变化率
+	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, HealthNetFlow)
+	
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth);
 	
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
+	
+	UFUNCTION()
+	 void OnRep_HealthNetFlow(const FGameplayAttributeData& OldHealthNetFlow);
 	/* End of Health */
 	
 	/* Armor */
@@ -47,11 +54,18 @@ public:
 	FGameplayAttributeData MaxArmor;
 	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, MaxArmor)
 	
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_ArmorNetFlow)
+	FGameplayAttributeData ArmorNetFlow;// 护甲变化率
+	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, ArmorNetFlow)
+	
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor);
 	
 	UFUNCTION()
 	void OnRep_MaxArmor(const FGameplayAttributeData& OldMaxArmor);
+	
+	UFUNCTION()
+	void OnRep_ArmorNetFlow(const FGameplayAttributeData& OldArmorNetFlow);
 	/* End of Armor */
 };
 

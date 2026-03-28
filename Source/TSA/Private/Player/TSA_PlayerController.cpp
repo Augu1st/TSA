@@ -118,6 +118,8 @@ void ATSA_PlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(PrimaryInteractAction,ETriggerEvent::Started,this,&ATSA_PlayerController::PrimaryInteract);
 	
 	EnhancedInputComponent->BindAction(InventoryAction,ETriggerEvent::Started,this,&ATSA_PlayerController::InteractWithInventory);
+	
+	EnhancedInputComponent->BindAction(AttributeMenuAction,ETriggerEvent::Started,this,&ATSA_PlayerController::ToggleAttributeMenu);
 }
 
 void ATSA_PlayerController::Server_PickUpItem_Implementation(UTSA_ItemComponent* ItemComponent)
@@ -181,6 +183,14 @@ void ATSA_PlayerController::InitializeInventoryMenu()
 	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void ATSA_PlayerController::ToggleAttributeMenu()
+{
+	if (GetHUD())
+	{	
+		HUD = Cast<ATSA_HUD>(GetHUD());
+		HUD->ToggleAttributeMenu();
+	}
+}
 
 
 void ATSA_PlayerController::Server_DropItem_Implementation(UTSA_InventoryComponent* SourceComp, int32 SlotIndex)
@@ -242,7 +252,7 @@ void ATSA_PlayerController::ConstructInventory()
 {
 	if (!IsValid(InventoryMenuClass)) return;
 	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
-	InventoryMenu->AddToViewport();
+	InventoryMenu->AddToViewport(0);
 	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 }
 

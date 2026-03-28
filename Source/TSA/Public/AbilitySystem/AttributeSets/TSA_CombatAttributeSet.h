@@ -38,14 +38,6 @@ public:
 	void OnRep_CritDamage(const FGameplayAttributeData& OldCritDamage);
 	/* End of Critical */
 	
-	/* DodgeRate 闪避率 */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_DodgeRate)
-	FGameplayAttributeData DodgeRate;
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, DodgeRate)
-	
-	UFUNCTION()
-	void OnRep_DodgeRate(const FGameplayAttributeData& OldDodgeRate);
-	/* End of DodgeRate */
 	
 	/* Resist 抗性*/
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Sturdy)

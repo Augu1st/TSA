@@ -30,11 +30,18 @@ public:
 	FGameplayAttributeData MaxEnergy;//最大能量
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MaxEnergy)
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_EnergyNetFlow)
+	FGameplayAttributeData EnergyNetFlow;//能量变化率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, EnergyNetFlow)
+	
 	UFUNCTION()
 	void OnRep_Energy(const FGameplayAttributeData& OldEnergy);	
 	
 	UFUNCTION()
 	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy);
+	
+	UFUNCTION()
+	void OnRep_EnergyNetFlow(const FGameplayAttributeData& OldEnergyNetFlow);
 	/* End of Energy */
 	
 	/* Matter 物质 */
@@ -46,11 +53,18 @@ public:
 	FGameplayAttributeData MaxMatter;//最大物质量
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MaxMatter)
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MatterNetFlow)
+	FGameplayAttributeData MatterNetFlow;//物质变化率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MatterNetFlow)
+	
 	UFUNCTION()
 	void OnRep_Matter(const FGameplayAttributeData& OldMatter);
 			
 	UFUNCTION()
 	void OnRep_MaxMatter(const FGameplayAttributeData& OldMaxMatter);
+	
+	UFUNCTION()
+	void OnRep_MatterNetFlow(const FGameplayAttributeData& OldMatterNetFlow);
 	/* End of Matter */
 	
 	/* Conversion 转换 */

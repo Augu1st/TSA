@@ -45,7 +45,9 @@ protected:
 	void InitCameraAndArm();
 	void InitInteractComponent();
 	void InitInventoryComponents();
+	// GAS
 	void InitAbilitySystemInfo();
+	void InitAttributes();
 	
 	/* Camera */
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
