@@ -25,7 +25,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	
 	void InitializeGrid(UTSA_InventoryComponent* InventoryComponent);
-	void ConstructGrid(int32 Rows, int32 Columns);
+	void ConstructGrid(int32 Rows, int32 Columns,int MaxCapacity);
 	void ClearGrid();
 	
 	UFUNCTION()
@@ -41,7 +41,7 @@ public:
 
 	UTSA_InventoryComponent* GetOwnerComponent() const;
 
-private:
+protected:
 	void SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
 	
 	TWeakObjectPtr<UTSA_InventoryComponent> OwnerComponent;

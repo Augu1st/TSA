@@ -66,24 +66,6 @@ struct FTSA_ItemDataRow : public FTableRowBase
 	FGameplayTagContainer BondTags;
 };
 
-USTRUCT(BlueprintType)
-struct FTSA_ItemTrait // 特质
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText TraitName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText TraitDescription;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> TraitEffect; 
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayAbility> TraitAbility; 
-};
-
 // 羁绊的单个阶级
 USTRUCT(BlueprintType)
 struct FTSA_BondTier

@@ -98,7 +98,7 @@ void ATSA_HUD::ToggleAttributeMenu()
 {
 	if (!bAttributeMenuOpen)
 	{
-		GetAttributeMenu()->SetVisibility(ESlateVisibility::Visible);
+		GetAttributeMenu()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		bAttributeMenuOpen = true;
 	}
 	else

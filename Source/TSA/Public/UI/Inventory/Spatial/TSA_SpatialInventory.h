@@ -28,4 +28,19 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTSA_InventoryGrid> Grid_Container;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Weapon;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Armor;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Module;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Converter;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Printer;
 };

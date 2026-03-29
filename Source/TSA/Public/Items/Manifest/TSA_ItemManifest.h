@@ -2,9 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "StructUtils/InstancedStruct.h"
-#include "Items/DataAssets/TSA_EquipmentDataAsset.h"
-#include "Items/DataAssets/TSA_PropDataAsset.h"
-#include "Items/DataAssets/TSA_CollectionDataAsset.h"
 #include "Items/DataTable/TSA_ItemData.h"
 
 #include "TSA_ItemManifest.generated.h"

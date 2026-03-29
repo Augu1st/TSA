@@ -46,6 +46,7 @@ public:
 	bool MatchItemCategory(const FGameplayTag& ItemCategory) const;
 	int32 GetRows() const { return Rows; }
 	int32 GetColumns() const { return Columns; }
+	int32 GetMaxCapacity() const { return MaxCapacity; }
 	
 	UFUNCTION(Client, Reliable)
 	void Client_ShowMessage(const FText& Message);

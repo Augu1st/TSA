@@ -310,7 +310,7 @@ void UTSA_InventoryComponent::DropItemIntoWorld(int32 SlotIndex)
 bool UTSA_InventoryComponent::MatchItemCategory(const FGameplayTag& ItemCategory) const
 {
 	if (InventoryCategory.MatchesTag(ItemTags::Category::General)) return true;
-	return InventoryCategory.MatchesTag(ItemCategory);
+	return ItemCategory.MatchesTag(InventoryCategory);
 }
 
 

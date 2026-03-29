@@ -174,12 +174,22 @@ void ATSA_PlayerController::InitializeInventoryMenu()
 	UTSA_InventoryComponent* EquipmentInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
 	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Prop);
 	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::General);
+	UTSA_InventoryComponent* WeaponInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Weapon);
+	UTSA_InventoryComponent* ArmorInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
+	UTSA_InventoryComponent* ModuleInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Module);
+	UTSA_InventoryComponent* ConverterInventoryComp = AgentCharacter->GetConverterInventory();
+	UTSA_InventoryComponent* PrinterInventoryComp = AgentCharacter->GetPrinterInventory();
 	
 	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
 	
 	SpatialInventory->Grid_Equipment->InitializeGrid(EquipmentInventoryComp);
 	SpatialInventory->Grid_Prop->InitializeGrid(PropInventoryComp);
 	SpatialInventory->Grid_General->InitializeGrid(GeneralInventoryComp);
+	SpatialInventory->Grid_Weapon->InitializeGrid(WeaponInventoryComp);
+	SpatialInventory->Grid_Armor->InitializeGrid(ArmorInventoryComp);
+	SpatialInventory->Grid_Module->InitializeGrid(ModuleInventoryComp);
+	SpatialInventory->Grid_Converter->InitializeGrid(ConverterInventoryComp);
+	SpatialInventory->Grid_Printer->InitializeGrid(PrinterInventoryComp);
 	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
 }
 

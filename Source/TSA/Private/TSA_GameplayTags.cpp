@@ -9,6 +9,7 @@ namespace ItemTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment,"Item.Category.Equipment","装备根标签");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Weapon,"Item.Category.Equipment.Weapon","装备-武器");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Armor,"Item.Category.Equipment.Armor","装备-防具");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Module,"Item.Category.Equipment.Module","装备-模块");
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Prop,"Item.Category.Prop","道具根标签");
 		
@@ -52,7 +53,7 @@ namespace AttributeTags
 	// Combat Attributes
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritRate,"Attribute.Combat.CritRate","暴击率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritDamage,"Attribute.Combat.CritDamage","暴击伤害");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(DodgeRate,"Attribute.Combat.DodgeRate","闪避率");
+	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(DodgeRate,"Attribute.Combat.DodgeRate","闪避率");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Sturdy,"Attribute.Combat.Resist.Sturdy","坚固");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Toughness,"Attribute.Combat.Resist.Toughness","韧性");

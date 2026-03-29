@@ -35,7 +35,7 @@ void UTSA_InventoryGrid::InitializeGrid(UTSA_InventoryComponent* InventoryCompon
 	OwnerComponent->OnItemChanged.AddDynamic(this, &UTSA_InventoryGrid::UpdateItemAtIndex);
 	OwnerComponent->OnItemRemoved.AddDynamic(this, &UTSA_InventoryGrid::RemoveItemFromIndex);
 	
-	ConstructGrid(OwnerComponent->GetRows(), OwnerComponent->GetColumns());
+	ConstructGrid(OwnerComponent->GetRows(), OwnerComponent->GetColumns(), OwnerComponent->GetMaxCapacity());
 	
 	const TArray<FTSA_ItemSearchResult>& ItemEntries = OwnerComponent->GetAllItemEntries();
 	for (int32 i = 0; i < ItemEntries.Num(); ++i)
@@ -44,7 +44,7 @@ void UTSA_InventoryGrid::InitializeGrid(UTSA_InventoryComponent* InventoryCompon
 	}
 }
 
-void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
+void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns,int MaxCapacity)
 {
 	GridSlots.Reserve(Rows * Columns);
 
@@ -52,9 +52,10 @@ void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 	{
 		for (int32 i = 0; i < Columns; ++i)
 		{
+			//TODO:增加单个槽的更新
+			if (GridSlots.Num()>=MaxCapacity)break;
 			UTSA_GridSlot* GridSlot = CreateWidget<UTSA_GridSlot>(this, GridSlotClass);
 			CanvasPanel->AddChild(GridSlot);
-			UWidget* a = this;
 			GridSlot->InitSlot(this,UTSA_WidgetUtils::GetIndexFromPosition(FIntPoint(i,j), Columns));
 			
 			FIntPoint SlotPos = FIntPoint(i, j) * SlotSize;
@@ -63,6 +64,7 @@ void UTSA_InventoryGrid::ConstructGrid(int32 Rows, int32 Columns)
 			GridCPS->SetPosition(SlotPos + FIntPoint(SlotPadding));
 			GridSlots.Add(GridSlot);
 		}
+		if (GridSlots.Num()>=MaxCapacity)break;
 	}
 }
 

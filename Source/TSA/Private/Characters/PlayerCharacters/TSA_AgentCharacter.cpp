@@ -4,7 +4,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "TSA/TSA.h"
-#include "TSA_GameplayTags.h"
+#include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,8 +12,9 @@
 #include "Items/TSA_InventoryItem.h"
 #include "Items/Component/TSA_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Player/TSA_PlayerController.h"
 #include "Player/TSA_PlayerState.h"
+#include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
+#include "Systems/EquipmentSystem/TSA_ResourceManagerComp.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "Utils/TSA_ItemUtils.h"
 
@@ -28,6 +29,8 @@ ATSA_AgentCharacter::ATSA_AgentCharacter()
 	InitCameraAndArm();
 	InitInteractComponent();
 	InitInventoryComponents();
+	EquipmentManagerComp = CreateDefaultSubobject<UTSA_EquipmentManagerComp>(TEXT("EquipmentManager"));
+	ResourceManagerComp = CreateDefaultSubobject<UTSA_ResourceManagerComp>(TEXT("ResourceManager"));
 }
 
 void ATSA_AgentCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -36,6 +39,13 @@ void ATSA_AgentCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME(ATSA_AgentCharacter, EquipmentInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, PropInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, GeneralInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, WeaponInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, ArmorInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, ModuleInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, ConverterInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, PrinterInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, EquipmentManagerComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, ResourceManagerComp);
 }
 
 void ATSA_AgentCharacter::PossessedBy(AController* NewController)
@@ -106,15 +116,47 @@ UTSA_InventoryComponent* ATSA_AgentCharacter::GetInventoryCompByCategory(const F
 	for (UTSA_InventoryComponent* InventoryComp : InventoryComponents)
 	{
 		if (!IsValid(InventoryComp)) continue;
-		if (InventoryComp->MatchItemCategory(ItemCategory)) return InventoryComp;
+		if (ItemCategory.MatchesTag(InventoryComp->GetInventoryCategory())) return InventoryComp;
 	}
 	UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentMap does not contain %s"), *GetName(), *ItemCategory.ToString());
+	return nullptr;
+}
+
+UTSA_InventoryComponent* ATSA_AgentCharacter::GetEquipmentInventoryByCategory(const FGameplayTag& ItemCategory)
+{
+	for (UTSA_InventoryComponent* InventoryComp : InventoryComponents)
+	{
+		if (!IsValid(InventoryComp)) continue;
+		if (ItemCategory.MatchesTagExact(InventoryComp->GetInventoryCategory())) return InventoryComp;
+	}
+	UE_LOG(LogTSA, Warning, TEXT("%s : InventoryComponentMap does not contain %s"), *GetName(), *ItemCategory.ToString());
+	return nullptr;
+}
+
+UTSA_AbilitySystemComponent* ATSA_AgentCharacter::GetASC() const
+{
+	if (ATSA_PlayerState* PS = GetPlayerState<ATSA_PlayerState>())
+	{
+		return Cast<UTSA_AbilitySystemComponent>(PS->GetAbilitySystemComponent());
+	}
 	return nullptr;
 }
 
 void ATSA_AgentCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ATSA_AgentCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	InventoryComponents.Empty();
+	InventoryComponents.Add(EquipmentInventoryComp);
+	InventoryComponents.Add(PropInventoryComp);
+	InventoryComponents.Add(GeneralInventoryComp);
+	InventoryComponents.Add(WeaponInventoryComp);
+	InventoryComponents.Add(ArmorInventoryComp);
+	InventoryComponents.Add(ModuleInventoryComp);
 }
 
 void ATSA_AgentCharacter::UpdateLookAtMouse()
@@ -178,16 +220,20 @@ void ATSA_AgentCharacter::InitInventoryComponents()
 {
 	if (!EquipmentInventoryComp)
 		EquipmentInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("EquipmentInventory");
-	
 	if (!PropInventoryComp)
 		PropInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("PropInventory");
-	
 	if (!GeneralInventoryComp)
 		GeneralInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("GeneralInventory");
-	
-	InventoryComponents.Add(EquipmentInventoryComp);
-	InventoryComponents.Add(PropInventoryComp);
-	InventoryComponents.Add(GeneralInventoryComp);
+	if (!WeaponInventoryComp)
+		WeaponInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("WeaponInventory");
+	if (!ArmorInventoryComp)
+		ArmorInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("ArmorInventory");
+	if (!ModuleInventoryComp)
+		ModuleInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("ModuleInventory");
+	if (!ConverterInventoryComp)
+		ConverterInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("ConverterInventory");
+	if (!PrinterInventoryComp)
+		PrinterInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("PrinterInventory");
 }
 
 void ATSA_AgentCharacter::InitAbilitySystemInfo()

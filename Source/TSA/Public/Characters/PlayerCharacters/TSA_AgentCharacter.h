@@ -7,6 +7,9 @@
 #include "Characters/TSA_CharacterBase.h"
 #include "TSA_AgentCharacter.generated.h"
 
+class UTSA_ResourceManagerComp;
+class UTSA_AbilitySystemComponent;
+class UTSA_EquipmentManagerComp;
 class UTSA_InventoryItem;
 struct FInstancedStruct;
 class UTSA_ItemComponent;
@@ -35,11 +38,15 @@ public:
 	void PickUpItemInInventory(UTSA_InventoryItem* Item);
 	
 	UTSA_InventoryComponent* GetInventoryCompByCategory(const FGameplayTag& ItemCategory);
+	UTSA_InventoryComponent* GetEquipmentInventoryByCategory(const FGameplayTag& ItemCategory);
+	UTSA_InventoryComponent* GetConverterInventory() const { return ConverterInventoryComp; }
+	UTSA_InventoryComponent* GetPrinterInventory() const {return PrinterInventoryComp; }
 	
-
+	UTSA_AbilitySystemComponent* GetASC() const;
+	
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void PostInitializeComponents() override;
 	void UpdateLookAtMouse();
 	void InitMovement();
 	void InitCameraAndArm();
@@ -78,4 +85,29 @@ protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Inventory")
 	TObjectPtr<UTSA_InventoryComponent> GeneralInventoryComp;
 	/* End of Inventory Components */
+	
+	/* Equipment Components */
+	UPROPERTY(VisibleAnywhere,Replicated, Category = "TSA|Equipment")
+	TObjectPtr<UTSA_EquipmentManagerComp> EquipmentManagerComp;
+	
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Equipment")
+	TObjectPtr<UTSA_InventoryComponent> WeaponInventoryComp;
+	
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Equipment")
+	TObjectPtr<UTSA_InventoryComponent> ArmorInventoryComp;
+	
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Equipment")
+	TObjectPtr<UTSA_InventoryComponent> ModuleInventoryComp;	
+	/* End of Equipment Components */
+	
+	/* Resource Components */
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Resource")
+	TObjectPtr<UTSA_ResourceManagerComp> ResourceManagerComp;
+	
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Resource")
+	TObjectPtr<UTSA_InventoryComponent> ConverterInventoryComp;
+	
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Resource")
+	TObjectPtr<UTSA_InventoryComponent> PrinterInventoryComp;
+	/* Resource Components */
 };
