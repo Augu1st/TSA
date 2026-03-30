@@ -6,6 +6,7 @@
 #include "UI/Inventory/TSA_InventoryBase.h"
 #include "TSA_SpatialInventory.generated.h"
 
+struct FGameplayTag;
 class UCanvasPanel;
 class UTSA_InventoryGrid;
 /**
@@ -17,6 +18,9 @@ class TSA_API UTSA_SpatialInventory : public UTSA_InventoryBase
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateAttribute(FGameplayTag AttributeTag, float NewValue);
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTSA_InventoryGrid> Grid_Equipment;
 	

@@ -42,6 +42,9 @@ private:
 	FInstancedStruct CreateManifestByTag(const FDataTableRowHandle& Handle, int32 Quantity, const FGameplayTag& CategoryTag) const;
 	
 	/* Inventory Component */
+	UPROPERTY(EditAnywhere,Category="TSA|Inventory")
+	FText ContainerName;
+	
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
 	TSoftObjectPtr<UTSA_RandomItemPool> ItemPool;
 	

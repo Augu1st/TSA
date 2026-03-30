@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "TSA_PlayerController.generated.h"
 
+struct FOnAttributeChangeData;
+class UTSA_AbilitySystemComponent;
+class UTSA_AttributeData;
 class UTSA_InventoryBase;
 class UTSA_ItemComponent;
 class UTSA_InteractComponent;
@@ -15,6 +19,7 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAttributeChanged, FGameplayTag, AttributeTag, float, NewValue);
 
 UCLASS()
 class TSA_API ATSA_PlayerController : public APlayerController
@@ -40,6 +45,10 @@ public:
 	
 	void ToggleAttributeMenu();
 	void ToggleInventory();
+	
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChanged OnAttributeChanged;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -62,6 +71,10 @@ protected:
 	UTSA_InventoryBase* GetInventoryMenu();
 	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
 	void ClearContainerGrid();
+	
+	void InitAttributesBindings(UTSA_AbilitySystemComponent* ASC);
+	void BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC);
+	void AttributeChanged(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag);
 	// End of Inventory Menu
 	
 private:
@@ -88,6 +101,9 @@ private:
 	TWeakObjectPtr<UTSA_InventoryComponent> CurrentContainer;
 	
 	/* Inventory Widget */
+	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
+	TObjectPtr<UTSA_AttributeData> AttributeData;
+	
 	bool bInventoryMenuOpen = false;
 	
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")

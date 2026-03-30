@@ -22,7 +22,7 @@ public:
 	void BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC);
 	
 	FOnAttributeMenuChanged OnAttributeMenuChanged;
-	
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTSA_AttributeData> AttributeMenuData;

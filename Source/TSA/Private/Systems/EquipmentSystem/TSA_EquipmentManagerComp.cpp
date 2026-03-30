@@ -60,12 +60,12 @@ void UTSA_EquipmentManagerComp::OnArmorEquipped(UTSA_InventoryItem* Item, int32 
 {
 	FTSA_ItemDataRow DataRow;
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
-	if (DataRow.ItemDataAsset)
+	if (UTSA_ItemDataAsset* ItemDataAsset = DataRow.ItemDataAsset.LoadSynchronous())
 	{
 		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 		if (!IsValid(Agent)) return;
 		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
-		if (const UTSA_AttributeFragment* AttributeFragment = DataRow.ItemDataAsset->FindFragment<UTSA_AttributeFragment>())
+		if (const UTSA_AttributeFragment* AttributeFragment = ItemDataAsset->FindFragment<UTSA_AttributeFragment>())
 		{
 			FGameplayEffectSpecHandle EffectSpec =ASC->MakeOutgoingSpec(AttributeFragment->AttributeGEClass,1,ASC->MakeEffectContext());
 			ActiveGEHandles.Add(Item, ASC->ApplyGameplayEffectSpecToSelf(*EffectSpec.Data.Get()));

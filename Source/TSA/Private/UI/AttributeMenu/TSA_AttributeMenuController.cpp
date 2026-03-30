@@ -15,7 +15,6 @@ void UTSA_AttributeMenuController::InitAttributesBindings(UTSA_AbilitySystemComp
 			&UTSA_AttributeMenuController::AttributeMenuChanged,
 			Info.AttributeTag
 		);
-		float Value =ASC->GetNumericAttribute(Info.Attribute);
 	}
 }
 

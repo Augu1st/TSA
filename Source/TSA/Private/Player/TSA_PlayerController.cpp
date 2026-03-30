@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "TSA_GameplayTags.h"
+#include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "UI/HUD/TSA_HUD.h"
 #include "GameFramework/Character.h"
@@ -17,7 +18,7 @@
 
 ATSA_PlayerController::ATSA_PlayerController()
 {
-	ConstructInventory();
+	
 }
 
 void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory)
@@ -73,6 +74,13 @@ void ATSA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	SetShowMouseCursor(true);
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	OnAttributeChanged.AddDynamic( SpatialInventory, &UTSA_SpatialInventory::UpdateAttribute);	
+	
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
+	BroadcastInitAttributes(AgentCharacter->GetASC());
+
 }
 
 void ATSA_PlayerController::OnPossess(APawn* InPawn)
@@ -83,6 +91,13 @@ void ATSA_PlayerController::OnPossess(APawn* InPawn)
 		HUD = Cast<ATSA_HUD>(GetHUD()); 
 	}
 	if (HUD) HUD->InitAttributesBindings();
+	
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(InPawn);
+	if (AgentCharacter)
+	{
+
+		InitAttributesBindings(AgentCharacter->GetASC());
+	}
 }
 
 void ATSA_PlayerController::OnRep_PlayerState()
@@ -94,6 +109,11 @@ void ATSA_PlayerController::OnRep_PlayerState()
 		HUD = Cast<ATSA_HUD>(GetHUD()); 
 	}
 	HUD->InitAttributesBindings();
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
+	if (AgentCharacter)
+	{
+		InitAttributesBindings(AgentCharacter->GetASC());
+	}
 }
 
 void ATSA_PlayerController::SetupInputComponent()
@@ -258,11 +278,41 @@ void ATSA_PlayerController::ClearContainerGrid()
 	CurrentContainer = nullptr;
 }
 
+void ATSA_PlayerController::InitAttributesBindings(UTSA_AbilitySystemComponent* ASC)
+{
+	if (!ASC) return;
+	
+	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
+	{
+		ASC->GetGameplayAttributeValueChangeDelegate(Info.Attribute).AddUObject(
+			this,
+			&ATSA_PlayerController::AttributeChanged,
+			Info.AttributeTag
+		);
+	}
+}
+
+void ATSA_PlayerController::BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC)
+{
+	if (!ASC) return;
+	
+	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
+	{
+		float Value =ASC->GetNumericAttribute(Info.Attribute);
+		OnAttributeChanged.Broadcast(Info.AttributeTag, Value);
+	}
+}
+
+void ATSA_PlayerController::AttributeChanged(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag)
+{
+	OnAttributeChanged.Broadcast(AttributeTag, Data.NewValue);
+}
+
 void ATSA_PlayerController::ConstructInventory()
 {
 	if (!IsValid(InventoryMenuClass)) return;
 	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
-	InventoryMenu->AddToViewport(0);
+	InventoryMenu->AddToViewport(1);
 	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 }
 

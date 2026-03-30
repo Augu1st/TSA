@@ -40,6 +40,8 @@ public:
 	void SetSlottedItemImage(UTSA_InventoryItem* Item, UTSA_SlottedItem* SlottedItem);
 
 	UTSA_InventoryComponent* GetOwnerComponent() const;
+	
+	void SetGridName(const FText& InGridName) { GridName = InGridName; };
 
 protected:
 	void SetupSlottedItem(UTSA_InventoryItem* Item, int32 SlotIndex, UTSA_SlottedItem* SlottedItem);
@@ -48,6 +50,9 @@ protected:
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "TSA|Inventory|Grid")
+	FText GridName;
 	
 	/* Grid Slots */
 	UPROPERTY(EditAnywhere, Category = "TSA|Inventory|Grid")
