@@ -3,6 +3,7 @@
 
 #include "Utils/TSA_CommonLibrary.h"
 
+#include "Game/States/TSA_TestGameState.h"
 #include "Interaction/TSA_InteractableActor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
@@ -62,5 +63,11 @@ FVector UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(const AActor* PlayerAc
 	}
 	
 	return Start - FVector(0, 0, PlayerActor->GetSimpleCollisionHalfHeight());
+}
+
+float UTSA_CommonLibrary::GetConversionRatio(UObject* WorldContextObject)
+{
+	ATSA_TestGameState* GameState = Cast<ATSA_TestGameState>(WorldContextObject->GetWorld()->GetGameState());
+	return GameState ? GameState->WorldMassEnergyRatio : 10.0f;
 }
 

@@ -76,7 +76,7 @@ namespace AttributeTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConversionRate);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConversionSpeed);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PrintSpeed);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PrintPower);
+	//UE_DECLARE_GAMEPLAY_TAG_EXTERN(PrintPower);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PropUseSpeed);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PropUseEfficiency);
 	// End of Resource Attributes
@@ -91,6 +91,25 @@ namespace CombatTags
 	}
 }
 
+namespace StateTags
+{
+	// Converter State
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Idle);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Working);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Locked);
+}
+
+namespace EventTags
+{
+	namespace Converter
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ItemToMatter);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ItemToEnergy);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(MatterToEnergy);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyToMatter);		
+	}
+
+}
 
 
 namespace ItemBonds

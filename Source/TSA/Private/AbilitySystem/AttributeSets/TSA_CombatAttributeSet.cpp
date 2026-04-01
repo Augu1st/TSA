@@ -7,7 +7,7 @@
 
 UTSA_CombatAttributeSet::UTSA_CombatAttributeSet()
 {
-	InitCritDamage(125.f);
+	InitCritDamage(1.25f);
 	InitCritRate(0.f);
 	
 	InitResist_Sturdy(0.f);

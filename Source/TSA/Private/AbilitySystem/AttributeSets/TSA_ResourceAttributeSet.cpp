@@ -14,13 +14,12 @@ UTSA_ResourceAttributeSet::UTSA_ResourceAttributeSet()
 	InitMaxMatter(100.f);
 	InitMatterNetFlow(0.f);
 	
-	InitConversionRate(50.f);
-	InitConversionSpeed(100.f);
+	InitConversionRate(0.5f);
+	InitConversionSpeed(1.f);
 	InitPrintSpeed(100.f);
-	InitPrintPower(1.f);
 	
-	InitPropUseSpeed(100.f);
-	InitPropUseEfficiency(100.f);
+	InitPropUseSpeed(1.f);
+	InitPropUseEfficiency(1.f);
 }
 
 void UTSA_ResourceAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -37,7 +36,6 @@ void UTSA_ResourceAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, ConversionSpeed, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, PrintSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, PrintPower, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, PropUseSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_ResourceAttributeSet, PropUseEfficiency, COND_None, REPNOTIFY_Always);
@@ -86,11 +84,6 @@ void UTSA_ResourceAttributeSet::OnRep_ConversionSpeed(const FGameplayAttributeDa
 void UTSA_ResourceAttributeSet::OnRep_PrintSpeed(const FGameplayAttributeData& OldPrintSpeed)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, PrintSpeed, OldPrintSpeed);
-}
-
-void UTSA_ResourceAttributeSet::OnRep_PrintPower(const FGameplayAttributeData& OldPrintPower)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_ResourceAttributeSet, PrintPower, OldPrintPower);
 }
 
 void UTSA_ResourceAttributeSet::OnRep_PropUseSpeed(const FGameplayAttributeData& OldPropUseSpeed)

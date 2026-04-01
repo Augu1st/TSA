@@ -21,4 +21,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "TSA|Utils")
 	static FVector GetRandomLocationAtPlayerFoot(const AActor* PlayerActor, float TraceDistance, float Radius);
+	
+	UFUNCTION(BlueprintCallable, Category = "TSA|Utils")
+	static float GetConversionRatio(UObject* WorldContextObject);
 };

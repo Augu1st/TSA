@@ -74,6 +74,7 @@ protected:
 	
 	void InitAttributesBindings(UTSA_AbilitySystemComponent* ASC);
 	void BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC);
+	
 	void AttributeChanged(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag);
 	// End of Inventory Menu
 	

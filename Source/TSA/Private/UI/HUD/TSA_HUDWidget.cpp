@@ -6,7 +6,6 @@
 #include "TSA_GameplayTags.h"
 #include "TSA/TSA.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
-#include "Systems/InventorySystem/Utils/TSA_InventoryStatics.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 
 void UTSA_HUDWidget::NativeConstruct()

@@ -74,13 +74,6 @@ void ATSA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	SetShowMouseCursor(true);
-	
-	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
-	OnAttributeChanged.AddDynamic( SpatialInventory, &UTSA_SpatialInventory::UpdateAttribute);	
-	
-	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
-	BroadcastInitAttributes(AgentCharacter->GetASC());
-
 }
 
 void ATSA_PlayerController::OnPossess(APawn* InPawn)
@@ -95,8 +88,8 @@ void ATSA_PlayerController::OnPossess(APawn* InPawn)
 	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(InPawn);
 	if (AgentCharacter)
 	{
-
 		InitAttributesBindings(AgentCharacter->GetASC());
+		BroadcastInitAttributes(AgentCharacter->GetASC());
 	}
 }
 
@@ -113,6 +106,7 @@ void ATSA_PlayerController::OnRep_PlayerState()
 	if (AgentCharacter)
 	{
 		InitAttributesBindings(AgentCharacter->GetASC());
+		BroadcastInitAttributes(AgentCharacter->GetASC());
 	}
 }
 
@@ -138,7 +132,6 @@ void ATSA_PlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(PrimaryInteractAction,ETriggerEvent::Started,this,&ATSA_PlayerController::PrimaryInteract);
 	
 	EnhancedInputComponent->BindAction(InventoryAction,ETriggerEvent::Started,this,&ATSA_PlayerController::InteractWithInventory);
-	
 	EnhancedInputComponent->BindAction(AttributeMenuAction,ETriggerEvent::Started,this,&ATSA_PlayerController::ToggleAttributeMenu);
 }
 
@@ -250,6 +243,11 @@ void ATSA_PlayerController::ToggleInventory()
 		if (!bInitInventoryMenu)
 		{
 			InitializeInventoryMenu();
+			ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
+			if (AgentCharacter && AgentCharacter->GetASC())
+			{
+				BroadcastInitAttributes(AgentCharacter->GetASC());
+			}
 			bInitInventoryMenu = true;
 		}
 		if (bInventoryMenuOpen)
@@ -314,6 +312,12 @@ void ATSA_PlayerController::ConstructInventory()
 	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
 	InventoryMenu->AddToViewport(1);
 	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(InventoryMenu);
+	if (SpatialInventory)
+	{
+		OnAttributeChanged.AddDynamic(SpatialInventory, &UTSA_SpatialInventory::UpdateAttribute);
+	}
 }
 
 void ATSA_PlayerController::Move(const FInputActionValue& Value)

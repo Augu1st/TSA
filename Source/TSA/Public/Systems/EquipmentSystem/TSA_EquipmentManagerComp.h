@@ -11,6 +11,8 @@
 
 class UTSA_InventoryItem;
 
+
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TSA_API UTSA_EquipmentManagerComp : public UActorComponent
 {

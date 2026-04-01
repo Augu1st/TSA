@@ -44,6 +44,8 @@ public:
 	
 	UTSA_AbilitySystemComponent* GetASC() const;
 	
+	UFUNCTION(BlueprintCallable)
+	void TryConvertItem();
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;

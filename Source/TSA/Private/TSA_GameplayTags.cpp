@@ -74,7 +74,7 @@ namespace AttributeTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ConversionRate,"Attribute.Resource.ConversionRate","转换率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ConversionSpeed,"Attribute.Resource.ConversionSpeed","转换速度");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PrintSpeed,"Attribute.Resource.PrintSpeed","打印速度");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PrintPower,"Attribute.Resource.PrintPower","打印功率");
+	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(PrintPower,"Attribute.Resource.PrintPower","打印功率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseSpeed,"Attribute.Resource.PropUseSpeed","道具使用速度");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseEfficiency,"Attribute.Resource.PropUseEfficiency","道具使用效率");
 	// End of Resource Attributes
@@ -87,3 +87,25 @@ namespace CombatTags
  		
  	}
  }
+
+namespace StateTags
+{
+	// Converter States
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Idle,"State.Converter.Idle","等待转换");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Converting,"State.Converter.Working","正在转换");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Locked,"State.Converter.Locked","锁定");
+	
+}
+
+namespace EventTags
+{
+	// Converter Event
+	namespace Converter
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemToMatter,"Event.Converter.ItemToMatter","物品转换成物质");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemToEnergy,"Event.Converter.ItemToEnergy","物品转换成能量");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(MatterToEnergy,"Event.Converter.MatterToEnergy","物质转换成能量");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyToMatter,"Event.Converter.EnergyToMatter","能量转换成物质");		
+	}
+
+}

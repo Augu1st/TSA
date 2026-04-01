@@ -88,15 +88,8 @@ public:
 	FGameplayAttributeData PrintSpeed;//打印速度
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, PrintSpeed)
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_PrintPower)
-	FGameplayAttributeData PrintPower;//打印功率
-	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, PrintPower)
-	
 	UFUNCTION()
 	void OnRep_PrintSpeed(const FGameplayAttributeData& OldPrintSpeed);
-	
-	UFUNCTION()
-	void OnRep_PrintPower(const FGameplayAttributeData& OldPrintPower);
 	/* End of Print */
 	
 	/* Prop 道具 */

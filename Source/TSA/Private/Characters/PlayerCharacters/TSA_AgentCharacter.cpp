@@ -142,6 +142,14 @@ UTSA_AbilitySystemComponent* ATSA_AgentCharacter::GetASC() const
 	return nullptr;
 }
 
+void ATSA_AgentCharacter::TryConvertItem()
+{
+	if (ResourceManagerComp)
+	{
+		ResourceManagerComp->TryToConvert();
+	}
+}
+
 void ATSA_AgentCharacter::BeginPlay()
 {
 	Super::BeginPlay();

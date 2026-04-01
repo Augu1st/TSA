@@ -45,6 +45,8 @@ private:
 	
 	TWeakObjectPtr<UTSA_AbilitySystemComponent> ASC;
 	
+	
+	
 	// Attribute Menu
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UTSA_AttributeMenuController> AttributeMenuControllerClass;
