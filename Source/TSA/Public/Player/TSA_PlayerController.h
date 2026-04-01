@@ -19,8 +19,6 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAttributeChanged, FGameplayTag, AttributeTag, float, NewValue);
-
 UCLASS()
 class TSA_API ATSA_PlayerController : public APlayerController
 {
@@ -29,8 +27,10 @@ class TSA_API ATSA_PlayerController : public APlayerController
 public:
 	ATSA_PlayerController();
 	
+	void InteractWithInventory();
 	void OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory);
-
+	void ToggleAttributeMenu();
+	
 	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
 	void RequestPickUpItem(UTSA_ItemComponent* ItemComponent);
 	
@@ -42,13 +42,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "TSA|Inventory")
 	void RequestDropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
-	
-	void ToggleAttributeMenu();
-	void ToggleInventory();
-	
-	UPROPERTY(BlueprintAssignable)
-	FAttributeChanged OnAttributeChanged;
-	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -67,23 +61,10 @@ protected:
 	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_DropItem(UTSA_InventoryComponent* SourceComp, int32 SlotIndex);
-	
-	UTSA_InventoryBase* GetInventoryMenu();
-	bool IsInventoryOpen() const { return bInventoryMenuOpen;}
-	void ClearContainerGrid();
-	
-	void InitAttributesBindings(UTSA_AbilitySystemComponent* ASC);
-	void BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC);
-	
-	void AttributeChanged(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag);
 	// End of Inventory Menu
 	
 private:
-	void ConstructInventory();
-	
 	void PrimaryInteract();
-	void InteractWithInventory();
-	void InitializeInventoryMenu();
 	
 	void Move(const FInputActionValue& Value);
 	void Jump();
@@ -97,26 +78,6 @@ private:
 	TObjectPtr<ATSA_HUD> HUD;
 	/* */
 	
-	/* 当前已打开的容器 */
-	UPROPERTY()
-	TWeakObjectPtr<UTSA_InventoryComponent> CurrentContainer;
-	
-	/* Inventory Widget */
-	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
-	TObjectPtr<UTSA_AttributeData> AttributeData;
-	
-	bool bInventoryMenuOpen = false;
-	
-	UPROPERTY(EditAnywhere, Category = "TSA|Inventory")
-	TSubclassOf<UTSA_InventoryBase> InventoryMenuClass;
-	
-	UPROPERTY()
-	TObjectPtr<UTSA_InventoryBase> InventoryMenu;
-	
-	bool bInitInventoryMenu = false;
-	/* End of Inventory Widget */
-	
-	
 	/* Input Context and Actions */
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Input")
 	TArray<TObjectPtr<UInputMappingContext>> InputMappingContexts;
@@ -127,7 +88,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Input")
 	TObjectPtr<UInputAction> JumpAction;
 	/* */
-	
 	
 	/* Interaction Action */
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Interact")

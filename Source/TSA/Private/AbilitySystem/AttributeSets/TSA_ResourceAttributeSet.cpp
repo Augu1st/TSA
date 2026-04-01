@@ -7,10 +7,10 @@
 
 UTSA_ResourceAttributeSet::UTSA_ResourceAttributeSet()
 {
-	InitEnergy(200.f);
+	InitEnergy(100.f);
 	InitMaxEnergy(200.f);
 	InitEnergyNetFlow(0.f);
-	InitMatter(10.f);
+	InitMatter(50.f);
 	InitMaxMatter(100.f);
 	InitMatterNetFlow(0.f);
 	

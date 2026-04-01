@@ -3,12 +3,17 @@
 
 #include "UI/HUD/TSA_HUD.h"
 
+#include "TSA_GameplayTags.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
+#include "Player/TSA_PlayerController.h"
 #include "Player/TSA_PlayerState.h"
 #include "UI/AttributeMenu/TSA_AttributeMenuController.h"
 #include "UI/AttributeMenu/TSA_AttributeMenu.h"
 #include "UI/HUD/TSA_HUDWidget.h"
+#include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
+#include "UI/Inventory/Spatial/TSA_SpatialInventory.h"
+#include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 
 
 ATSA_HUD::ATSA_HUD()
@@ -69,6 +74,47 @@ void ATSA_HUD::BroadcastInitAttributes()
 	}
 }
 
+void ATSA_HUD::ToggleInventory()
+{
+	if (GetInventoryMenu())
+	{
+		if (!bInitInventoryMenu)
+		{
+			InitializeInventoryMenu();
+			ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetOwningPlayerController()->GetPawn());
+			if (AgentCharacter && AgentCharacter->GetASC())
+			{
+				BroadcastInitAttributes();
+			}
+			bInitInventoryMenu = true;
+		}
+		if (bInventoryMenuOpen)
+		{
+			InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+			ClearContainerGrid();
+		}
+		else
+		{
+			InventoryMenu->SetVisibility(ESlateVisibility::Visible);
+		}
+		bInventoryMenuOpen = !bInventoryMenuOpen;
+	}
+}
+
+void ATSA_HUD::OpenContainer(UTSA_InventoryComponent* ContainerInventory)
+{
+	if (CurrentContainer.IsValid()) return;
+	
+	CurrentContainer = ContainerInventory;
+	
+	ATSA_PlayerController* PC = Cast<ATSA_PlayerController>(GetOwningPlayerController());
+	if (PC)PC->InteractWithInventory();
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	SpatialInventory->Grid_Container->InitializeGrid(ContainerInventory);
+	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Visible);	
+}
+
 UTSA_AttributeMenuController* ATSA_HUD::GetAttributeMenuController()
 {
 	if (!AttributeMenuController)
@@ -111,4 +157,64 @@ void ATSA_HUD::ToggleAttributeMenu()
 void ATSA_HUD::OnAnyAttributeChange(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag)
 {
 	OnAttributeChanged.Broadcast(AttributeTag, Data.NewValue);
+}
+
+UTSA_InventoryBase* ATSA_HUD::GetInventoryMenu()
+{
+	if (!IsValid(InventoryMenu))
+	{
+		ConstructInventory();
+	}
+	return InventoryMenu;
+}
+
+void ATSA_HUD::ConstructInventory()
+{
+	if (!IsValid(InventoryMenuClass)) return;
+	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
+	InventoryMenu->AddToViewport(1);
+	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(InventoryMenu);
+	if (SpatialInventory)
+	{
+		OnAttributeChanged.AddDynamic(SpatialInventory, &UTSA_SpatialInventory::UpdateAttribute);
+	}
+}
+
+void ATSA_HUD::InitializeInventoryMenu()
+{
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetOwningPlayerController()->GetPawn());
+	UTSA_InventoryComponent* EquipmentInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
+	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Prop);
+	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::General);
+	UTSA_InventoryComponent* WeaponInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Weapon);
+	UTSA_InventoryComponent* ArmorInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
+	UTSA_InventoryComponent* ModuleInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Module);
+	UTSA_InventoryComponent* ConverterInventoryComp = AgentCharacter->GetConverterInventory();
+	UTSA_InventoryComponent* PrinterInventoryComp = AgentCharacter->GetPrinterInventory();
+	
+	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
+	
+	SpatialInventory->Grid_Equipment->InitializeGrid(EquipmentInventoryComp);
+	SpatialInventory->Grid_Prop->InitializeGrid(PropInventoryComp);
+	SpatialInventory->Grid_General->InitializeGrid(GeneralInventoryComp);
+	SpatialInventory->Grid_Weapon->InitializeGrid(WeaponInventoryComp);
+	SpatialInventory->Grid_Armor->InitializeGrid(ArmorInventoryComp);
+	SpatialInventory->Grid_Module->InitializeGrid(ModuleInventoryComp);
+	SpatialInventory->Grid_Converter->InitializeGrid(ConverterInventoryComp);
+	SpatialInventory->Grid_Printer->InitializeGrid(PrinterInventoryComp);
+	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void ATSA_HUD::ClearContainerGrid()
+{
+	if (!CurrentContainer.IsValid()) return;
+	
+	if (UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu()))
+	{
+		SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
+		SpatialInventory->Grid_Container->ClearGrid();
+	}
+	CurrentContainer = nullptr;
 }

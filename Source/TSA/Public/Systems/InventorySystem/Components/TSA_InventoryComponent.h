@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
 	bool TryAddItem(FInstancedStruct& ItemManifestStruct);
 	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "TSA|Inventory")
+	int32 ConsumeItemStack(int32 SlotIndex,int32 AmountToConsume);
 	
 	void AddNewItem(FInstancedStruct& ItemManifestStruct, int32 SlotIndex);
 	void AddStacksToItem(FInstancedStruct& ItemManifestStruct, int32 AddToStack, int32 SlotIndex);

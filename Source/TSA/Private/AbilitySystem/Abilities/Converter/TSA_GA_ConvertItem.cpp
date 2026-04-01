@@ -7,6 +7,7 @@
 #include "AbilitySystem/Abilities/TSA_AbilityTags.h"
 #include "AbilitySystem/AttributeSets/TSA_ResourceAttributeSet.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Utils/TSA_CommonLibrary.h"
 
 void UTSA_GA_ConvertItem::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -19,8 +20,6 @@ void UTSA_GA_ConvertItem::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
-	
-	// 通知资源管理器将物品数量-1 !!!
 	
 	FGameplayTag TriggerTag = TriggerEventData->EventTag;
 	
@@ -62,6 +61,12 @@ void UTSA_GA_ConvertItem::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
+	}
+	
+	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetAvatarActorFromActorInfo());
+	if (Agent)
+	{
+		Agent->ConsumeItemInConverter();
 	}
 	
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);

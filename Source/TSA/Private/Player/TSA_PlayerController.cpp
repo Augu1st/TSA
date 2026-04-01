@@ -23,16 +23,8 @@ ATSA_PlayerController::ATSA_PlayerController()
 
 void ATSA_PlayerController::OpenContainerInventory(UTSA_InventoryComponent* ContainerInventory)
 {
-	// 如果已经打开了容器，直接返回
-	if (CurrentContainer.IsValid()) return;
-	
-	CurrentContainer = ContainerInventory;
-	
-	InteractWithInventory();
-	
-	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
-	SpatialInventory->Grid_Container->InitializeGrid(ContainerInventory);
-	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Visible);
+	HUD = Cast<ATSA_HUD>(GetHUD());
+	HUD-> OpenContainer(ContainerInventory);
 }
 
 void ATSA_PlayerController::RequestPickUpItem(UTSA_ItemComponent* ItemComponent)
@@ -84,13 +76,6 @@ void ATSA_PlayerController::OnPossess(APawn* InPawn)
 		HUD = Cast<ATSA_HUD>(GetHUD()); 
 	}
 	if (HUD) HUD->InitAttributesBindings();
-	
-	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(InPawn);
-	if (AgentCharacter)
-	{
-		InitAttributesBindings(AgentCharacter->GetASC());
-		BroadcastInitAttributes(AgentCharacter->GetASC());
-	}
 }
 
 void ATSA_PlayerController::OnRep_PlayerState()
@@ -102,12 +87,6 @@ void ATSA_PlayerController::OnRep_PlayerState()
 		HUD = Cast<ATSA_HUD>(GetHUD()); 
 	}
 	HUD->InitAttributesBindings();
-	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
-	if (AgentCharacter)
-	{
-		InitAttributesBindings(AgentCharacter->GetASC());
-		BroadcastInitAttributes(AgentCharacter->GetASC());
-	}
 }
 
 void ATSA_PlayerController::SetupInputComponent()
@@ -181,31 +160,6 @@ bool ATSA_PlayerController::Server_MoveItem_Validate(UTSA_InventoryComponent* So
 	return SourceComp != nullptr && TargetComp != nullptr && SourceIndex >= 0 && TargetIndex >= 0;
 }
 
-void ATSA_PlayerController::InitializeInventoryMenu()
-{
-	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetCharacter());
-	UTSA_InventoryComponent* EquipmentInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Equipment);
-	UTSA_InventoryComponent* PropInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::Prop);
-	UTSA_InventoryComponent* GeneralInventoryComp = AgentCharacter->GetInventoryCompByCategory(ItemTags::Category::General);
-	UTSA_InventoryComponent* WeaponInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Weapon);
-	UTSA_InventoryComponent* ArmorInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
-	UTSA_InventoryComponent* ModuleInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Module);
-	UTSA_InventoryComponent* ConverterInventoryComp = AgentCharacter->GetConverterInventory();
-	UTSA_InventoryComponent* PrinterInventoryComp = AgentCharacter->GetPrinterInventory();
-	
-	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
-	
-	SpatialInventory->Grid_Equipment->InitializeGrid(EquipmentInventoryComp);
-	SpatialInventory->Grid_Prop->InitializeGrid(PropInventoryComp);
-	SpatialInventory->Grid_General->InitializeGrid(GeneralInventoryComp);
-	SpatialInventory->Grid_Weapon->InitializeGrid(WeaponInventoryComp);
-	SpatialInventory->Grid_Armor->InitializeGrid(ArmorInventoryComp);
-	SpatialInventory->Grid_Module->InitializeGrid(ModuleInventoryComp);
-	SpatialInventory->Grid_Converter->InitializeGrid(ConverterInventoryComp);
-	SpatialInventory->Grid_Printer->InitializeGrid(PrinterInventoryComp);
-	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
-}
-
 void ATSA_PlayerController::ToggleAttributeMenu()
 {
 	if (GetHUD())
@@ -225,99 +179,6 @@ void ATSA_PlayerController::Server_DropItem_Implementation(UTSA_InventoryCompone
 bool ATSA_PlayerController::Server_DropItem_Validate(UTSA_InventoryComponent* SourceComp, int32 SlotIndex)
 {
 	return SourceComp != nullptr && SlotIndex >= 0;
-}
-
-UTSA_InventoryBase* ATSA_PlayerController::GetInventoryMenu()
-{
-	if (!IsValid(InventoryMenu))
-	{
-		ConstructInventory();
-	}
-	return InventoryMenu;
-}
-
-void ATSA_PlayerController::ToggleInventory()
-{
-	if (GetInventoryMenu())
-	{
-		if (!bInitInventoryMenu)
-		{
-			InitializeInventoryMenu();
-			ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
-			if (AgentCharacter && AgentCharacter->GetASC())
-			{
-				BroadcastInitAttributes(AgentCharacter->GetASC());
-			}
-			bInitInventoryMenu = true;
-		}
-		if (bInventoryMenuOpen)
-		{
-			InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
-			ClearContainerGrid();
-		}
-		else
-		{
-			InventoryMenu->SetVisibility(ESlateVisibility::Visible);
-		}
-		bInventoryMenuOpen = !bInventoryMenuOpen;
-	}
-}
-
-
-void ATSA_PlayerController::ClearContainerGrid()
-{
-	if (!CurrentContainer.IsValid()) return;
-	
-	if (UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu()))
-	{
-		SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
-		SpatialInventory->Grid_Container->ClearGrid();
-	}
-	CurrentContainer = nullptr;
-}
-
-void ATSA_PlayerController::InitAttributesBindings(UTSA_AbilitySystemComponent* ASC)
-{
-	if (!ASC) return;
-	
-	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
-	{
-		ASC->GetGameplayAttributeValueChangeDelegate(Info.Attribute).AddUObject(
-			this,
-			&ATSA_PlayerController::AttributeChanged,
-			Info.AttributeTag
-		);
-	}
-}
-
-void ATSA_PlayerController::BroadcastInitAttributes(UTSA_AbilitySystemComponent* ASC)
-{
-	if (!ASC) return;
-	
-	for (const FTSA_AttributeInfo& Info : AttributeData->AttributeInformation)
-	{
-		float Value =ASC->GetNumericAttribute(Info.Attribute);
-		OnAttributeChanged.Broadcast(Info.AttributeTag, Value);
-	}
-}
-
-void ATSA_PlayerController::AttributeChanged(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag)
-{
-	OnAttributeChanged.Broadcast(AttributeTag, Data.NewValue);
-}
-
-void ATSA_PlayerController::ConstructInventory()
-{
-	if (!IsValid(InventoryMenuClass)) return;
-	InventoryMenu = CreateWidget<UTSA_SpatialInventory>(GetWorld(),InventoryMenuClass);
-	InventoryMenu->AddToViewport(1);
-	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
-	
-	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(InventoryMenu);
-	if (SpatialInventory)
-	{
-		OnAttributeChanged.AddDynamic(SpatialInventory, &UTSA_SpatialInventory::UpdateAttribute);
-	}
 }
 
 void ATSA_PlayerController::Move(const FInputActionValue& Value)
@@ -367,8 +228,9 @@ void ATSA_PlayerController::PrimaryInteract()
 
 void ATSA_PlayerController::InteractWithInventory()
 {
-	ToggleInventory();
-	
+	if (!GetHUD())return;
+	HUD = Cast<ATSA_HUD>(GetHUD());
+	HUD->ToggleInventory();
 	// 获取交互组件
 	UTSA_InteractComponent* InteractComp = nullptr;
 	if (IsValid(GetCharacter()))
@@ -376,7 +238,7 @@ void ATSA_PlayerController::InteractWithInventory()
 		InteractComp = GetCharacter()->FindComponentByClass<UTSA_InteractComponent>();
 	}
 	
-	if (IsInventoryOpen())
+	if (HUD->IsInventoryOpen())
 	{
 		SetCursorInputMode();
 		if (IsValid(InteractComp)) InteractComp->SetInteractionEnabled(false);

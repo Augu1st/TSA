@@ -46,6 +46,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void TryConvertItem();
+	void ConsumeItemInConverter();
+	UFUNCTION(BlueprintCallable)
+	UTSA_ResourceManagerComp* GetResourceManagerComp(){ return ResourceManagerComp; }
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;

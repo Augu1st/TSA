@@ -58,6 +58,33 @@ bool UTSA_InventoryComponent::TryAddItem(FInstancedStruct& ItemManifestStruct)
 	return true;
 }
 
+int32 UTSA_InventoryComponent::ConsumeItemStack(int32 SlotIndex, int32 AmountToConsume)
+{
+	if (!GetOwner()->HasAuthority() || AmountToConsume <= 0) return 0;
+	
+	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
+	if (!Item) return 0;
+	
+	FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
+	
+	int32 ActualConsumed = FMath::Min(ItemManifest.StackCount,AmountToConsume);
+	ItemManifest.StackCount -= ActualConsumed;
+	
+	if (ItemManifest.StackCount <= 0)
+	{
+		RemoveItem(Item,SlotIndex);
+	}
+	else
+	{
+		InventoryList.MarkItemDirtyByPtr(Item);
+		if (GetOwner()->GetNetMode() != NM_DedicatedServer)
+		{
+			OnItemChanged.Broadcast(Item,SlotIndex);
+		}
+	}
+	return ActualConsumed;
+}
+
 void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,int32 SlotIndex)
 {
 	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;

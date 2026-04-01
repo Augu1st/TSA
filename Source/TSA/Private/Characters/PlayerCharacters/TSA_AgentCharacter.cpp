@@ -150,6 +150,14 @@ void ATSA_AgentCharacter::TryConvertItem()
 	}
 }
 
+void ATSA_AgentCharacter::ConsumeItemInConverter()
+{
+	if (ConverterInventoryComp)
+	{
+		ConverterInventoryComp->ConsumeItemStack(0,1);
+	}
+}
+
 void ATSA_AgentCharacter::BeginPlay()
 {
 	Super::BeginPlay();

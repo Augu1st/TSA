@@ -29,8 +29,6 @@ void UTSA_ResourceManagerComp::TryToConvert()
 	{
 		ConvertItem(Agent);
 	}
-	
-	//TODO 转换失败通知
 }
 
 void UTSA_ResourceManagerComp::PutModeToEnergy()
@@ -109,11 +107,15 @@ void UTSA_ResourceManagerComp::ConvertItem(ATSA_AgentCharacter* Agent)
 void UTSA_ResourceManagerComp::OnConverterAddItem(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
 	if (SlotIndex == 0)ItemInConverter = Item;
+	if (ConverterMode == EventTags::Converter::EnergyToMatter) ConverterMode = EventTags::Converter::ItemToMatter;
+	if (ConverterMode == EventTags::Converter::MatterToEnergy) ConverterMode = EventTags::Converter::ItemToEnergy;
 }
 
 void UTSA_ResourceManagerComp::OnConverterRemoveItem(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
 	if (SlotIndex == 0)ItemInConverter = nullptr;
+	if (ConverterMode == EventTags::Converter::ItemToMatter) ConverterMode = EventTags::Converter::EnergyToMatter;
+	if (ConverterMode == EventTags::Converter::ItemToEnergy) ConverterMode = EventTags::Converter::MatterToEnergy;
 }
 
 void UTSA_ResourceManagerComp::OnPrinterAddItem(UTSA_InventoryItem* Item, int32 SlotIndex)

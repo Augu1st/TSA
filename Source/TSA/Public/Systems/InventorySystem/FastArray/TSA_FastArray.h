@@ -75,7 +75,7 @@ public:
 	void RemoveEntry(UTSA_InventoryItem* Item);
 	const TArray<FTSA_InventoryEntry>& GetEntries() const { return Entries; }
 	
-	void MarkItemDirtyByPtr(UTSA_InventoryItem*  Item);
+	void MarkItemDirtyByPtr(UTSA_InventoryItem* Item);
 	
 	// 获取指定格子里的物品
 	UTSA_InventoryItem* GetItemAtSlot(int32 SlotIndex) const;
