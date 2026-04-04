@@ -16,6 +16,7 @@
 UTSA_EquipmentManagerComp::UTSA_EquipmentManagerComp()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 	
 }
 

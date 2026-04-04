@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Types/TSA_ItemTypes.h"
-#include "GameplayEffect.h"
 #include "TSA_ItemData.generated.h"
 
 class UTSA_ItemDataAsset;
@@ -64,46 +63,4 @@ struct FTSA_ItemDataRow : public FTableRowBase
 	// 羁绊
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bond")
 	FGameplayTagContainer BondTags;
-};
-
-// 羁绊的单个阶级
-USTRUCT(BlueprintType)
-struct FTSA_BondTier
-{
-	GENERATED_BODY()
-
-	// 触发此阶级需要的收集品数量
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 RequiredCount = 2;
-
-	// 达到该数量时给予的 Buff
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> BondEffect;
-	
-	// 达到该数量时给予的 Ability
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayAbility> BondAbility;
-};
-
-// 羁绊表的一行 (Data Table 结构)
-USTRUCT(BlueprintType)
-struct FTSA_BondDataRow : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	// 羁绊名称
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText BondName;
-
-	// 标识这个羁绊的 Tag (用于和物品身上的 Tag 匹配)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag BondTag;
-	
-	// 羁绊图标
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UTexture2D> BondIcon = nullptr;
-
-	// 羁绊的阶级列表 (按 RequiredCount 从小到大排序)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<FTSA_BondTier> BondTiers;
 };

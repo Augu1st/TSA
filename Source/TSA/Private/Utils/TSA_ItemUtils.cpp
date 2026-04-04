@@ -3,8 +3,10 @@
 
 #include "Utils/TSA_ItemUtils.h"
 
+#include "Game/States/TSA_TestGameState.h"
 #include "Items/TSA_InventoryItem.h"
 #include "Items/Component/TSA_ItemComponent.h"
+#include "Items/DataAssets/TSA_ItemDataAsset.h"
 #include "Items/Manifest/TSA_ItemManifest.h"
 #include "Items/DataTable/TSA_ItemData.h" 
 
@@ -71,3 +73,25 @@ bool UTSA_ItemUtils::GetItemDataFromManifest(const FTSA_ItemManifestBase& Manife
 	}
 	return false;
 }
+
+bool UTSA_ItemUtils::CheckItemTypes(UTSA_InventoryItem* ItemA, UTSA_InventoryItem* ItemB)
+{
+	FTSA_ItemManifestBase ItemDataA = ItemA->GetItemManifest();
+	FTSA_ItemManifestBase ItemDataB = ItemB->GetItemManifest();
+	
+	return ItemDataA.ItemDataHandle.DataTable == ItemDataB.ItemDataHandle.DataTable && ItemDataA.ItemDataHandle.RowName == ItemDataB.ItemDataHandle.RowName;
+}
+
+bool UTSA_ItemUtils::GetBondDefinition(UObject* WorldContextObject, const FGameplayTag& BondTag,
+	FTSA_BondDefinition& OutBondDef)
+{
+	ATSA_TestGameState* GameState = Cast<ATSA_TestGameState>(WorldContextObject->GetWorld()->GetGameState());
+	if (!GameState) return false;
+	if (auto BondDef = GameState->GlobalBondDatabase->BondMap.Find(BondTag))
+	{
+		OutBondDef = *BondDef;
+		return true;
+	}
+	return false;
+}
+

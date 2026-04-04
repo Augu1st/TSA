@@ -13,6 +13,7 @@
 #include "Items/Component/TSA_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/TSA_PlayerState.h"
+#include "Systems/EquipmentSystem/TSA_BondManagerComp.h"
 #include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
 #include "Systems/EquipmentSystem/TSA_ResourceManagerComp.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
@@ -31,6 +32,7 @@ ATSA_AgentCharacter::ATSA_AgentCharacter()
 	InitInventoryComponents();
 	EquipmentManagerComp = CreateDefaultSubobject<UTSA_EquipmentManagerComp>(TEXT("EquipmentManager"));
 	ResourceManagerComp = CreateDefaultSubobject<UTSA_ResourceManagerComp>(TEXT("ResourceManager"));
+	BondManagerComp = CreateDefaultSubobject<UTSA_BondManagerComp>(TEXT("BondManager"));
 }
 
 void ATSA_AgentCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -39,6 +41,7 @@ void ATSA_AgentCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME(ATSA_AgentCharacter, EquipmentInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, PropInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, GeneralInventoryComp);
+	
 	DOREPLIFETIME(ATSA_AgentCharacter, WeaponInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, ArmorInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, ModuleInventoryComp);
@@ -46,6 +49,9 @@ void ATSA_AgentCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME(ATSA_AgentCharacter, PrinterInventoryComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, EquipmentManagerComp);
 	DOREPLIFETIME(ATSA_AgentCharacter, ResourceManagerComp);
+	
+	DOREPLIFETIME(ATSA_AgentCharacter, ConnectorInventoryComp);
+	DOREPLIFETIME(ATSA_AgentCharacter, BondManagerComp);
 }
 
 void ATSA_AgentCharacter::PossessedBy(AController* NewController)
@@ -250,6 +256,8 @@ void ATSA_AgentCharacter::InitInventoryComponents()
 		ConverterInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("ConverterInventory");
 	if (!PrinterInventoryComp)
 		PrinterInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("PrinterInventory");
+	if (!ConnectorInventoryComp)
+		ConnectorInventoryComp = CreateDefaultSubobject<UTSA_InventoryComponent>("BondInventory");
 }
 
 void ATSA_AgentCharacter::InitAbilitySystemInfo()

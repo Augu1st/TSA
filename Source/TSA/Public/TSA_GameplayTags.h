@@ -108,11 +108,4 @@ namespace EventTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(MatterToEnergy);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyToMatter);		
 	}
-
-}
-
-
-namespace ItemBonds
-{
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MartialSaint);
 }

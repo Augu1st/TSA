@@ -7,6 +7,7 @@
 #include "Characters/TSA_CharacterBase.h"
 #include "TSA_AgentCharacter.generated.h"
 
+class UTSA_BondManagerComp;
 class UTSA_ResourceManagerComp;
 class UTSA_AbilitySystemComponent;
 class UTSA_EquipmentManagerComp;
@@ -41,6 +42,7 @@ public:
 	UTSA_InventoryComponent* GetEquipmentInventoryByCategory(const FGameplayTag& ItemCategory);
 	UTSA_InventoryComponent* GetConverterInventory() const { return ConverterInventoryComp; }
 	UTSA_InventoryComponent* GetPrinterInventory() const {return PrinterInventoryComp; }
+	UTSA_InventoryComponent* GetConnectorInventory() const { return ConnectorInventoryComp; }
 	
 	UTSA_AbilitySystemComponent* GetASC() const;
 	
@@ -49,6 +51,9 @@ public:
 	void ConsumeItemInConverter();
 	UFUNCTION(BlueprintCallable)
 	UTSA_ResourceManagerComp* GetResourceManagerComp(){ return ResourceManagerComp; }
+	
+	UFUNCTION(BlueprintCallable)
+	UTSA_BondManagerComp* GetBondManagerComp() { return  BondManagerComp; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -116,4 +121,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "TSA|Resource")
 	TObjectPtr<UTSA_InventoryComponent> PrinterInventoryComp;
 	/* Resource Components */
+	
+	/* Bonds Components */
+	UPROPERTY(VisibleAnywhere,Replicated,Category = "TSA|Bond")
+	TObjectPtr<UTSA_BondManagerComp> BondManagerComp;
+	
+	UPROPERTY(VisibleAnywhere,Replicated,Category = "TSA|Bond")
+	TObjectPtr<UTSA_InventoryComponent> ConnectorInventoryComp;
+	/* Bonds Components */
 };

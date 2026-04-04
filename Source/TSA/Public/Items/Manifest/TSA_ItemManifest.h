@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "StructUtils/InstancedStruct.h"
 #include "Items/DataTable/TSA_ItemData.h"
-
 #include "TSA_ItemManifest.generated.h"
 
 class UTSA_InventoryItem;

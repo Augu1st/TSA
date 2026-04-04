@@ -42,4 +42,10 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
 	static bool GetItemDataFromManifest(const FTSA_ItemManifestBase& Manifest, FTSA_ItemDataRow& OutItemData);
+	
+	UFUNCTION(BlueprintPure, Category = "TSA|Item")
+	static bool CheckItemTypes(UTSA_InventoryItem* ItemA, UTSA_InventoryItem* ItemB);
+	
+	UFUNCTION(BlueprintPure, Category = "TSA|Bond")
+	static bool GetBondDefinition(UObject* WorldContextObject, const FGameplayTag& BondTag, FTSA_BondDefinition& OutBondDef);
 };

@@ -6,6 +6,7 @@
 #include "GameFramework/GameState.h"
 #include "TSA_TestGameState.generated.h"
 
+class UTSA_BondDatabase;
 /**
  * 
  */
@@ -20,4 +21,7 @@ public:
 	
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "TSA|WorldRules")
 	float WorldMassEnergyRatio = 10.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bonds")
+	TObjectPtr<UTSA_BondDatabase> GlobalBondDatabase;
 };

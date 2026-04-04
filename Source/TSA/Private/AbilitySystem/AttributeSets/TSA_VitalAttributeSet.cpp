@@ -29,6 +29,19 @@ void UTSA_VitalAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_VitalAttributeSet, ArmorNetFlow, COND_None, REPNOTIFY_Always);
 }
 
+void UTSA_VitalAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+	if (Attribute == GetArmorAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxArmor());
+	}
+}
+
 void UTSA_VitalAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_VitalAttributeSet, Health, OldHealth);

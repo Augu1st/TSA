@@ -238,7 +238,6 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 		// 1. 检查目标组件是否允许放入这个物品 (类型过滤，比如武器栏不能放药水)
 		FTSA_SlotAvailabilityResult TargetResult = TargetComp->HasRoomForItem(PayloadManifest);
 		
-		// 注意：这里的 TargetResult.TotalRoomToFill 其实代表了目标组件能接纳这个物品的总容量
 		if (TargetResult.TotalRoomToFill > 0)
 		{
 			// 2. 目标组件同意接收！直接在目标指定的格子里生成物品
@@ -254,9 +253,7 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 	}
 	else
 	{
-		// ----------------------------------------
 		// 情况 B：目标格子已经有东西了 (堆叠或交换)
-		// ----------------------------------------
 		
 		// 提取目标物品的数据
 		FInstancedStruct TargetManifest = TargetItem->GetItemManifestStruct();
@@ -264,7 +261,7 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 		const FTSA_ItemManifestBase& TargetBase = TargetManifest.Get<FTSA_ItemManifestBase>();
 
 		// 1. 尝试堆叠 (同种物品，且都是可堆叠的)
-		if (PayloadBase.ItemDataHandle == TargetBase.ItemDataHandle /* 这里假设你有判断物品ID是否相同的逻辑 */)
+		if (PayloadBase.ItemDataHandle == TargetBase.ItemDataHandle)
 		{
 			FTSA_ItemDataRow TargetDataRow;
 			if (!UTSA_ItemUtils::GetItemDataFromManifest(TargetBase, TargetDataRow)) return;
@@ -315,7 +312,7 @@ void UTSA_InventoryComponent::DropItemIntoWorld(int32 SlotIndex)
 	FVector SpawnLocation = UTSA_CommonLibrary::GetRandomLocationAtPlayerFoot(OwningActor,300.f,100.f);
 	FRotator SpawnRotation = OwningActor->GetActorRotation();
 
-	// 4. 在 3D 世界中生成掉落物 Actor
+	// 生成掉落物 Actor
 	if (ItemActorClass)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -329,7 +326,7 @@ void UTSA_InventoryComponent::DropItemIntoWorld(int32 SlotIndex)
 		UE_LOG(LogTemp, Log, TEXT("Dropped Item: %s"), *ItemToDrop->GetName());
 	}
 
-	// 6. 从背包里彻底删除该物品！
+	// 删除该物品
 	RemoveItem(ItemToDrop, SlotIndex);
 }
 

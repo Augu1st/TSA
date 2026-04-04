@@ -4,7 +4,10 @@
 #include "UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h"
 
 #include "GameplayTagContainer.h"
-#include "Items/DataTable/TSA_ItemData.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
+#include "Game/States/TSA_TestGameState.h"
+#include "Items/DataAssets/TSA_ItemDataAsset.h"
+#include "Systems/EquipmentSystem/TSA_BondManagerComp.h"
 
 void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStruct& ItemManifestStruct)
 {
@@ -13,20 +16,17 @@ void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStr
 TArray<FText> UTSA_ItemDetailsWidget::FindBondNameByTags(const FGameplayTagContainer& ItemBonds)
 {
 	TArray<FText> BondNames;
-	if (!BondDataTable) return BondNames;
-
-	// 遍历这个物品拥有的所有羁绊 Tag
+	
+	// 获取羁绊数据库
+	ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetOwningPlayer()->GetPawn());
+	UTSA_BondManagerComp* BondManagerComp = AgentCharacter->GetBondManagerComp();
+	UTSA_BondDatabase* BondData = Cast<ATSA_TestGameState>(GetWorld()->GetGameState())->GlobalBondDatabase;
+	
 	for (const FGameplayTag& BondTag : ItemBonds)
 	{
-		// 🌟 核心魔法：直接把 Tag 转换成 FName 当作行名去查！
-		FName RowName = BondTag.GetTagName();
-		
-		FString ContextString(TEXT("Find Bond By Tag"));
-		FTSA_BondDataRow* BondRow = BondDataTable->FindRow<FTSA_BondDataRow>(RowName, ContextString);
-
-		if (BondRow)
+		if (BondData->BondMap.Contains(BondTag))
 		{
-			BondNames.Add(BondRow->BondName);
+			BondNames.Add(BondData->BondMap[BondTag].BondName);
 		}
 	}
 	if (BondNames.Num() < 3)

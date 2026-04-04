@@ -17,7 +17,8 @@
 
 UTSA_ResourceManagerComp::UTSA_ResourceManagerComp()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 }
 
 void UTSA_ResourceManagerComp::TryToConvert()

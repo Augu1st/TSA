@@ -8,6 +8,7 @@
 #include "AbilitySystem/DataAssets/TSA_AttributeData.h"
 #include "TSA_HUD.generated.h"
 
+class ATSA_AgentCharacter;
 class UTSA_InventoryComponent;
 class UTSA_InventoryBase;
 class UTSA_AbilitySystemComponent;
@@ -15,6 +16,8 @@ class UTSA_AttributeMenu;
 class UTSA_AttributeMenuController;
 struct FOnAttributeChangeData;
 class UTSA_HUDWidget;
+class UTSA_BondMenu;
+class UTSA_BondMenuController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttributeChanged, FGameplayTag, AttributeTag, float, NewValue);
 
@@ -38,7 +41,11 @@ public:
 	UTSA_AttributeMenuController* GetAttributeMenuController();
 	UTSA_AttributeMenu* GetAttributeMenu();
 	void ToggleAttributeMenu();
-	//
+	
+	// Bond Menu
+	UTSA_BondMenuController* GetBondMenuController();
+	UTSA_BondMenu* GetBondMenu();
+	
 	FOnAttributeChanged OnAttributeChanged;
 	
 protected:
@@ -57,13 +64,13 @@ private:
 	
 	TWeakObjectPtr<UTSA_AbilitySystemComponent> ASC;
 	
-	// HUD Widget
+	/* HUD Widget */
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|UI|HUD")
 	TSubclassOf<UTSA_HUDWidget> HUDWidgetClass;
 	
 	UPROPERTY()
 	TObjectPtr<UTSA_HUDWidget> HUDWidget;
-	// End of HUD Widget	
+	/* End of HUD Widget */
 	
 	/* Inventory Widget */
 	UPROPERTY()
@@ -80,7 +87,7 @@ private:
 	bool bInitInventoryMenu = false;
 	/* End of Inventory Widget */		
 	
-	// Attribute Menu
+	/* Attribute Menu */
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UTSA_AttributeMenuController> AttributeMenuControllerClass;
 	
@@ -94,5 +101,19 @@ private:
 	TObjectPtr<UTSA_AttributeMenu> AttributeMenu;
 	
 	bool bAttributeMenuOpen = false;
-	// End of Attribute Menu
+	/* End of Attribute Menu */
+	
+	/* BondMenu */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTSA_BondMenuController> BondMenuControllerClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_BondMenuController> BondMenuController;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTSA_BondMenu> BondMenuClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_BondMenu> BondMenu;
+	/* End of Bond Menu */
 };

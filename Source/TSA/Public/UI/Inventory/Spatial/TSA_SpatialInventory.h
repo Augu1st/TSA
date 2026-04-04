@@ -47,4 +47,7 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTSA_InventoryGrid> Grid_Printer;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTSA_InventoryGrid> Grid_Connector;
 };

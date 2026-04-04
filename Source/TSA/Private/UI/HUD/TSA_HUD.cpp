@@ -14,6 +14,8 @@
 #include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
 #include "UI/Inventory/Spatial/TSA_SpatialInventory.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "UI/BondMenu/TSA_BondMenuController.h"
+#include "UI/BondMenu/TSA_BondMenu.h"
 
 
 ATSA_HUD::ATSA_HUD()
@@ -32,7 +34,7 @@ void ATSA_HUD::CreateHUDWidget()
 	HUDWidget = CreateWidget<UTSA_HUDWidget>(GetWorld(),HUDWidgetClass);
 	if (IsValid(HUDWidget))
 	{
-		HUDWidget->AddToViewport();
+		HUDWidget->AddToViewport(0);
 	}
 	OnAttributeChanged.AddDynamic(HUDWidget,&UTSA_HUDWidget::UpdateAttribute);
 }
@@ -61,6 +63,7 @@ void ATSA_HUD::InitAttributesBindings()
 	BroadcastInitAttributes();
 	GetAttributeMenu();
 	GetAttributeMenuController()->BroadcastInitAttributes(ASC.Get());
+	GetBondMenu();
 }
 
 void ATSA_HUD::BroadcastInitAttributes()
@@ -154,6 +157,28 @@ void ATSA_HUD::ToggleAttributeMenu()
 	}
 }
 
+UTSA_BondMenuController* ATSA_HUD::GetBondMenuController()
+{
+	if (!BondMenuController)
+	{
+		BondMenuController = NewObject<UTSA_BondMenuController>(this,BondMenuControllerClass);
+		ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(GetOwningPlayerController()->GetPawn());
+		if (AgentCharacter)BondMenuController->InitBondDelegate(AgentCharacter);
+	}
+	return BondMenuController;
+}
+
+UTSA_BondMenu* ATSA_HUD::GetBondMenu()
+{
+	if (!BondMenu)
+	{
+		BondMenu = CreateWidget<UTSA_BondMenu>(GetWorld(), BondMenuClass);
+		BondMenu->InitBondMenu(GetBondMenuController());
+		BondMenu->AddToViewport(5);
+	}
+	return BondMenu;
+}
+
 void ATSA_HUD::OnAnyAttributeChange(const FOnAttributeChangeData& Data, FGameplayTag AttributeTag)
 {
 	OnAttributeChanged.Broadcast(AttributeTag, Data.NewValue);
@@ -193,6 +218,7 @@ void ATSA_HUD::InitializeInventoryMenu()
 	UTSA_InventoryComponent* ModuleInventoryComp = AgentCharacter->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Module);
 	UTSA_InventoryComponent* ConverterInventoryComp = AgentCharacter->GetConverterInventory();
 	UTSA_InventoryComponent* PrinterInventoryComp = AgentCharacter->GetPrinterInventory();
+	UTSA_InventoryComponent* ConnectorInventoryComp = AgentCharacter->GetConnectorInventory();
 	
 	UTSA_SpatialInventory* SpatialInventory = Cast<UTSA_SpatialInventory>(GetInventoryMenu());
 	
@@ -204,6 +230,7 @@ void ATSA_HUD::InitializeInventoryMenu()
 	SpatialInventory->Grid_Module->InitializeGrid(ModuleInventoryComp);
 	SpatialInventory->Grid_Converter->InitializeGrid(ConverterInventoryComp);
 	SpatialInventory->Grid_Printer->InitializeGrid(PrinterInventoryComp);
+	SpatialInventory->Grid_Connector->InitializeGrid(ConnectorInventoryComp);
 	SpatialInventory->Grid_Container->SetVisibility(ESlateVisibility::Collapsed);
 }
 

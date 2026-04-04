@@ -15,5 +15,7 @@ class TSA_API UTSA_AbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 	
 public:
+	
+	
 	void GiveAbilityWithClassesAndLevel(const TArray<TSubclassOf<UGameplayAbility>>& AbilityClasses, int32 Level);
 };
