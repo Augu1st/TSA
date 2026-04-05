@@ -15,6 +15,10 @@ class TSA_API UTSA_AbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 	
 public:
+	bool IsHealthFull() const;
+	bool IsArmorFull() const;
+	bool IsMatterFull() const;
+	bool IsEnergyFull() const;
 	
 	
 	void GiveAbilityWithClassesAndLevel(const TArray<TSubclassOf<UGameplayAbility>>& AbilityClasses, int32 Level);

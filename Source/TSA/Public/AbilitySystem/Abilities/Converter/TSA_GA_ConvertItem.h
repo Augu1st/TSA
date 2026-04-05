@@ -16,10 +16,18 @@ class TSA_API UTSA_GA_ConvertItem : public UTSA_GameplayAbility
 	
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	UPROPERTY(EditDefaultsOnly,Category="TSA|Converter")
 	TSubclassOf<UGameplayEffect> ProduceEnergy;
 	
 	UPROPERTY(EditDefaultsOnly,Category="TSA|Converter")
 	TSubclassOf<UGameplayEffect> ProduceMatter;
+	
+private:
+	UPROPERTY()
+	FActiveGameplayEffectHandle ConversionGEHandle;
+	
+	UFUNCTION()
+	void OnConversionEffectRemoved(const FGameplayEffectRemovalInfo& InGameplayEffectRemovalInfo);
 };

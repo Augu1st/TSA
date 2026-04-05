@@ -35,9 +35,13 @@ namespace AttributeTags
 	// Vital Attributes
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Health,"Attribute.Vital.Health","生命值");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxHealth,"Attribute.Vital.MaxHealth","最大生命值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthRegenRate,"Attribute.Vital.HealthRegenRate","生命值回复率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthConsumeRate,"Attribute.Vital.HealthConsumeRate","生命值消耗率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthNetFow,"Attribute.Vital.HealthNetFlow","生命值变化率")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Armor,"Attribute.Vital.Armor","护甲值");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxArmor,"Attribute.Vital.MaxArmor","最大护甲值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ArmorRegenRate,"Attribute.Vital.ArmorRegenRate","护甲回复率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ArmorConsumeRate,"Attribute.Vital.ArmorConsumeRate","护甲消耗率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ArmorNetFlow,"Attribute.Vital.ArmorNetFlow","护甲值变化率")
 	// End of Vital Attributes
 	
@@ -47,13 +51,20 @@ namespace AttributeTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Calculation,"Attribute.Core.Calculation","计算");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Observation,"Attribute.Core.Observation","观察");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Tenacity,"Attribute.Core.Tenacity","坚韧");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resonance,"Attribute.Core.Resonance","共鸣")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resonance,"Attribute.Core.Resonance","共感")
 	// End of Core Attributes
 	
 	// Combat Attributes
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritRate,"Attribute.Combat.CritRate","暴击率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritDamage,"Attribute.Combat.CritDamage","暴击伤害");
-	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(DodgeRate,"Attribute.Combat.DodgeRate","闪避率");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponCooldown,"Attribute.Combat.WeaponCooldown","武器冷却");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ModuleCooldown,"Attribute.Combat.ModuleCooldown","模块冷却");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseSpeed,"Attribute.Combat.PropUseSpeed","道具使用速度");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WalkSpeed,"Attribute.Combat.WalkSpeed","行走速度");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RunSpeed,"Attribute.Combat.RunSpeed","跑步速度");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SprintSpeed,"Attribute.Combat.SprintSpeed","冲刺速度");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Sturdy,"Attribute.Combat.Resist.Sturdy","坚固");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Toughness,"Attribute.Combat.Resist.Toughness","韧性");
@@ -66,17 +77,18 @@ namespace AttributeTags
 	// Resource Attributes
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Energy,"Attribute.Resource.Energy","能量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxEnergy,"Attribute.Resource.MaxEnergy","最大能量");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyRegenRate,"Attribute.Resource.EnergyRegenRate","能量回复率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyConsumeRate,"Attribute.Resource.EnergyConsumeRate","能量消耗率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyNetFlow,"Attribute.Resource.EnergyNetFlow","能量变化率")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Matter,"Attribute.Resource.Matter","物质量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxMatter,"Attribute.Resource.MaxMatter","最大物质量");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MatterRegenRate,"Attribute.Resource.MatterRegenRate","物质量回复率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MatterConsumeRate,"Attribute.Resource.MatterConsumeRate","物质量消耗率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MatterNetFlow,"Attribute.Resource.MatterNetFlow","物质变化率")
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ConversionRate,"Attribute.Resource.ConversionRate","转换率");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ConversionSpeed,"Attribute.Resource.ConversionSpeed","转换速度");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PrintSpeed,"Attribute.Resource.PrintSpeed","打印速度");
-	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(PrintPower,"Attribute.Resource.PrintPower","打印功率");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseSpeed,"Attribute.Resource.PropUseSpeed","道具使用速度");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseEfficiency,"Attribute.Resource.PropUseEfficiency","道具使用效率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SearchSpeed,"Attribute.Resource.SearchSpeed","搜索速度");
 	// End of Resource Attributes
 }
 

@@ -21,6 +21,9 @@ public:
 	UTSA_ResourceAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
 	/* Energy 能量 */
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Energy)
 	FGameplayAttributeData Energy;//能量
@@ -29,6 +32,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MaxEnergy)
 	FGameplayAttributeData MaxEnergy;//最大能量
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MaxEnergy)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_EnergyRegenRate)
+	FGameplayAttributeData EnergyRegenRate;//能量回复率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, EnergyRegenRate)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_EnergyConsumeRate)
+	FGameplayAttributeData EnergyConsumeRate;//能量消耗率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, EnergyConsumeRate)
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_EnergyNetFlow)
 	FGameplayAttributeData EnergyNetFlow;//能量变化率
@@ -39,6 +50,12 @@ public:
 	
 	UFUNCTION()
 	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy);
+	
+	UFUNCTION()
+	void OnRep_EnergyRegenRate(const FGameplayAttributeData& OldEnergyRegenRate);
+	
+	UFUNCTION()
+	void OnRep_EnergyConsumeRate(const FGameplayAttributeData& OldEnergyConsumeRate);
 	
 	UFUNCTION()
 	void OnRep_EnergyNetFlow(const FGameplayAttributeData& OldEnergyNetFlow);
@@ -53,6 +70,14 @@ public:
 	FGameplayAttributeData MaxMatter;//最大物质量
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MaxMatter)
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MatterRegenRate)
+	FGameplayAttributeData MatterRegenRate;// 物质回复率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MatterRegenRate)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MatterConsumeRate)
+	FGameplayAttributeData MatterConsumeRate;//物质消耗率
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MatterConsumeRate)
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MatterNetFlow)
 	FGameplayAttributeData MatterNetFlow;//物质变化率
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, MatterNetFlow)
@@ -64,6 +89,12 @@ public:
 	void OnRep_MaxMatter(const FGameplayAttributeData& OldMaxMatter);
 	
 	UFUNCTION()
+	void OnRep_MatterRegenRate(const FGameplayAttributeData& OldMatterRegenRate);
+	
+	UFUNCTION()
+	void OnRep_MatterConsumeRate(const FGameplayAttributeData& OldMatterConsumeRate);
+	
+	UFUNCTION()
 	void OnRep_MatterNetFlow(const FGameplayAttributeData& OldMatterNetFlow);
 	/* End of Matter */
 	
@@ -72,15 +103,8 @@ public:
 	FGameplayAttributeData ConversionRate;//转换率
 	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, ConversionRate)
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_ConversionSpeed)
-	FGameplayAttributeData ConversionSpeed;//转换速度
-	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, ConversionSpeed)
-	
 	UFUNCTION()
 	void OnRep_ConversionRate(const FGameplayAttributeData& OldConversionRate);
-	
-	UFUNCTION()
-	void OnRep_ConversionSpeed(const FGameplayAttributeData& OldConversionSpeed);
 	/* End of ConversionTime */
 	
 	/* Print 打印 */
@@ -92,20 +116,12 @@ public:
 	void OnRep_PrintSpeed(const FGameplayAttributeData& OldPrintSpeed);
 	/* End of Print */
 	
-	/* Prop 道具 */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_PropUseSpeed)
-	FGameplayAttributeData PropUseSpeed;//道具使用速度
-	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, PropUseSpeed)
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_PropUseEfficiency)
-	FGameplayAttributeData PropUseEfficiency;//道具使用效率
-	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, PropUseEfficiency)
+	/* Search 搜索 */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_SearchSpeed)
+	FGameplayAttributeData SearchSpeed;//搜索速度
+	ATTRIBUTE_ACCESSORS(UTSA_ResourceAttributeSet, SearchSpeed)
 	
 	UFUNCTION()
-	void OnRep_PropUseSpeed(const FGameplayAttributeData& OldPropUseSpeed);
-	
-	UFUNCTION()
-	void OnRep_PropUseEfficiency(const FGameplayAttributeData& OldPropUseEfficiency);
-	/* End of Prop */
-	
+	void OnRep_SearchSpeed(const FGameplayAttributeData& OldSearchSpeed);
+	/* End of Search */
 };

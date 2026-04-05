@@ -5,6 +5,7 @@
 
 #include "TSA_GameplayTags.h"
 #include "AbilitySystem/Abilities/TSA_AbilityTags.h"
+#include "AbilitySystem/AttributeSets/TSA_ResourceAttributeSet.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Game/States/TSA_TestGameState.h"
@@ -13,6 +14,8 @@
 #include "TSA/TSA.h"
 #include "Utils/TSA_ItemUtils.h"
 #include "GameplayAbilities/Public/AbilitySystemBlueprintLibrary.h"
+#include "Systems/MessageSystem/TSA_MessageUtils.h"
+#include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 
 
 UTSA_ResourceManagerComp::UTSA_ResourceManagerComp()
@@ -25,9 +28,24 @@ void UTSA_ResourceManagerComp::TryToConvert()
 {
 	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 	if (!Agent || !Agent->HasAuthority()) return;
+	UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 	
-	if (ConverterMode.MatchesTagExact(EventTags::Converter::ItemToMatter) || ConverterMode.MatchesTagExact(EventTags::Converter::ItemToEnergy))
+	if (ConverterMode.MatchesTagExact(EventTags::Converter::ItemToMatter))
 	{
+		if (ASC->IsMatterFull())
+		{
+			UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("物质已满，无法转换！")));
+			return;
+		}
+		ConvertItem(Agent);
+	}
+	else if (ConverterMode.MatchesTagExact(EventTags::Converter::ItemToEnergy))
+	{
+		if (ASC->IsEnergyFull())
+		{
+			UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("能量已满，无法转换！")));
+			return;
+		}
 		ConvertItem(Agent);
 	}
 }
