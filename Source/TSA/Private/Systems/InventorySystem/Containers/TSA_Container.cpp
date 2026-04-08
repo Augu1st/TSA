@@ -10,6 +10,7 @@
 #include "TSA_GameplayTags.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/TSA_PlayerController.h"
+#include "Utils/TSA_ItemUtils.h"
 
 
 ATSA_Container::ATSA_Container()
@@ -115,45 +116,14 @@ FTSA_ItemDataRow* ATSA_Container::GetItemStaticData(const FDataTableRowHandle& H
 
 FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& Handle, int32 Quantity,const FGameplayTag& CategoryTag) const
 {
-	// 情况A：是装备 (包括 Weapon, Armor 等所有子标签)
-	if (CategoryTag.MatchesTag(ItemTags::Category::Equipment))
-	{
-		FTSA_EquipmentManifest EquipManifest;
-		EquipManifest.ItemDataHandle = Handle;
-		EquipManifest.StackCount = Quantity;
-		
-		return FInstancedStruct::Make(EquipManifest);
-	}
-    
-	// 情况B：是道具
-	if (CategoryTag.MatchesTag(ItemTags::Category::Prop))
-	{
-		FTSA_PropManifest PropManifest;
-		PropManifest.ItemDataHandle = Handle;
-		PropManifest.StackCount = Quantity;
-        
-		return FInstancedStruct::Make(PropManifest);
-	}
-    
-	// 情况C：是收集品
-	if (CategoryTag.MatchesTag(ItemTags::Category::Collection))
-	{
-		FTSA_CollectionManifest CollectionManifest;
-		CollectionManifest.ItemDataHandle = Handle;
-		CollectionManifest.StackCount = Quantity;
-		// 可以在这里扩展鉴定状态等：
-		// CollectionManifest.bIsIdentified = false;
-        
-		return FInstancedStruct::Make(CollectionManifest);
-	}
-    
-	// 情况D：通用保底处理 (如果 Tag 没配，或者配的是 General)
 	
-	FTSA_ItemManifestBase BaseManifest;
-	BaseManifest.ItemDataHandle = Handle;
-	BaseManifest.StackCount = Quantity;
-        
-	return FInstancedStruct::Make(BaseManifest);
+	FTSA_ItemManifest Manifest;
+	Manifest.ItemDataHandle = Handle;
+	Manifest.StackCount = Quantity;
+	
+	FString ContextString(TEXT("Container Spawn Item Manifest"));
+	UTSA_ItemUtils::MakeManifestFromItemDataRow(Manifest, *Handle.GetRow<FTSA_ItemDataRow>(ContextString));
+	return FInstancedStruct::Make(Manifest);
 	
 }
 

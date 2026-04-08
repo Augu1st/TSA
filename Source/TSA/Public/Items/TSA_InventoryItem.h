@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Items/Manifest/TSA_ItemManifest.h"
+#include "StructUtils/InstancedStruct.h"
 
 #include "TSA_InventoryItem.generated.h"
 
@@ -23,9 +24,9 @@ public:
 	
 	// Getters and Setters
 	void SetItemManifest(const FInstancedStruct& InManifestStruct);
-	const FTSA_ItemManifestBase& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifestBase>(); }
-	const FTSA_ItemManifestBase* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifestBase>(); }
-	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
+	const FTSA_ItemManifest& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifest>(); }
+	const FTSA_ItemManifest* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifest>(); }
+	FTSA_ItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifest>(); }
 	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Inventory")

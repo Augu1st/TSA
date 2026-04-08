@@ -135,7 +135,7 @@ void ATSA_PlayerController::Server_AutoAddItem_Implementation(UTSA_InventoryComp
 	{
 		ATSA_AgentCharacter* PlayerCharacter = Cast<ATSA_AgentCharacter>(GetPawn());
 		if (PlayerCharacter) PlayerCharacter->PickUpItemInInventory(Item);
-		FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
+		FTSA_ItemManifest& ItemManifest = Item->GetItemManifestMutable();
 		if (ItemManifest.StackCount == 0)
 		{
 			SourceComp->RemoveItem(Item,SourceIndex);

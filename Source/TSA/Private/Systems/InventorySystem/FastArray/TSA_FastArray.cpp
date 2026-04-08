@@ -145,7 +145,7 @@ TArray<TTuple<UTSA_InventoryItem*, int32>> FTSA_InventoryFastArray::FindItemsAnd
 	{
 		if (!Entry.Item) continue;
 		
-		const FTSA_ItemManifestBase& Manifest = Entry.Item->GetItemManifest();
+		const FTSA_ItemManifest& Manifest = Entry.Item->GetItemManifest();
 		if (Manifest.ItemDataHandle.DataTable == ItemHandle.DataTable && 
 			Manifest.ItemDataHandle.RowName == ItemHandle.RowName)
 		{

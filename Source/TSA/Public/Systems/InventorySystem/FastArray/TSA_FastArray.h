@@ -6,7 +6,7 @@
 #include "TSA_FastArray.generated.h"
 
 struct FInstancedStruct;
-struct FTSA_ItemManifestBase;
+struct FTSA_ItemManifest;
 class UTSA_ItemComponent;
 class UTSA_InventoryItem;
 class UTSA_InventoryComponent;

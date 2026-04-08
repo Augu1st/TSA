@@ -10,7 +10,7 @@
 
 class ATSA_ItemActor;
 struct FInstancedStruct;
-struct FTSA_ItemManifestBase;
+struct FTSA_ItemManifest;
 struct FTSA_ItemDataRow;
 struct FTSA_SlotAvailabilityResult;
 class UTSA_ItemComponent;

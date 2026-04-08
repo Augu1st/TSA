@@ -65,7 +65,7 @@ int32 UTSA_InventoryComponent::ConsumeItemStack(int32 SlotIndex, int32 AmountToC
 	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
 	if (!Item) return 0;
 	
-	FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
+	FTSA_ItemManifest& ItemManifest = Item->GetItemManifestMutable();
 	
 	int32 ActualConsumed = FMath::Min(ItemManifest.StackCount,AmountToConsume);
 	ItemManifest.StackCount -= ActualConsumed;
@@ -89,7 +89,7 @@ void UTSA_InventoryComponent::AddNewItem(FInstancedStruct& ItemManifestStruct,in
 {
 	if (SlotIndex < 0 || SlotIndex >= MaxCapacity) return;
 	UTSA_InventoryItem* NewItem = InventoryList.AddEntry(ItemManifestStruct,SlotIndex);
-	ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>().StackCount = 0;
+	ItemManifestStruct.GetMutable<FTSA_ItemManifest>().StackCount = 0;
 	CurrentItemCount++;
 	
 	if (GetOwner()->GetNetMode() != NM_DedicatedServer)
@@ -104,7 +104,7 @@ void UTSA_InventoryComponent::AddStacksToItem(FInstancedStruct& ItemManifestStru
 	UTSA_InventoryItem* Item = InventoryList.GetItemAtSlot(SlotIndex);
 	Item->GetItemManifestMutable().StackCount += AddToStack;
 	
-	FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifestBase>();
+	FTSA_ItemManifest& ItemManifest = ItemManifestStruct.GetMutable<FTSA_ItemManifest>();
 	ItemManifest.StackCount -= AddToStack;
 	
 	// 🌟 核心修复：告诉网络系统，这个格子的数据变了！赶快发给客户端！
@@ -138,7 +138,7 @@ void UTSA_InventoryComponent::AddRepSubObj(UObject* SubObj)
 
 FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(const FInstancedStruct& ItemManifestStruct)
 {
-	const FTSA_ItemManifestBase& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifestBase>();
+	const FTSA_ItemManifest& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifest>();
 	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromManifest(ItemManifest);
 	// 物品类别不匹配直接返回空结果
 	if (!MatchItemCategory(ItemCategory)) return FTSA_SlotAvailabilityResult();
@@ -227,7 +227,7 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 	UTSA_InventoryItem* SourceItem = GetItemAtIndex(SourceIndex);
 	if (!SourceItem) return;
 	
-	FInstancedStruct PayloadManifest = SourceItem->GetItemManifestStruct();
+	FInstancedStruct& PayloadManifest = SourceItem->GetItemManifestStruct();
 	
 	// 看看目标格子原来有没有东西
 	UTSA_InventoryItem* TargetItem = TargetComp->GetItemAtIndex(TargetIndex);
@@ -257,8 +257,8 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 		
 		// 提取目标物品的数据
 		FInstancedStruct TargetManifest = TargetItem->GetItemManifestStruct();
-		const FTSA_ItemManifestBase& PayloadBase = PayloadManifest.Get<FTSA_ItemManifestBase>();
-		const FTSA_ItemManifestBase& TargetBase = TargetManifest.Get<FTSA_ItemManifestBase>();
+		const FTSA_ItemManifest& PayloadBase = PayloadManifest.Get<FTSA_ItemManifest>();
+		const FTSA_ItemManifest& TargetBase = TargetManifest.Get<FTSA_ItemManifest>();
 
 		// 1. 尝试堆叠 (同种物品，且都是可堆叠的)
 		if (PayloadBase.ItemDataHandle == TargetBase.ItemDataHandle)

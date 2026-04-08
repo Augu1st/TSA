@@ -29,6 +29,16 @@ namespace ItemTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Collection_Myth);
 		/* End of Collection Category */
 	}
+
+	namespace ResourceTags
+	{
+		namespace EnergyCost
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Instant);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Duration);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Infinite);
+		}
+	}
 	
 }
 

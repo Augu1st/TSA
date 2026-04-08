@@ -28,6 +28,16 @@ namespace ItemTags
 		/* End of Collection Category */
 		
 	}
+	
+	namespace ResourceTags
+	{
+		namespace EnergyCost
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Instant,"Item.Resource.EnergyCost.Instant","瞬间消耗")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Duration,"Item.Resource.EnergyCost.Percentage","持续时间内消耗")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Infinite,"Item.Resource.EnergyCost.Percentage","无限消耗")
+		}
+	}
 }
 
 namespace AttributeTags

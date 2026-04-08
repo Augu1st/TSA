@@ -4,6 +4,9 @@
 #include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
+#include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
 
 UTSA_VitalAttributeSet::UTSA_VitalAttributeSet()
 {
@@ -62,6 +65,15 @@ void UTSA_VitalAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	else if (Data.EvaluatedData.Attribute == GetArmorAttribute())
 	{
 		SetArmor(FMath::Clamp(GetArmor(), 0.f, GetMaxArmor()));
+		UTSA_AbilitySystemComponent* ASC = Cast<UTSA_AbilitySystemComponent>(GetOwningAbilitySystemComponent());
+		if (ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(ASC->GetAvatarActor()))
+		{
+			UTSA_EquipmentManagerComp* EquipmentManagerComp = AgentCharacter->FindComponentByClass<UTSA_EquipmentManagerComp>();
+			if (EquipmentManagerComp)
+			{
+				EquipmentManagerComp->UpdateArmor(GetArmor());
+			}
+		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetHealthRegenRateAttribute() ||
 		Data.EvaluatedData.Attribute == GetHealthConsumeRateAttribute())

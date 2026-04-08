@@ -107,7 +107,7 @@ void UTSA_BondManagerComp::RecalculateBonds()
 	TArray<FDataTableRowHandle> ItemDataRows;
 	for (auto& Item : ItemsInConnector)
 	{
-		FTSA_ItemManifestBase& ItemManifest = Item->GetItemManifestMutable();
+		FTSA_ItemManifest& ItemManifest = Item->GetItemManifestMutable();
 		bool bHasSameItem = false;
 		for (auto& Row : ItemDataRows)
 		{

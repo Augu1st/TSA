@@ -8,7 +8,7 @@
 
 struct FInstancedStruct;
 struct FGameplayTag;
-struct FTSA_ItemManifestBase;
+struct FTSA_ItemManifest;
 class UTSA_InventoryItem;
 class UTSA_ItemComponent;
 struct FTSA_ItemDataRow;
@@ -32,7 +32,7 @@ public:
 	static bool GetItemStaticDataFromManifestStruct(const FInstancedStruct& ItemManifestStruct, FTSA_ItemDataRow& OutItemData);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
-	static FGameplayTag GetItemCategoryFromManifest(const FTSA_ItemManifestBase& Manifest);
+	static FGameplayTag GetItemCategoryFromManifest(const FTSA_ItemManifest& Manifest);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
 	static FGameplayTag GetItemCategoryFromItem(UTSA_InventoryItem* Item);
@@ -41,11 +41,16 @@ public:
 	static FGameplayTag GetItemCategoryFromItemComp(UTSA_ItemComponent* ItemComponent);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
-	static bool GetItemDataFromManifest(const FTSA_ItemManifestBase& Manifest, FTSA_ItemDataRow& OutItemData);
+	static bool GetItemDataFromManifest(const FTSA_ItemManifest& Manifest, FTSA_ItemDataRow& OutItemData);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
 	static bool CheckItemTypes(UTSA_InventoryItem* ItemA, UTSA_InventoryItem* ItemB);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Bond")
 	static bool GetBondDefinition(UObject* WorldContextObject, const FGameplayTag& BondTag, FTSA_BondDefinition& OutBondDef);
+	
+	UFUNCTION(BlueprintPure, Category = "TSA|Bond")
+	static bool MakeManifestFromItemDataRow(FTSA_ItemManifest& OutManifest, const FTSA_ItemDataRow& ItemDataRow);
+	
+	
 };

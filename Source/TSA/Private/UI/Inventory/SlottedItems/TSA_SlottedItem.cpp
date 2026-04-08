@@ -2,7 +2,7 @@
 
 
 #include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
-
+#include "Types/TSA_ItemTypes.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
@@ -38,7 +38,7 @@ void UTSA_SlottedItem::SetInventoryItem(UTSA_InventoryItem* Item)
 	if (bIsStackable)
 	{	
 		MaxStackCount = ItemDataRow.MaxStackCount;
-		UpdateStackCount(ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount);
+		UpdateStackCount(ItemManifestStruct.Get<FTSA_ItemManifest>().StackCount);
 		Text_StackCount->SetVisibility(ESlateVisibility::Visible);
 	}
 	else

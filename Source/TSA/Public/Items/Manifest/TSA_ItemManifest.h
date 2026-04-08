@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "StructUtils/InstancedStruct.h"
+#include "Types/TSA_ItemTypes.h"
 #include "Items/DataTable/TSA_ItemData.h"
 #include "TSA_ItemManifest.generated.h"
 
@@ -10,45 +12,38 @@ class UTSA_InventoryItem;
 
 // 1. 基类结构体 (提取公共部分)
 USTRUCT(BlueprintType)
-struct FTSA_ItemManifestBase
+struct FTSA_ItemManifest
 {
 	GENERATED_BODY()
-	
-	FTSA_ItemManifestBase() {}
-	FTSA_ItemManifestBase(const FTSA_ItemManifestBase& InData) = default;
-	FTSA_ItemManifestBase& operator=(const FTSA_ItemManifestBase& InData) = default;
-	FTSA_ItemManifestBase(FTSA_ItemManifestBase&&) = default;
-	FTSA_ItemManifestBase& operator=(FTSA_ItemManifestBase&&) = default;
-	virtual ~FTSA_ItemManifestBase() = default;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item", meta=(RowType="TSA_ItemDataRow"))
 	FDataTableRowHandle ItemDataHandle;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item")
 	int32 StackCount = 1;
-};
-
-// 2. 装备动态数据 
-USTRUCT(BlueprintType)
-struct FTSA_EquipmentManifest : public FTSA_ItemManifestBase
-{ 
-	GENERATED_BODY()
 	
-};
-
-// 3. 道具动态数据 
-USTRUCT(BlueprintType)
-struct FTSA_PropManifest : public FTSA_ItemManifestBase
-{
-	GENERATED_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TSA|Item")
+	TMap<FGameplayTag, float> DynamicStats;
 	
-};
-
-// 4. 收集品动态数据 
-USTRUCT(BlueprintType)
-struct FTSA_CollectionManifest : public FTSA_ItemManifestBase
-{
-	GENERATED_BODY()
-
+	float GetStat(const FGameplayTag& StatTag, float DefaultValue = 0.0f) const
+	{
+		for (const auto& Pair : DynamicStats)
+		{
+			UE_LOG(LogTemp, Log, TEXT("GetStat: %s %f"), *StatTag.ToString(), Pair.Value);
+		}
+		if (DynamicStats.Contains(StatTag))
+		{
+			return DynamicStats[StatTag];
+		}
+		return DefaultValue;
+	}
 	
+	void SetStat(const FGameplayTag& StatTag, float NewValue)
+	{
+		DynamicStats.Add(StatTag) = NewValue;
+		for (const auto& Pair : DynamicStats)
+		{
+			UE_LOG(LogTemp, Log, TEXT("GetStat: %s %f"), *StatTag.ToString(), Pair.Value);
+		}
+	}
 };

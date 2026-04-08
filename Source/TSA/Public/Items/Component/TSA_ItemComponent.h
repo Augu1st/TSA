@@ -18,9 +18,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void PickUp();
-	const FTSA_ItemManifestBase& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifestBase>(); }
-	const FTSA_ItemManifestBase* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifestBase>(); }
-	FTSA_ItemManifestBase& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifestBase>(); }
+	const FTSA_ItemManifest& GetItemManifest() const { return ItemManifest.Get<FTSA_ItemManifest>(); }
+	const FTSA_ItemManifest* GetItemManifestPtr() const { return ItemManifest.GetPtr<FTSA_ItemManifest>(); }
+	FTSA_ItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FTSA_ItemManifest>(); }
 	
 	FInstancedStruct& GetItemManifestStruct() { return ItemManifest; }
 	void SetItemManifest(const FInstancedStruct& InData) { ItemManifest = InData;}

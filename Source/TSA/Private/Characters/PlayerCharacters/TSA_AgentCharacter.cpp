@@ -84,7 +84,7 @@ void ATSA_AgentCharacter::PickUpItem(UTSA_ItemComponent* ItemComponent)
 	if (UTSA_InventoryComponent* InventoryComp = GetInventoryCompByCategory(ItemCategory))
 	{
 		InventoryComp->TryAddItem(ItemManifestStruct);
-		if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) ItemComponent->PickUp();
+		if (ItemManifestStruct.Get<FTSA_ItemManifest>().StackCount == 0) ItemComponent->PickUp();
 		return;
 	}
 	
@@ -93,7 +93,7 @@ void ATSA_AgentCharacter::PickUpItem(UTSA_ItemComponent* ItemComponent)
 	{
 		if (GeneralInventoryComp->TryAddItem(ItemManifestStruct))
 		{
-			if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) ItemComponent->PickUp();
+			if (ItemManifestStruct.Get<FTSA_ItemManifest>().StackCount == 0) ItemComponent->PickUp();
 		}
 	}
 }
@@ -108,7 +108,7 @@ void ATSA_AgentCharacter::PickUpItemInInventory(UTSA_InventoryItem* Item)
 	if(UTSA_InventoryComponent* InventoryComp = GetInventoryCompByCategory(ItemCategory))
 	{
 		InventoryComp->TryAddItem(ItemManifestStruct);
-		if (ItemManifestStruct.Get<FTSA_ItemManifestBase>().StackCount == 0) return;
+		if (ItemManifestStruct.Get<FTSA_ItemManifest>().StackCount == 0) return;
 	}
 	// 尝试在通用仓库添加
 	if (IsValid(GeneralInventoryComp))
