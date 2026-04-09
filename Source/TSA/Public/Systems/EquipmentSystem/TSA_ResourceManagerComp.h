@@ -64,9 +64,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<UGameplayAbility>> ConverterAbilityClasses;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> ResourceWatcher;
 	/* End of Converter */
 	
 	UPROPERTY()

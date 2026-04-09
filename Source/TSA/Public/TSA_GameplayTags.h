@@ -78,12 +78,9 @@ namespace AttributeTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(RunSpeed);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SprintSpeed);
 	
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Sturdy);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Toughness);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Stable);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Reflect);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Insulate_E);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resist_Insulate_H);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PhysicalResistance);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyResistance);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StructureResistance);
 	// End of Combat Attributes
 	
 	// Resource Attributes

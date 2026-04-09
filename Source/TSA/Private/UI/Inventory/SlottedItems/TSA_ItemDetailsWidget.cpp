@@ -4,13 +4,38 @@
 #include "UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h"
 
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h"
+#include "AbilitySystem/AttributeSets/TSA_CoreAttributeSet.h"
+#include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
+#include "Components/VerticalBox.h"
 #include "Game/States/TSA_TestGameState.h"
 #include "Items/DataAssets/TSA_ItemDataAsset.h"
+#include "Items/DataAssets/TSA_ItemFragment.h"
+#include "Items/Manifest/TSA_ItemManifest.h"
 #include "Systems/EquipmentSystem/TSA_BondManagerComp.h"
+#include "UI/Inventory/SlottedItems/TSA_ItemRichText.h"
+#include "Utils/TSA_ItemUtils.h"
 
 void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStruct& ItemManifestStruct)
 {
+	FTSA_ItemDataRow ItemData;
+	UTSA_ItemUtils::GetItemStaticDataFromManifestStruct(ItemManifestStruct, ItemData);
+	if (UTSA_ItemDataAsset* ItemDataAsset = ItemData.ItemDataAsset.LoadSynchronous())
+	{
+		if (const UTSA_EquipStatFragment* EquipStatFragment = ItemDataAsset->FindFragment<UTSA_EquipStatFragment>())
+		{
+			for (const FTSA_StatModifier& StatModifier : EquipStatFragment->Modifiers)
+			{
+				FText AttributeText;
+				AnalyzeStatModifier(StatModifier,AttributeText);
+				if (AttributeText.IsEmpty()) continue;
+				UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
+				RichText->SetRichText(AttributeText);
+				Box_Fragment->AddChild(RichText);
+			}
+		}
+	}
 }
 
 TArray<FText> UTSA_ItemDetailsWidget::FindBondNameByTags(const FGameplayTagContainer& ItemBonds)
@@ -37,4 +62,53 @@ TArray<FText> UTSA_ItemDetailsWidget::FindBondNameByTags(const FGameplayTagConta
 		}
 	}
 	return BondNames;
+}
+
+void UTSA_ItemDetailsWidget::AnalyzeStatModifier(const FTSA_StatModifier& StatModifier,FText& AttributeText)
+{
+	FString ValueString = GetValueString(StatModifier.ModifierOp, StatModifier.Value);
+	FString Attribute = GetAttributeString(StatModifier.Attribute,ValueString);
+	if (!StatModifier.AttributeScales.IsEmpty())
+	{
+		FString AttributeScales = "(";
+		for (const auto& Pair : StatModifier.AttributeScales)
+		{
+			AttributeScales.Append(GetAttributeString(Pair.Key,GetValueString(EGameplayModOp::Additive, Pair.Value)));
+		}
+		AttributeScales.Append(")");
+		Attribute.Append(AttributeScales);
+	}
+	AttributeText = FText::FromString(Attribute);
+}
+
+FString UTSA_ItemDetailsWidget::GetAttributeString(const FGameplayAttribute& Attribute,const FString& ValueString)
+{
+	if (Attribute==UTSA_CoreAttributeSet::GetMasteryAttribute()) 
+		return ValueString+FString("<Mastery>")+TEXT("掌控")+FString("</>");
+	if (Attribute==UTSA_CoreAttributeSet::GetReactionAttribute())
+		return ValueString+FString("<Reaction>")+TEXT("反应")+FString("</>");
+	if (Attribute==UTSA_CoreAttributeSet::GetCalculationAttribute())
+		return ValueString+FString("<Calculation>")+TEXT("计算")+FString("</>");
+	if (Attribute==UTSA_CoreAttributeSet::GetObservationAttribute())
+		return ValueString+FString("<Observation>")+TEXT("观察")+FString("</>");
+	if (Attribute==UTSA_CoreAttributeSet::GetTenacityAttribute())
+		return ValueString+FString("<Tenacity>")+TEXT("坚韧")+FString("</>");
+	if (Attribute==UTSA_CoreAttributeSet::GetResonanceAttribute())
+		return ValueString+FString("<Resonance>")+TEXT("共感")+FString("</>");
+	if (Attribute==UTSA_CombatAttributeSet::GetPhysicalResistanceAttribute())
+		return ValueString+FString("<Physical>")+TEXT("物理抗性")+FString("</>");
+	if (Attribute==UTSA_CombatAttributeSet::GetEnergyResistanceAttribute())
+		return ValueString+FString("<Energy>")+TEXT("能量抗性")+FString("</>");
+	if (Attribute==UTSA_CombatAttributeSet::GetStructureResistanceAttribute())
+		return ValueString+FString("<Structure>")+TEXT("结构抗性")+FString("</>");
+	if (Attribute==UTSA_VitalAttributeSet::GetMaxArmorAttribute())
+		return ValueString+FString("<Armor>")+TEXT("最大护甲")+FString("</>");
+	return FString();
+}
+
+FString UTSA_ItemDetailsWidget::GetValueString(const TEnumAsByte<EGameplayModOp::Type>& ModifierOp, float Value)
+{
+	if (ModifierOp==EGameplayModOp::Multiplicitive || ModifierOp==EGameplayModOp::Division)
+		return FString::Printf(TEXT("%.0f%%"),Value*100);
+	return FString::Printf(TEXT("+%.1f"),Value);
 }

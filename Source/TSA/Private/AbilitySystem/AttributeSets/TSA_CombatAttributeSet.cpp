@@ -18,12 +18,9 @@ UTSA_CombatAttributeSet::UTSA_CombatAttributeSet()
 	InitRunSpeed(450.f);
 	InitSprintSpeed(600.f);
 	
-	InitResist_Sturdy(0.f);
-	InitResist_Toughness(0.f);
-	InitResist_Stable(0.f);
-	InitResist_Reflect(0.f);
-	InitResist_Insulate_E(0.f);
-	InitResist_Insulate_H(0.f);
+	InitPhysicalResistance(10.f);
+	InitEnergyResistance(10.f);
+	InitStructureResistance(0.f);
 }
 
 void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -41,12 +38,9 @@ void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, RunSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, SprintSpeed, COND_None, REPNOTIFY_Always);
 	
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Sturdy, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Toughness, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Stable, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Reflect, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Insulate_E, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Resist_Insulate_H, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, EnergyResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, StructureResistance, COND_None, REPNOTIFY_Always);
 }
 
 void UTSA_CombatAttributeSet::OnRep_CritRate(const FGameplayAttributeData& OldCritRate)
@@ -89,32 +83,17 @@ void UTSA_CombatAttributeSet::OnRep_PropUseSpeed(const FGameplayAttributeData& O
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, PropUseSpeed, OldPropUseSpeed);
 }
 
-void UTSA_CombatAttributeSet::OnRep_Resist_Sturdy(const FGameplayAttributeData& OldResist_Sturdy)
+void UTSA_CombatAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Sturdy, OldResist_Sturdy);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, PhysicalResistance, OldPhysicalResistance)
 }
 
-void UTSA_CombatAttributeSet::OnRep_Resist_Toughness(const FGameplayAttributeData& OldResist_Toughness)
+void UTSA_CombatAttributeSet::OnRep_EnergyResistance(const FGameplayAttributeData& OldEnergyResistance)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Toughness, OldResist_Toughness);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, EnergyResistance, OldEnergyResistance)
 }
 
-void UTSA_CombatAttributeSet::OnRep_Resist_Stable(const FGameplayAttributeData& OldResist_Stable)
+void UTSA_CombatAttributeSet::OnRep_StructureResistance(const FGameplayAttributeData& OldStructureResistance)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Stable, OldResist_Stable);
-}
-
-void UTSA_CombatAttributeSet::OnRep_Resist_Reflect(const FGameplayAttributeData& OldResist_Reflect)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Reflect, OldResist_Reflect);
-}
-
-void UTSA_CombatAttributeSet::OnRep_Resist_Insulate_E(const FGameplayAttributeData& OldResist_Insulate_E)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Insulate_E, OldResist_Insulate_E);
-}
-
-void UTSA_CombatAttributeSet::OnRep_Resist_Insulate_H(const FGameplayAttributeData& OldResist_Insulate_H)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Resist_Insulate_H, OldResist_Insulate_H);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, StructureResistance, OldStructureResistance)
 }

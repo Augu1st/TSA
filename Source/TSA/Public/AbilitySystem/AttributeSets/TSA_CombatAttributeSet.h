@@ -86,48 +86,27 @@ public:
 	void OnRep_Speed_Sprint(const FGameplayAttributeData& OldSpeed_Sprint);
 	/* End of Speed */
 	
-	/* Resist 抗性*/
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Sturdy)
-	FGameplayAttributeData Resist_Sturdy;//坚固
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Sturdy)
+	/* Resist 抗性 */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_PhysicalResistance)
+	FGameplayAttributeData PhysicalResistance; // 物理抗性
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, PhysicalResistance)
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Toughness)
-	FGameplayAttributeData Resist_Toughness;//韧性
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Toughness)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_EnergyResistance)
+	FGameplayAttributeData EnergyResistance; // 能量抗性
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, EnergyResistance)
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Stable)
-	FGameplayAttributeData Resist_Stable;//稳定
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Stable)
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Reflect)
-	FGameplayAttributeData Resist_Reflect;//反射
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Reflect)
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Insulate_E)
-	FGameplayAttributeData Resist_Insulate_E;//绝缘
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Insulate_E)
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Resist_Insulate_H)
-	FGameplayAttributeData Resist_Insulate_H;//隔热
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Resist_Insulate_H)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_StructureResistance)
+	FGameplayAttributeData StructureResistance;
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, StructureResistance)
 	
 	UFUNCTION()
-	void OnRep_Resist_Sturdy(const FGameplayAttributeData& OldResist_Sturdy);
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance);
 	
 	UFUNCTION()
-	void OnRep_Resist_Toughness(const FGameplayAttributeData& OldResist_Toughness);
-    	
-	UFUNCTION()
-	void OnRep_Resist_Stable(const FGameplayAttributeData& OldResist_Stable);
+	void OnRep_EnergyResistance(const FGameplayAttributeData& OldEnergyResistance);
 	
 	UFUNCTION()
-	void OnRep_Resist_Reflect(const FGameplayAttributeData& OldResist_Reflect);
-		
-	UFUNCTION()
-	void OnRep_Resist_Insulate_E(const FGameplayAttributeData& OldResist_Insulate_E);
-		
-	UFUNCTION()
-	void OnRep_Resist_Insulate_H(const FGameplayAttributeData& OldResist_Insulate_H);
+	void OnRep_StructureResistance(const FGameplayAttributeData& OldStructureResistance);
 	/* End of Resist */
 	
 };

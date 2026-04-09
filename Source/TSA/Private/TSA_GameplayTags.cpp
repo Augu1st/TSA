@@ -76,12 +76,9 @@ namespace AttributeTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RunSpeed,"Attribute.Combat.RunSpeed","跑步速度");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SprintSpeed,"Attribute.Combat.SprintSpeed","冲刺速度");
 	
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Sturdy,"Attribute.Combat.Resist.Sturdy","坚固");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Toughness,"Attribute.Combat.Resist.Toughness","韧性");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Stable,"Attribute.Combat.Resist.Stable","稳定");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Reflect,"Attribute.Combat.Resist.Reflect","反射");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Insulate_E,"Attribute.Combat.Resist.Insulate.E","绝缘");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resist_Insulate_H,"Attribute.Combat.Resist.Insulate.H","隔热");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PhysicalResistance,"Attribute.Combat.Resistance.Physical","物理抗性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyResistance,"Attribute.Combat.Resistance.Energy","能量抗性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(StructureResistance,"Attribute.Combat.Resistance.Structure","结构抗性");
 	// End of Combat Attributes
 	
 	// Resource Attributes

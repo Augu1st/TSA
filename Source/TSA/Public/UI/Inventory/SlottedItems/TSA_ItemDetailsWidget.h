@@ -5,8 +5,19 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "StructUtils/InstancedStruct.h"
+#include "AttributeSet.h"
 #include "TSA_ItemDetailsWidget.generated.h"
 
+struct FTSA_StatModifier;
+
+namespace EGameplayModOp
+{
+	enum Type : int;
+}
+
+class UTSA_EquipStatFragment;
+class UTSA_ItemRichText;
+class UVerticalBox;
 struct FGameplayTagContainer;
 /**
  * 
@@ -23,7 +34,23 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "TSA|Item Details")
 	void SetUpItemDetails(const FInstancedStruct& ItemManifestStruct);
 	
+	void AnalyzeStatModifier(const FTSA_StatModifier& StatModifier,FText& AttributeText);
+	FString GetAttributeString(const FGameplayAttribute& Attribute,const FString& ValueString);
+	FString GetValueString(const TEnumAsByte<EGameplayModOp::Type>& ModifierOp,float Value);
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* Box_Fragment;
+	
 private:
-	UPROPERTY(EditAnywhere)
-	UDataTable* BondDataTable;
+	
+	UPROPERTY(EditAnywhere,Category = "TSA|Item Details")
+	TSubclassOf<UTSA_ItemRichText> ItemRichTextClass;
+	
+	UPROPERTY()
+	TArray<UTSA_ItemRichText*> RichTexts;
+	
+	UPROPERTY(EditAnywhere, Category = "TSA|Item Details")
+	TMap<FGameplayAttribute,FName> AttributeRowMap;
+	
+	UPROPERTY(EditAnywhere, Category = "TSA|Item Details")
+	UDataTable* RichTextData;
 };

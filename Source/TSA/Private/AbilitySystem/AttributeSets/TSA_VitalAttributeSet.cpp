@@ -54,6 +54,27 @@ void UTSA_VitalAttributeSet::PreAttributeChange(const FGameplayAttribute& Attrib
 	}
 }
 
+void UTSA_VitalAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	
+	if (Attribute == GetHealthRegenRateAttribute() ||
+		Attribute == GetHealthConsumeRateAttribute())
+	{
+		float CurrentRegen = GetHealthRegenRate();
+		float CurrentConsume = GetHealthConsumeRate();
+		
+		SetHealthNetFlow(GetHealthRegenRate() - GetHealthConsumeRate() );
+		float temp = GetHealthNetFlow();
+		return;
+	}
+	else if (Attribute == GetArmorRegenRateAttribute() ||
+		Attribute == GetArmorConsumeRateAttribute())
+	{
+		SetArmorNetFlow(GetArmorRegenRate() - GetArmorConsumeRate());
+	}
+}
+
 void UTSA_VitalAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -78,7 +99,12 @@ void UTSA_VitalAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	else if (Data.EvaluatedData.Attribute == GetHealthRegenRateAttribute() ||
 		Data.EvaluatedData.Attribute == GetHealthConsumeRateAttribute())
 	{
+		float CurrentRegen = GetHealthRegenRate();
+		float CurrentConsume = GetHealthConsumeRate();
+		
 		SetHealthNetFlow(GetHealthRegenRate() - GetHealthConsumeRate() );
+		float temp = GetHealthNetFlow();
+
 	}
 	else if (Data.EvaluatedData.Attribute == GetArmorRegenRateAttribute() ||
 		Data.EvaluatedData.Attribute == GetArmorConsumeRateAttribute())

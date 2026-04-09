@@ -79,10 +79,6 @@ void UTSA_ResourceManagerComp::BeginPlay()
 	if (ASC && ASC->IsOwnerActorAuthoritative())
 	{
 		ASC->GiveAbilityWithClassesAndLevel(ConverterAbilityClasses, ConverterLevel);
-		
-		FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ResourceWatcher, 1.0f, ContextHandle);
-		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
 

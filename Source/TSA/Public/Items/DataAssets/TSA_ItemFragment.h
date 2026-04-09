@@ -46,7 +46,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "TSA|Attributes")
 	TArray<FTSA_StatModifier> Modifiers;
 	
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
 	FText Description;
 };
@@ -60,8 +59,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "TSA|Attributes")
 	TArray<FTSA_StatModifier> Modifiers;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
-	FText Description;
 };
 
 // 持续Buff片段
@@ -75,9 +72,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
 	float Duration = 0.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
-	FText Description;
 };
 
 // 技能片段
