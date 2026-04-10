@@ -2,9 +2,12 @@
 
 
 #include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
+
+#include "TSA_GameplayTags.h"
 #include "Types/TSA_ItemTypes.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
@@ -51,8 +54,6 @@ void UTSA_SlottedItem::SetInventoryItem(UTSA_InventoryItem* Item)
 	{
 		ItemDetailsWidget = CreateWidget<UTSA_ItemDetailsWidget>(GetOwningPlayer(), ItemDetailsWidgetClass);
 	}
-	// 更新物品详情
-	if (ItemDetailsWidget) ItemDetailsWidget->SetUpItemDetails(ItemManifestStruct);
 	
 }
 
@@ -109,8 +110,13 @@ FReply UTSA_SlottedItem::NativeOnMouseButtonDoubleClick(const FGeometry& InGeome
 	{
 		if (UTSA_InventoryComponent* Inventory = GetOwningInventoryComponent())
 		{
-			ACharacter* Player = Cast<ACharacter>(Inventory->GetOwner());
-			if (Player && Player->IsPlayerControlled()) return FReply::Handled();
+			ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwningPlayer()->GetPawn());
+			if (Inventory == Agent->GetInventoryCompByCategory(ItemTags::Category::Equipment) ||
+				Inventory == Agent->GetInventoryCompByCategory(ItemTags::Category::Prop) || 
+				Inventory == Agent->GetInventoryCompByCategory(ItemTags::Category::General))
+			{
+				return FReply::Handled();
+			}
 			
 			ATSA_PlayerController* PlayerController = Cast<ATSA_PlayerController>(GetWorld()->GetFirstPlayerController());
 			PlayerController->RequestAutoAddItem(Inventory,SlotIndex);
@@ -135,6 +141,10 @@ void UTSA_SlottedItem::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	// 取消显示物品详情
 	GetWorld()->GetTimerManager().ClearTimer(ItemDetailsTimerHandle);
 	SetToolTip(nullptr);
+	if (ItemDetailsWidget)
+	{
+		ItemDetailsWidget->ClearRichText();
+	}
 	
 	PlayCursorOutAnimation();
 }
@@ -157,6 +167,9 @@ void UTSA_SlottedItem::ShowItemDetails()
 {
 	if (ItemDetailsWidget)
 	{
+		if (!InventoryItem.IsValid()) return;
+		const FInstancedStruct& ItemManifestStruct = InventoryItem.Get()->GetItemManifestStruct();
+		if (ItemDetailsWidget) ItemDetailsWidget->SetUpItemDetails(ItemManifestStruct);
 		SetToolTip(ItemDetailsWidget);
 	}
 }

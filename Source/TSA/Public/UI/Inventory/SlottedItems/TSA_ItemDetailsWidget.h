@@ -34,9 +34,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "TSA|Item Details")
 	void SetUpItemDetails(const FInstancedStruct& ItemManifestStruct);
 	
+	void ClearRichText();
+	
 	void AnalyzeStatModifier(const FTSA_StatModifier& StatModifier,FText& AttributeText);
 	FString GetAttributeString(const FGameplayAttribute& Attribute,const FString& ValueString);
 	FString GetValueString(const TEnumAsByte<EGameplayModOp::Type>& ModifierOp,float Value);
+	
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* Box_Fragment;
 	
@@ -47,10 +50,4 @@ private:
 	
 	UPROPERTY()
 	TArray<UTSA_ItemRichText*> RichTexts;
-	
-	UPROPERTY(EditAnywhere, Category = "TSA|Item Details")
-	TMap<FGameplayAttribute,FName> AttributeRowMap;
-	
-	UPROPERTY(EditAnywhere, Category = "TSA|Item Details")
-	UDataTable* RichTextData;
 };

@@ -12,6 +12,10 @@ struct FTSA_ItemDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
 	
+	// ID
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Base")
+	FName ID;
+	
 	// 名称
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Base")
 	FText Name = FText::FromString("None");

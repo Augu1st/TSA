@@ -126,10 +126,42 @@ void UTSA_EquipmentManagerComp::OnArmorUnequipped(UTSA_InventoryItem* Item, int3
 
 void UTSA_EquipmentManagerComp::OnModuleEquipped(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
+	FTSA_ItemDataRow DataRow;
+	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
+	if (UTSA_ItemDataAsset* ItemDataAsset = DataRow.ItemDataAsset.LoadSynchronous())
+	{
+		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
+		if (!IsValid(Agent)) return;
+		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
+	
+		ItemEffectHandles.Emplace(Item, FTSA_ActiveEffectHandles());
+		
+		if (const UTSA_EquipStatFragment* EquipStatFragment = ItemDataAsset->FindFragment<UTSA_EquipStatFragment>())
+		{
+			ApplyEquipStatFragment(Item,EquipStatFragment,ASC);
+		}
+	}
 }
 
 void UTSA_EquipmentManagerComp::OnModuleUnequipped(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
+	FTSA_ItemDataRow DataRow;
+	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
+	if (DataRow.ItemDataAsset)
+	{
+		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
+		if (!IsValid(Agent)) return;
+		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
+		
+		if (ItemEffectHandles.Contains(Item))
+		{
+			for (FActiveGameplayEffectHandle& Handle : ItemEffectHandles[Item].ActiveEffectHandles)
+			{
+				ASC->RemoveActiveGameplayEffect(Handle);
+			}
+		}
+		ItemEffectHandles.Remove(Item);
+	}
 }
 
 float UTSA_EquipmentManagerComp::GetAdditiveValue(const TMap<FGameplayAttribute, float>& AttributeScales,UTSA_AbilitySystemComponent* ASC)

@@ -111,7 +111,7 @@ namespace StateTags
 {
 	// Converter States
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Idle,"State.Converter.Idle","等待转换");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Converting,"State.Converter.Working","正在转换");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Working,"State.Converter.Working","正在转换");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Locked,"State.Converter.Locked","锁定");
 	
 }

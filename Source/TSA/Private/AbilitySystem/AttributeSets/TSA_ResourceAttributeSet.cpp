@@ -59,6 +59,20 @@ void UTSA_ResourceAttributeSet::PreAttributeChange(const FGameplayAttribute& Att
 	}
 }
 
+void UTSA_ResourceAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	
+	if (Attribute == GetEnergyRegenRateAttribute() || Attribute == GetEnergyConsumeRateAttribute())
+	{
+		SetEnergyNetFlow(GetEnergyRegenRate() - GetEnergyConsumeRate());
+	}
+	if (Attribute == GetMatterRegenRateAttribute() || Attribute == GetMatterConsumeRateAttribute())
+	{
+		SetMatterNetFlow(GetMatterRegenRate() - GetMatterConsumeRate());
+	}
+}
+
 void UTSA_ResourceAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);

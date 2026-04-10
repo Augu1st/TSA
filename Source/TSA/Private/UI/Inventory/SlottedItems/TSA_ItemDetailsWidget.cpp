@@ -4,11 +4,14 @@
 #include "UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h"
 
 #include "GameplayTagContainer.h"
+#include "TSA_GameplayTags.h"
 #include "AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h"
 #include "AbilitySystem/AttributeSets/TSA_CoreAttributeSet.h"
+#include "AbilitySystem/AttributeSets/TSA_ResourceAttributeSet.h"
 #include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Components/VerticalBox.h"
+#include "Game/TSA_GameInstanceSys.h"
 #include "Game/States/TSA_TestGameState.h"
 #include "Items/DataAssets/TSA_ItemDataAsset.h"
 #include "Items/DataAssets/TSA_ItemFragment.h"
@@ -19,10 +22,23 @@
 
 void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStruct& ItemManifestStruct)
 {
+	const FTSA_ItemManifest& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifest>();
 	FTSA_ItemDataRow ItemData;
 	UTSA_ItemUtils::GetItemStaticDataFromManifestStruct(ItemManifestStruct, ItemData);
 	if (UTSA_ItemDataAsset* ItemDataAsset = ItemData.ItemDataAsset.LoadSynchronous())
 	{
+		// 是否为护甲
+		if (const UTSA_ArmorFragment* ArmorFragment = ItemDataAsset->FindFragment<UTSA_ArmorFragment>())
+		{
+			FString CurrentArmor;
+			float ArmorValue = ItemManifest.GetStat(AttributeTags::Armor);
+			CurrentArmor.Append(GetAttributeString(UTSA_VitalAttributeSet::GetArmorAttribute(),GetValueString(EGameplayModOp::Additive,ArmorValue)));
+			UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
+			RichText->SetRichText(FText::FromString(CurrentArmor));
+			Box_Fragment->AddChild(RichText);
+			RichTexts.Add(RichText);
+		}
+		// 获取装备属性
 		if (const UTSA_EquipStatFragment* EquipStatFragment = ItemDataAsset->FindFragment<UTSA_EquipStatFragment>())
 		{
 			for (const FTSA_StatModifier& StatModifier : EquipStatFragment->Modifiers)
@@ -33,8 +49,10 @@ void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStr
 				UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
 				RichText->SetRichText(AttributeText);
 				Box_Fragment->AddChild(RichText);
+				RichTexts.Add(RichText);
 			}
 		}
+		
 	}
 }
 
@@ -64,6 +82,15 @@ TArray<FText> UTSA_ItemDetailsWidget::FindBondNameByTags(const FGameplayTagConta
 	return BondNames;
 }
 
+void UTSA_ItemDetailsWidget::ClearRichText()
+{
+	for (UTSA_ItemRichText* RichText : RichTexts)
+	{
+		RichText->RemoveFromParent();
+	}
+	RichTexts.Empty();
+}
+
 void UTSA_ItemDetailsWidget::AnalyzeStatModifier(const FTSA_StatModifier& StatModifier,FText& AttributeText)
 {
 	FString ValueString = GetValueString(StatModifier.ModifierOp, StatModifier.Value);
@@ -83,26 +110,19 @@ void UTSA_ItemDetailsWidget::AnalyzeStatModifier(const FTSA_StatModifier& StatMo
 
 FString UTSA_ItemDetailsWidget::GetAttributeString(const FGameplayAttribute& Attribute,const FString& ValueString)
 {
-	if (Attribute==UTSA_CoreAttributeSet::GetMasteryAttribute()) 
-		return ValueString+FString("<Mastery>")+TEXT("掌控")+FString("</>");
-	if (Attribute==UTSA_CoreAttributeSet::GetReactionAttribute())
-		return ValueString+FString("<Reaction>")+TEXT("反应")+FString("</>");
-	if (Attribute==UTSA_CoreAttributeSet::GetCalculationAttribute())
-		return ValueString+FString("<Calculation>")+TEXT("计算")+FString("</>");
-	if (Attribute==UTSA_CoreAttributeSet::GetObservationAttribute())
-		return ValueString+FString("<Observation>")+TEXT("观察")+FString("</>");
-	if (Attribute==UTSA_CoreAttributeSet::GetTenacityAttribute())
-		return ValueString+FString("<Tenacity>")+TEXT("坚韧")+FString("</>");
-	if (Attribute==UTSA_CoreAttributeSet::GetResonanceAttribute())
-		return ValueString+FString("<Resonance>")+TEXT("共感")+FString("</>");
-	if (Attribute==UTSA_CombatAttributeSet::GetPhysicalResistanceAttribute())
-		return ValueString+FString("<Physical>")+TEXT("物理抗性")+FString("</>");
-	if (Attribute==UTSA_CombatAttributeSet::GetEnergyResistanceAttribute())
-		return ValueString+FString("<Energy>")+TEXT("能量抗性")+FString("</>");
-	if (Attribute==UTSA_CombatAttributeSet::GetStructureResistanceAttribute())
-		return ValueString+FString("<Structure>")+TEXT("结构抗性")+FString("</>");
-	if (Attribute==UTSA_VitalAttributeSet::GetMaxArmorAttribute())
-		return ValueString+FString("<Armor>")+TEXT("最大护甲")+FString("</>");
+	FString AttributeString;
+	AttributeString.Append(ValueString);
+	if (UTSA_GameInstanceSys* GameInstanceSys = GetWorld()->GetGameInstance()->GetSubsystem<UTSA_GameInstanceSys>())
+	{
+		if (GameInstanceSys->AttributeStrings.Contains(Attribute))
+		{
+			AttributeString.Append(" ");
+			AttributeString.Append(GameInstanceSys->AttributeStrings[Attribute]);
+			AttributeString.Append(" ");
+			return AttributeString;
+		}
+		
+	}
 	return FString();
 }
 
@@ -112,3 +132,4 @@ FString UTSA_ItemDetailsWidget::GetValueString(const TEnumAsByte<EGameplayModOp:
 		return FString::Printf(TEXT("%.0f%%"),Value*100);
 	return FString::Printf(TEXT("+%.1f"),Value);
 }
+

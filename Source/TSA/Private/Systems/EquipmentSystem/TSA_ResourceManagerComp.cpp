@@ -30,6 +30,12 @@ void UTSA_ResourceManagerComp::TryToConvert()
 	if (!Agent || !Agent->HasAuthority()) return;
 	UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 	
+	if (ASC->GetOwnedGameplayTags().HasTagExact(StateTags::Convert_Working))
+	{
+		UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("转换器工作中！")));
+		return;
+	}
+	
 	if (ConverterMode.MatchesTagExact(EventTags::Converter::ItemToMatter))
 	{
 		if (ASC->IsMatterFull())
