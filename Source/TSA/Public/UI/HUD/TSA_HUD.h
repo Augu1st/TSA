@@ -8,6 +8,7 @@
 #include "AbilitySystem/DataAssets/TSA_AttributeData.h"
 #include "TSA_HUD.generated.h"
 
+class UTSA_ContextMenu;
 class ATSA_AgentCharacter;
 class UTSA_InventoryComponent;
 class UTSA_InventoryBase;
@@ -45,6 +46,11 @@ public:
 	// Bond Menu
 	UTSA_BondMenuController* GetBondMenuController();
 	UTSA_BondMenu* GetBondMenu();
+	
+	// Context Menu
+	TSubclassOf<UTSA_ContextMenu> GetContextMenuClass() const { return ContextMenuClass; }
+	void SetContextMenu(UTSA_ContextMenu* NewContextMenu) { ContextMenu = NewContextMenu; }
+	UTSA_ContextMenu* GetContextMenu() const { return ContextMenu; }
 	
 	FOnAttributeChanged OnAttributeChanged;
 	
@@ -116,4 +122,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<UTSA_BondMenu> BondMenu;
 	/* End of Bond Menu */
+	
+	/* Context Menu */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTSA_ContextMenu> ContextMenuClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_ContextMenu> ContextMenu;
+	/* End of Context Menu */
 };

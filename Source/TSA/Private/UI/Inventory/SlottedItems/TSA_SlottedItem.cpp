@@ -13,11 +13,16 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/Character.h"
 #include "Items/TSA_InventoryItem.h"
+#include "Items/DataAssets/TSA_ItemDataAsset.h"
+#include "Items/DataAssets/TSA_ItemFragment.h"
 #include "Player/TSA_PlayerController.h"
 #include "UI/Inventory/SlottedItems/TSA_ItemDragDropOp.h"
 #include "Utils/TSA_ItemUtils.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "UI/HUD/TSA_HUD.h"
+#include "UI/Inventory/SlottedItems/TSA_ContextMenu.h"
 #include "UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h"
+#include "Utils/TSA_WidgetUtils.h"
 
 
 void UTSA_SlottedItem::SetImageBrush(const FSlateBrush& Brush) const
@@ -75,7 +80,10 @@ FReply UTSA_SlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	// 响应右键
 	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
-		
+		ATSA_HUD* HUD = Cast<ATSA_HUD>(GetOwningPlayer()->GetHUD());
+		if (!HUD) return FReply::Handled();
+		if (HUD->GetContextMenu()) HUD->GetContextMenu()->CloseMenu();
+		CreateAndShowContextMenu(InMouseEvent);
 	}
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
@@ -174,6 +182,67 @@ void UTSA_SlottedItem::ShowItemDetails()
 	}
 }
 
+void UTSA_SlottedItem::CreateAndShowContextMenu(const FPointerEvent& InMouseEvent)
+{
+	if (!InventoryItem.IsValid()) return;
+	ATSA_HUD* HUD = Cast<ATSA_HUD>(GetOwningPlayer()->GetHUD());
+	if (!HUD) return;
+	
+	UTSA_ContextMenu* ContextMenu = CreateWidget<UTSA_ContextMenu>(GetOwningPlayer(), HUD->GetContextMenuClass());
+	
+	UTSA_ItemDataAsset* ItemAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(InventoryItem.Get());
+	if (ItemAsset)
+	{
+		if (ItemAsset->FindFragment<UTSA_EquipStatFragment>())
+		{
+			FOnContextActionClicked Action;
+			Action.BindDynamic(this, &UTSA_SlottedItem::ExecuteEquip);
+			ContextMenu->AddMenuOption(FText::FromString(TEXT("装备")), Action);
+		}
+		
+		if (ItemAsset->FindFragment<UTSA_PropFragment>())
+		{
+			FOnContextActionClicked Action;
+			Action.BindDynamic(this, &UTSA_SlottedItem::ExecuteUseProp);
+			ContextMenu->AddMenuOption(FText::FromString(TEXT("使用")), Action);
+		}
+	}
+	FOnContextActionClicked DropAction;
+	DropAction.BindDynamic(this, &UTSA_SlottedItem::ExecuteDropItem);
+	ContextMenu->AddMenuOption(FText::FromString(TEXT("丢弃")), DropAction);
+	
+	FVector2D ViewportPos = UTSA_WidgetUtils::GetViewportPositionFromMouseEvent(this, InMouseEvent);
+	ContextMenu->SetMenuPosition(ViewportPos);
+	ContextMenu->AddToViewport(2);
+	
+	HUD->SetContextMenu(ContextMenu);
+}
+
+void UTSA_SlottedItem::ExecuteUseProp()
+{
+	UTSA_InventoryComponent* Inventory = GetOwningInventoryComponent();
+	if (Inventory)
+	{
+		Inventory->UseProp(InventoryItem.Get(), SlotIndex);
+	}
+}
+
+void UTSA_SlottedItem::ExecuteDropItem()
+{
+	UTSA_InventoryComponent* Inventory = GetOwningInventoryComponent();
+	if (Inventory)
+	{
+		Inventory->DropItemIntoWorld(SlotIndex);
+	}
+}
+
+void UTSA_SlottedItem::ExecuteEquip()
+{
+	if (UTSA_InventoryComponent* Inventory = GetOwningInventoryComponent())
+	{
+		Inventory->EquipItem(InventoryItem.Get(), SlotIndex);
+	}
+}
 
 void UTSA_SlottedItem::SetBackgroundByRarity(ETSA_ItemRarity Rarity)
 {

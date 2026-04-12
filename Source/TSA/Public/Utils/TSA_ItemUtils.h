@@ -32,6 +32,9 @@ public:
 	static bool GetItemStaticDataFromManifestStruct(const FInstancedStruct& ItemManifestStruct, FTSA_ItemDataRow& OutItemData);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")
+	static UTSA_ItemDataAsset* GetItemDataAssetFromItem(UTSA_InventoryItem* Item);
+	
+	UFUNCTION(BlueprintPure, Category = "TSA|Item")
 	static FGameplayTag GetItemCategoryFromManifest(const FTSA_ItemManifest& Manifest);
 	
 	UFUNCTION(BlueprintPure, Category = "TSA|Item")

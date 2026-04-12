@@ -10,6 +10,8 @@
 #include "TSA_EquipmentManagerComp.generated.h"
 
 
+class UTSA_InventoryComponent;
+class ATSA_AgentCharacter;
 class UTSA_EquipStatFragment;
 class UTSA_AbilitySystemComponent;
 class UTSA_ScalingFragment;
@@ -33,11 +35,13 @@ class TSA_API UTSA_EquipmentManagerComp : public UActorComponent
 
 public:
 	UTSA_EquipmentManagerComp();
-
-	void UpdateArmor(float BaseArmor);
-protected:
 	virtual void BeginPlay() override;
 	
+	void UpdateArmor(float BaseArmor);
+	
+	void UsingProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex);
+	void EquipItem(UTSA_InventoryComponent* SourceInventory, UTSA_InventoryItem* Item, int32 SourceIndex);
+protected:
 	UFUNCTION()
 	void OnWeaponEquipped(UTSA_InventoryItem* Item,int32 SlotIndex);
 	
@@ -66,4 +70,14 @@ protected:
 	void  ApplyEquipStatFragment(UTSA_InventoryItem* Item,const UTSA_EquipStatFragment* Fragment,UTSA_AbilitySystemComponent* ASC);
 	
 	void GenerateCurrentArmor(float BaseArmor,UTSA_AbilitySystemComponent* ASC);
+	
+	UPROPERTY()
+	TObjectPtr<ATSA_AgentCharacter> Agent;
+	
+	/* Props */
+	FTimerHandle PropUsingTimer;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "TSA|Props")
+	TSubclassOf<UGameplayEffect> PropUsingGEClass;
+	/* End of Props */
 };

@@ -50,7 +50,10 @@ public:
 	void TryConvertItem();
 	void ConsumeItemInConverter();
 	UFUNCTION(BlueprintCallable)
-	UTSA_ResourceManagerComp* GetResourceManagerComp(){ return ResourceManagerComp; }
+	UTSA_EquipmentManagerComp* GetEquipmentManagerComp() { return EquipmentManagerComp; }
+	
+	UFUNCTION(BlueprintCallable)
+	UTSA_ResourceManagerComp* GetResourceManagerComp() { return ResourceManagerComp; }
 	
 	UFUNCTION(BlueprintCallable)
 	UTSA_BondManagerComp* GetBondManagerComp() { return  BondManagerComp; }

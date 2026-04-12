@@ -21,7 +21,7 @@ public class TSA : ModuleRules
 			"GameplayAbilities","GameplayTags","GameplayTasks"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AlembicLib" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

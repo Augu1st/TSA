@@ -72,9 +72,7 @@ namespace AttributeTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ModuleCooldown,"Attribute.Combat.ModuleCooldown","模块冷却");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PropUseSpeed,"Attribute.Combat.PropUseSpeed","道具使用速度");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WalkSpeed,"Attribute.Combat.WalkSpeed","行走速度");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RunSpeed,"Attribute.Combat.RunSpeed","跑步速度");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SprintSpeed,"Attribute.Combat.SprintSpeed","冲刺速度");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(MovementSpeed,"Attribute.Combat.MovementSpeed","移动速度");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(PhysicalResistance,"Attribute.Combat.Resistance.Physical","物理抗性");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyResistance,"Attribute.Combat.Resistance.Energy","能量抗性");

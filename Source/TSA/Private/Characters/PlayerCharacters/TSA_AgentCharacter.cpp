@@ -3,6 +3,7 @@
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h"
 #include "TSA/TSA.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
@@ -266,6 +267,14 @@ void ATSA_AgentCharacter::InitAbilitySystemInfo()
 	check(PS);
 	PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
 	AbilitySystemComponent = PS->GetAbilitySystemComponent();
+	
+	// 监听移动速度变化
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UTSA_CombatAttributeSet::GetMovementSpeedAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData&  Data)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+		}	
+	);
 }
 
 void ATSA_AgentCharacter::InitAttributes()

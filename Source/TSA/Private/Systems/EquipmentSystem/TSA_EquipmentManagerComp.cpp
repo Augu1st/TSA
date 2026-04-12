@@ -13,6 +13,8 @@
 #include "Items/DataAssets/TSA_ItemFragment.h"
 #include "Items/DataTable/TSA_ItemData.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "Systems/MessageSystem/TSA_MessageUtils.h"
+#include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "Utils/TSA_ItemUtils.h"
 
 UTSA_EquipmentManagerComp::UTSA_EquipmentManagerComp()
@@ -22,25 +24,12 @@ UTSA_EquipmentManagerComp::UTSA_EquipmentManagerComp()
 	
 }
 
-void UTSA_EquipmentManagerComp::UpdateArmor(float BaseArmor)
-{
-	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
-	if (!Agent) return;
-	UTSA_InventoryComponent* ArmorInventoryComp = Agent->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
-	UTSA_InventoryItem* EquippedArmor = ArmorInventoryComp->GetItemAtIndex(0);
-	if (EquippedArmor)
-	{
-		FTSA_ItemManifest& ItemManifest= EquippedArmor->GetItemManifestMutable();
-		ItemManifest.SetStat(AttributeTags::Armor, BaseArmor);
-	}
-}
-
 // Called when the game starts
 void UTSA_EquipmentManagerComp::BeginPlay()
 {
 	Super::BeginPlay();
 	//获取装备背包组件
-	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
+	Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 	if (!Agent) return;
 	UTSA_InventoryComponent* WeaponInventoryComp = Agent->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Weapon);
 	UTSA_InventoryComponent* ArmorInventoryComp = Agent->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
@@ -63,6 +52,51 @@ void UTSA_EquipmentManagerComp::BeginPlay()
 	}
 }
 
+void UTSA_EquipmentManagerComp::UpdateArmor(float BaseArmor)
+{
+	if (!Agent) return;
+	UTSA_InventoryComponent* ArmorInventoryComp = Agent->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Armor);
+	UTSA_InventoryItem* EquippedArmor = ArmorInventoryComp->GetItemAtIndex(0);
+	if (EquippedArmor)
+	{
+		FTSA_ItemManifest& ItemManifest= EquippedArmor->GetItemManifestMutable();
+		ItemManifest.SetStat(AttributeTags::Armor, BaseArmor);
+	}
+}
+
+void UTSA_EquipmentManagerComp::UsingProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	UTSA_ItemDataAsset* ItemDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
+	if (ItemDataAsset)
+	{
+		if (const UTSA_PropFragment* PropFragment = ItemDataAsset->FindFragment<UTSA_PropFragment>())
+		{
+			
+		}
+	}
+}
+
+void UTSA_EquipmentManagerComp::EquipItem(UTSA_InventoryComponent* SourceInventory, UTSA_InventoryItem* Item,
+	int32 SourceIndex)
+{
+	FGameplayTag ItemCategory = UTSA_ItemUtils::GetItemCategoryFromItem(Item);
+	UTSA_InventoryComponent* TargetInventory = Agent->GetEquipmentInventoryByCategory(ItemCategory);
+	if (TargetInventory == SourceInventory)
+	{
+		UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("已经装备该物品！")));
+		return;
+	}
+	int32 TargetIndex = TargetInventory->FindFirstEmptySlot();
+	if (TargetIndex != -1)
+	{
+		SourceInventory->MoveItem(SourceIndex, TargetInventory, TargetIndex);
+	}
+	else
+	{
+		UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("装备栏已满！")));
+	}
+}
+
 void UTSA_EquipmentManagerComp::OnWeaponEquipped(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
 	
@@ -78,7 +112,6 @@ void UTSA_EquipmentManagerComp::OnArmorEquipped(UTSA_InventoryItem* Item, int32 
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
 	if (UTSA_ItemDataAsset* ItemDataAsset = DataRow.ItemDataAsset.LoadSynchronous())
 	{
-		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 		if (!IsValid(Agent)) return;
 		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 	
@@ -104,7 +137,6 @@ void UTSA_EquipmentManagerComp::OnArmorUnequipped(UTSA_InventoryItem* Item, int3
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
 	if (DataRow.ItemDataAsset)
 	{
-		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 		if (!IsValid(Agent)) return;
 		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 		
@@ -130,7 +162,6 @@ void UTSA_EquipmentManagerComp::OnModuleEquipped(UTSA_InventoryItem* Item, int32
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
 	if (UTSA_ItemDataAsset* ItemDataAsset = DataRow.ItemDataAsset.LoadSynchronous())
 	{
-		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 		if (!IsValid(Agent)) return;
 		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 	
@@ -149,7 +180,6 @@ void UTSA_EquipmentManagerComp::OnModuleUnequipped(UTSA_InventoryItem* Item, int
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, DataRow);
 	if (DataRow.ItemDataAsset)
 	{
-		ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetOwner());
 		if (!IsValid(Agent)) return;
 		UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
 		

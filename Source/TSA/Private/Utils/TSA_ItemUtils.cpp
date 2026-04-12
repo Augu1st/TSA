@@ -26,14 +26,19 @@ bool UTSA_ItemUtils::GetItemStaticDataFromItem(UTSA_InventoryItem* Item, FTSA_It
 	return GetItemDataFromManifest(ItemManifest, OutItemData);
 }
 
-// 【关键同步修改】：签名里的 FInstancedStruct 加上了 const
 bool UTSA_ItemUtils::GetItemStaticDataFromManifestStruct(const FInstancedStruct& ItemManifestStruct, FTSA_ItemDataRow& OutItemData)
 {
 	if (!ItemManifestStruct.IsValid()) return false;
 	
-	// FInstancedStruct 具有 const 版本的 Get() 方法，所以这里完美兼容
 	const FTSA_ItemManifest& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifest>();
 	return GetItemDataFromManifest(ItemManifest, OutItemData);
+}
+
+UTSA_ItemDataAsset* UTSA_ItemUtils::GetItemDataAssetFromItem(UTSA_InventoryItem* Item)
+{
+	FTSA_ItemDataRow ItemData;
+	GetItemStaticDataFromItem(Item, ItemData);
+	return ItemData.ItemDataAsset.LoadSynchronous();
 }
 
 FGameplayTag UTSA_ItemUtils::GetItemCategoryFromManifest(const FTSA_ItemManifest& Manifest)

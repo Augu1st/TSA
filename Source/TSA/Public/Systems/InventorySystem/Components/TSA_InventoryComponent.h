@@ -41,6 +41,7 @@ public:
 	
 	void AddRepSubObj(UObject* SubObj);
 	
+	int32 FindFirstEmptySlot() const;
 	FTSA_SlotAvailabilityResult HasRoomForItem(const FInstancedStruct& ItemManifestStruct);
 	void TryAddLeftItemToEmptySlot(FTSA_SlotAvailabilityResult& Result, int32 StackToAdd);
 	UTSA_InventoryItem* GetItemAtIndex(int32 Index) const;
@@ -53,6 +54,9 @@ public:
 	
 	UFUNCTION(Client, Reliable)
 	void Client_ShowMessage(const FText& Message);
+	
+	void UseProp(UTSA_InventoryItem* Item, int32 SlotIndex);
+	void EquipItem(UTSA_InventoryItem* Item, int32 SlotIndex);
 	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;

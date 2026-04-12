@@ -74,9 +74,7 @@ namespace AttributeTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ModuleCooldown);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PropUseSpeed);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(WalkSpeed);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(RunSpeed);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SprintSpeed);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(MovementSpeed);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PhysicalResistance);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyResistance);
@@ -117,6 +115,11 @@ namespace StateTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Idle);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Working);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Locked);
+
+	namespace Player
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(UsingProps);
+	}
 }
 
 namespace EventTags
@@ -128,4 +131,5 @@ namespace EventTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(MatterToEnergy);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnergyToMatter);		
 	}
+	
 }

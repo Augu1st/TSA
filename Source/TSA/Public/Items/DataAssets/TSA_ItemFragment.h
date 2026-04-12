@@ -58,7 +58,6 @@ class TSA_API UTSA_InstantStatFragment : public UTSA_ItemFragment
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "TSA|Attributes")
 	TArray<FTSA_StatModifier> Modifiers;
-	
 };
 
 // 持续Buff片段
@@ -103,9 +102,6 @@ class TSA_API UTSA_ArmorFragment : public UTSA_ItemFragment
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Armor")
 	float MaxArmor = 0.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Armor")
-	FText Description;
 };
 
 UCLASS()
@@ -122,31 +118,22 @@ class TSA_API UTSA_PropFragment : public UTSA_ItemFragment
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
-	bool bDisposable = false;// 是否一次性
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
-	float UseTime = 0.f;
+	FGameplayTag PropCategory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
 	FText Description ;
 };
 
 UCLASS()
-class TSA_API UTSA_EnergyCostFragment : public UTSA_ItemFragment
+class TSA_API UTSA_ConsumeFragment : public UTSA_ItemFragment
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Energy")
-	float MaxEnergy = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
+	int32 MaxConsumeCounts = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Energy")
-	FGameplayTag EnergyCostType;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Energy")
-	float EnergyCost = 0.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Energy")
-	float EnergyCostDuration = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
+	float ConsumeTime = 0.f;// 预热时间
 };
 
 // 蓝图片段

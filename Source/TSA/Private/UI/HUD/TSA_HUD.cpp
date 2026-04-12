@@ -16,6 +16,7 @@
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "UI/BondMenu/TSA_BondMenuController.h"
 #include "UI/BondMenu/TSA_BondMenu.h"
+#include "UI/Inventory/SlottedItems/TSA_ContextMenu.h"
 
 
 ATSA_HUD::ATSA_HUD()
@@ -95,6 +96,7 @@ void ATSA_HUD::ToggleInventory()
 		{
 			InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
 			ClearContainerGrid();
+			if (ContextMenu) ContextMenu->CloseMenu();
 		}
 		else
 		{

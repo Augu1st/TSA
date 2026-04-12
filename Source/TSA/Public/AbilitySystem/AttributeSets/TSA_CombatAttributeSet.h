@@ -64,26 +64,12 @@ public:
 	/* End of Prop */
 	
 	/* Speed 速度 */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Speed_Walk)
-	FGameplayAttributeData WalkSpeed;// 步行速度
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, WalkSpeed)
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Speed_Run)
-	FGameplayAttributeData RunSpeed;// 跑步速度
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, RunSpeed)
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Speed_Sprint)
-	FGameplayAttributeData SprintSpeed;// 冲刺速度
-	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, SprintSpeed)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MovementSpeed)
+	FGameplayAttributeData MovementSpeed;// 移动速度
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, MovementSpeed)
 	
 	UFUNCTION()
-	void OnRep_Speed_Walk(const FGameplayAttributeData& OldSpeed_Walk);
-	
-	UFUNCTION()
-	void OnRep_Speed_Run(const FGameplayAttributeData& OldSpeed_Run);
-	
-	UFUNCTION()
-	void OnRep_Speed_Sprint(const FGameplayAttributeData& OldSpeed_Sprint);
+	void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed);
 	/* End of Speed */
 	
 	/* Resist 抗性 */
@@ -96,7 +82,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, EnergyResistance)
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_StructureResistance)
-	FGameplayAttributeData StructureResistance;
+	FGameplayAttributeData StructureResistance; // 结构抗性
 	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, StructureResistance)
 	
 	UFUNCTION()

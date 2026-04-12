@@ -34,7 +34,7 @@ public:
 	// End of Getters and Setters
 	
 	const FName& GetItemID();
-	
+
 private:
 	UPROPERTY(VisibleAnywhere, meta = (BaseStruct = "/Script/TSA.TSA_ItmeManifestBase"), Replicated)
 	FInstancedStruct ItemManifest;

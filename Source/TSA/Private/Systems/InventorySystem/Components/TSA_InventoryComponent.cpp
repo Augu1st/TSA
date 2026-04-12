@@ -13,6 +13,7 @@
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "UI/Inventory/TSA_InventoryBase.h"
 #include "Net/UnrealNetwork.h"
+#include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
 #include "Utils/TSA_CommonLibrary.h"
 #include "Utils/TSA_ItemUtils.h"
 
@@ -136,6 +137,11 @@ void UTSA_InventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
+int32 UTSA_InventoryComponent::FindFirstEmptySlot() const
+{
+	return InventoryList.FindFirstEmptySlot(MaxCapacity);
+}
+
 FTSA_SlotAvailabilityResult UTSA_InventoryComponent::HasRoomForItem(const FInstancedStruct& ItemManifestStruct)
 {
 	const FTSA_ItemManifest& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifest>();
@@ -214,6 +220,21 @@ void UTSA_InventoryComponent::Client_ShowMessage_Implementation(const FText& Mes
 	}
 }
 
+void UTSA_InventoryComponent::UseProp(UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	UTSA_ItemDataAsset* ItemDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
+	
+}
+
+void UTSA_InventoryComponent::EquipItem(UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (Agent)
+	{
+		Agent->GetEquipmentManagerComp()->EquipItem(this,Item,SlotIndex);
+	}
+}
+
 void UTSA_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -240,10 +261,10 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 		
 		if (TargetResult.TotalRoomToFill > 0)
 		{
-			// 2. 目标组件同意接收！直接在目标指定的格子里生成物品
+			// 生成物品
 			TargetComp->AddNewItem(PayloadManifest, TargetIndex);
 			
-			// 3. 既然货物已经安全抵达，从我这里彻底销毁源物品！
+			// 销毁物品
 			RemoveItem(SourceItem, SourceIndex);
 		}
 		else

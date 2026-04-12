@@ -61,9 +61,7 @@ void UTSA_GameInstanceSys::SetAttributeStrings()
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetWeaponCooldownAttribute(),"<Cooldown>"+FString(TEXT("武器冷却"))+"</>");
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetModuleCooldownAttribute(),"<Cooldown>"+FString(TEXT("模块冷却"))+"</>");
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetPropUseSpeedAttribute(),"<Speed>"+FString(TEXT("道具使用速度"))+"</>");
-	AttributeStrings.Add(UTSA_CombatAttributeSet::GetWalkSpeedAttribute(),"<Speed>"+FString(TEXT("步行速度"))+"</>");
-	AttributeStrings.Add(UTSA_CombatAttributeSet::GetRunSpeedAttribute(),"<Speed>"+FString(TEXT("跑步速度"))+"</>");
-	AttributeStrings.Add(UTSA_CombatAttributeSet::GetSprintSpeedAttribute(),"<Speed>"+FString(TEXT("冲刺速度"))+"</>");
+	AttributeStrings.Add(UTSA_CombatAttributeSet::GetMovementSpeedAttribute(),"<Speed>"+FString(TEXT("移动速度"))+"</>");
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetPhysicalResistanceAttribute(),"<Physical>"+FString(TEXT("物理抗性"))+"</>");
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetEnergyResistanceAttribute(),"<Energy>"+FString(TEXT("能量抗性"))+"</>");
 	AttributeStrings.Add(UTSA_CombatAttributeSet::GetStructureResistanceAttribute(),"<Structure>"+FString(TEXT("结构抗性"))+"</>");

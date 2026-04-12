@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "TSA_SlottedItem.generated.h"
 
+class UTSA_ContextMenu;
 class UTSA_ItemDetailsWidget;
 class UTSA_InventoryComponent;
 enum class ETSA_ItemRarity : uint8;
@@ -53,6 +54,15 @@ protected:
 	void PlayCursorOutAnimation();
 	
 	void ShowItemDetails();
+	
+	void CreateAndShowContextMenu(const FPointerEvent& InMouseEvent);
+
+	UFUNCTION()
+	void ExecuteUseProp();
+	UFUNCTION()
+	void ExecuteDropItem();
+	UFUNCTION()
+	void ExecuteEquip();
 private:
 	void SetBackgroundByRarity(ETSA_ItemRarity Rarity);
 	UTSA_InventoryComponent* GetOwningInventoryComponent() const;
@@ -90,5 +100,7 @@ private:
 	FTimerHandle ItemDetailsTimerHandle;
 	/* End of Item Details*/
 	
-	
+	/* Context Menu */
+	UPROPERTY(EditAnywhere, Category="TSA|Context Menu")
+	TSubclassOf<UTSA_ContextMenu> ContextMenuClass;
 };

@@ -14,9 +14,7 @@ UTSA_CombatAttributeSet::UTSA_CombatAttributeSet()
 	InitWeaponCooldown(0.f);
 	
 	InitPropUseSpeed(1.f);
-	InitWalkSpeed(100.f);
-	InitRunSpeed(450.f);
-	InitSprintSpeed(600.f);
+	InitMovementSpeed(450.f);
 	
 	InitPhysicalResistance(10.f);
 	InitEnergyResistance(10.f);
@@ -34,9 +32,7 @@ void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, ModuleCooldown, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, PropUseSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, WalkSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, RunSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, SprintSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, EnergyResistance, COND_None, REPNOTIFY_Always);
@@ -58,21 +54,6 @@ void UTSA_CombatAttributeSet::OnRep_WeaponCooldown(const FGameplayAttributeData&
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, WeaponCooldown, OldWeaponCooldown);
 }
 
-void UTSA_CombatAttributeSet::OnRep_Speed_Walk(const FGameplayAttributeData& OldSpeed_Walk)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, WalkSpeed, OldSpeed_Walk);
-}
-
-void UTSA_CombatAttributeSet::OnRep_Speed_Run(const FGameplayAttributeData& OldSpeed_Run)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, RunSpeed, OldSpeed_Run);
-}
-
-void UTSA_CombatAttributeSet::OnRep_Speed_Sprint(const FGameplayAttributeData& OldSpeed_Sprint)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, SprintSpeed, OldSpeed_Sprint);
-}
-
 void UTSA_CombatAttributeSet::OnRep_ModuleCooldown(const FGameplayAttributeData& OldModuleCooldown)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, ModuleCooldown, OldModuleCooldown);
@@ -81,6 +62,11 @@ void UTSA_CombatAttributeSet::OnRep_ModuleCooldown(const FGameplayAttributeData&
 void UTSA_CombatAttributeSet::OnRep_PropUseSpeed(const FGameplayAttributeData& OldPropUseSpeed)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, PropUseSpeed, OldPropUseSpeed);
+}
+
+void UTSA_CombatAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, MovementSpeed, OldMovementSpeed);
 }
 
 void UTSA_CombatAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance)
