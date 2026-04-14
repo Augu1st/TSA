@@ -47,7 +47,7 @@ public:
 	TArray<FTSA_StatModifier> Modifiers;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
-	FText Description;
+	TSubclassOf<UGameplayEffect> EquipEffect;
 };
 
 // 即时效果片段
@@ -58,6 +58,9 @@ class TSA_API UTSA_InstantStatFragment : public UTSA_ItemFragment
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "TSA|Attributes")
 	TArray<FTSA_StatModifier> Modifiers;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
+	TSubclassOf<UGameplayEffect> InstantEffect;
 };
 
 // 持续Buff片段
@@ -71,6 +74,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
 	float Duration = 0.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Attributes")
+	TSubclassOf<UGameplayEffect> DurationEffect;
 };
 
 // 技能片段
@@ -129,9 +135,6 @@ class TSA_API UTSA_ConsumeFragment : public UTSA_ItemFragment
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
-	int32 MaxConsumeCounts = 0;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TSA|Props")
 	float ConsumeTime = 0.f;// 预热时间
 };

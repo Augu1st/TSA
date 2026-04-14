@@ -214,7 +214,6 @@ void ATSA_AgentCharacter::InitMovement()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;// TODO:从属性获取
 }
 
 void ATSA_AgentCharacter::InitCameraAndArm()

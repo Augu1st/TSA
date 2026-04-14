@@ -12,6 +12,8 @@ namespace ItemTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Module,"Item.Category.Equipment.Module","装备-模块");
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Prop,"Item.Category.Prop","道具根标签");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Prop_Consume,"Item.Category.Prop.Consume","消耗型道具");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Prop_Throw,"Item.Category.Prop.Consume","投掷型道具");
 		
 		/* Collection Category */
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Collection,"Item.Category.Collection","收集品根标签");
@@ -38,6 +40,7 @@ namespace ItemTags
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Infinite,"Item.Resource.EnergyCost.Percentage","无限消耗")
 		}
 	}
+	
 }
 
 namespace AttributeTags
@@ -111,7 +114,12 @@ namespace StateTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Idle,"State.Converter.Idle","等待转换");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Working,"State.Converter.Working","正在转换");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Convert_Locked,"State.Converter.Locked","锁定");
-	
+
+	namespace Props
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Idle,"State.Props.Idle","等待使用道具");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(UsingProps,"State.Props.Using","正在使用道具");
+	}
 }
 
 namespace EventTags

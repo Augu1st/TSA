@@ -44,6 +44,7 @@ public:
 	UVerticalBox* Box_Fragment;
 	
 private:
+	void AddRichText(const FText& Text);
 	
 	UPROPERTY(EditAnywhere,Category = "TSA|Item Details")
 	TSubclassOf<UTSA_ItemRichText> ItemRichTextClass;

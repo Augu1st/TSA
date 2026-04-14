@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "TSA_ItemUtils.generated.h"
 
+class UTSA_ItemDataAsset;
 struct FInstancedStruct;
 struct FGameplayTag;
 struct FTSA_ItemManifest;

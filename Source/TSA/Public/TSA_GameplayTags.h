@@ -15,6 +15,8 @@ namespace ItemTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment_Module);
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Prop);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Prop_Consume);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Prop_Throw);
 		
 		/* Collection Category */
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Collection);
@@ -116,8 +118,9 @@ namespace StateTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Working);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Convert_Locked);
 
-	namespace Player
+	namespace Props
 	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Idle);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(UsingProps);
 	}
 }

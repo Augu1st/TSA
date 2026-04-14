@@ -5,11 +5,16 @@
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayEffectTypes.h"
+#include "TSA_GameplayTags.h"
 #include "Components/ActorComponent.h"
 
 #include "TSA_EquipmentManagerComp.generated.h"
 
 
+struct FAttributeBasedFloat;
+class UTSA_OccupyProgressBar;
+class UTSA_ItemDataAsset;
+struct FTSA_StatModifier;
 class UTSA_InventoryComponent;
 class ATSA_AgentCharacter;
 class UTSA_EquipStatFragment;
@@ -39,8 +44,9 @@ public:
 	
 	void UpdateArmor(float BaseArmor);
 	
-	void UsingProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex);
 	void EquipItem(UTSA_InventoryComponent* SourceInventory, UTSA_InventoryItem* Item, int32 SourceIndex);
+	void UseProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex);
+	
 protected:
 	UFUNCTION()
 	void OnWeaponEquipped(UTSA_InventoryItem* Item,int32 SlotIndex);
@@ -67,17 +73,33 @@ protected:
 	TMap<UTSA_InventoryItem*, FTSA_ActiveEffectHandles> ItemEffectHandles;
 	
 	float GetAdditiveValue(const TMap<FGameplayAttribute, float>& AttributeScales,UTSA_AbilitySystemComponent* ASC);
-	void  ApplyEquipStatFragment(UTSA_InventoryItem* Item,const UTSA_EquipStatFragment* Fragment,UTSA_AbilitySystemComponent* ASC);
+	void ApplyEquipStatFragment(UTSA_InventoryItem* Item,const UTSA_EquipStatFragment* Fragment,UTSA_AbilitySystemComponent* ASC);
+	void ApplyInstantOrDurationEffect(const TSubclassOf<UGameplayEffect>& EffectClass , UTSA_AbilitySystemComponent* ASC,float Duration = 0.f);
+	void GetAttributeBaseMagnitude(FAttributeBasedFloat& AttributeBasedFloat,UTSA_AbilitySystemComponent* ASC, FGameplayAttribute Attribute,float Coefficient = 1.f);
 	
+	UFUNCTION()
+	void ApplyAllEffectOfProp(UTSA_InventoryComponent* Inventory,UTSA_InventoryItem* Item,int32 SlotIndex,UTSA_AbilitySystemComponent* ASC);
+	void ApplyUsingPropGE(float InTime,UTSA_AbilitySystemComponent* ASC);
 	void GenerateCurrentArmor(float BaseArmor,UTSA_AbilitySystemComponent* ASC);
 	
 	UPROPERTY()
 	TObjectPtr<ATSA_AgentCharacter> Agent;
 	
 	/* Props */
-	FTimerHandle PropUsingTimer;
+	FTimerHandle PropUsingTimerHandle;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "TSA|Props")
 	TSubclassOf<UGameplayEffect> PropUsingGEClass;
+	
+	UPROPERTY()
+	FGameplayEffectSpecHandle PropUsingGEHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "TSA|Props")
+	TSubclassOf<UTSA_OccupyProgressBar> OccupyProgressBarClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_OccupyProgressBar> OccupyProgressBar;
+	
+	
 	/* End of Props */
 };

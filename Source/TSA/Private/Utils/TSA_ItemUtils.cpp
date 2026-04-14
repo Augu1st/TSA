@@ -46,7 +46,7 @@ FGameplayTag UTSA_ItemUtils::GetItemCategoryFromManifest(const FTSA_ItemManifest
 	FTSA_ItemDataRow ItemData;	
 	GetItemDataFromManifest(Manifest, ItemData);
 	
-	return ItemData.Category; // 注意：根据你之前的定义，是 ItemCategory 而不是 Category
+	return ItemData.Category;
 }
 
 FGameplayTag UTSA_ItemUtils::GetItemCategoryFromItem(UTSA_InventoryItem* Item)
@@ -102,9 +102,10 @@ bool UTSA_ItemUtils::GetBondDefinition(UObject* WorldContextObject, const FGamep
 	return false;
 }
 
+// 将静态数据读入动态数据
 bool UTSA_ItemUtils::MakeManifestFromItemDataRow(FTSA_ItemManifest& OutManifest, const FTSA_ItemDataRow& ItemDataRow)
 {
-	UTSA_ItemDataAsset* ItemDataAsset = ItemDataRow.ItemDataAsset.Get();
+	UTSA_ItemDataAsset* ItemDataAsset = ItemDataRow.ItemDataAsset.LoadSynchronous();
 	if (!ItemDataAsset) return false;
 	
 	if (const UTSA_ArmorFragment* ArmorFragment =ItemDataAsset->FindFragment<UTSA_ArmorFragment>())

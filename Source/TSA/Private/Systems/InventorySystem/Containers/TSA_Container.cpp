@@ -124,6 +124,5 @@ FInstancedStruct ATSA_Container::CreateManifestByTag(const FDataTableRowHandle& 
 	FString ContextString(TEXT("Container Spawn Item Manifest"));
 	UTSA_ItemUtils::MakeManifestFromItemDataRow(Manifest, *Handle.GetRow<FTSA_ItemDataRow>(ContextString));
 	return FInstancedStruct::Make(Manifest);
-	
 }
 

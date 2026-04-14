@@ -5,8 +5,11 @@
 
 #include "AbilitySystemComponent.h"
 #include "TSA_GameplayTags.h"
+#include "AbilitySystem/Abilities/TSA_AbilityTags.h"
+#include "AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h"
 #include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Items/TSA_InventoryItem.h"
 #include "Items/DataAssets/TSA_ItemDataAsset.h"
@@ -16,6 +19,7 @@
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "Utils/TSA_ItemUtils.h"
+#include "UI/CommonWidgets/TSA_OccupyProgressBar.h"
 
 UTSA_EquipmentManagerComp::UTSA_EquipmentManagerComp()
 {
@@ -64,18 +68,6 @@ void UTSA_EquipmentManagerComp::UpdateArmor(float BaseArmor)
 	}
 }
 
-void UTSA_EquipmentManagerComp::UsingProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex)
-{
-	UTSA_ItemDataAsset* ItemDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
-	if (ItemDataAsset)
-	{
-		if (const UTSA_PropFragment* PropFragment = ItemDataAsset->FindFragment<UTSA_PropFragment>())
-		{
-			
-		}
-	}
-}
-
 void UTSA_EquipmentManagerComp::EquipItem(UTSA_InventoryComponent* SourceInventory, UTSA_InventoryItem* Item,
 	int32 SourceIndex)
 {
@@ -94,6 +86,41 @@ void UTSA_EquipmentManagerComp::EquipItem(UTSA_InventoryComponent* SourceInvento
 	else
 	{
 		UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("装备栏已满！")));
+	}
+}
+
+void UTSA_EquipmentManagerComp::UseProp(UTSA_InventoryComponent* Inventory, UTSA_InventoryItem* Item, int32 SlotIndex)
+{
+	UTSA_AbilitySystemComponent* ASC = Agent->GetASC();
+	if (ASC->GetOwnedGameplayTags().HasTagExact(StateTags::Props::UsingProps))
+	{
+		UTSA_MessageUtils::GetUIMessageSubsystem(GetOwner())->BroadcastUIMessage(FText::FromString(TEXT("正在使用道具！")));
+		return;
+	}
+	
+	UTSA_ItemDataAsset* ItemDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
+	if (!IsValid(ItemDataAsset)) return;
+	if (const UTSA_PropFragment* PropFragment = ItemDataAsset->FindFragment<UTSA_PropFragment>())
+	{
+		
+		const FGameplayTag& PropTag = PropFragment->PropCategory;
+		if (!PropTag.IsValid()) return;
+		// 消耗型道具
+		if (PropTag.MatchesTagExact(ItemTags::Category::Prop_Consume))
+		{
+			const UTSA_ConsumeFragment* ConsumeFragment = ItemDataAsset->FindFragment<UTSA_ConsumeFragment>();
+			if (!ConsumeFragment) return;
+			float OccupyTime = ConsumeFragment->ConsumeTime;
+			if ( OccupyTime!= 0)
+			{	
+				OccupyTime = ConsumeFragment->ConsumeTime/ASC->GetNumericAttribute(UTSA_CombatAttributeSet::GetPropUseSpeedAttribute());
+				ApplyUsingPropGE(OccupyTime, ASC);
+				FTimerDelegate PropUsingDelegate = FTimerDelegate::CreateUObject(
+                				this, &UTSA_EquipmentManagerComp::ApplyAllEffectOfProp, Inventory, Item, SlotIndex, ASC);
+				GetWorld()->GetTimerManager().SetTimer(PropUsingTimerHandle, PropUsingDelegate, OccupyTime, false);
+			}
+			else ApplyAllEffectOfProp(Inventory, Item, SlotIndex, ASC);
+		}
 	}
 }
 
@@ -208,31 +235,49 @@ float UTSA_EquipmentManagerComp::GetAdditiveValue(const TMap<FGameplayAttribute,
 
 void UTSA_EquipmentManagerComp::ApplyEquipStatFragment(UTSA_InventoryItem* Item,const UTSA_EquipStatFragment* Fragment,UTSA_AbilitySystemComponent* ASC)
 {
-	// 创建动态GE
-	FName UniqueGEName = MakeUniqueObjectName(GetTransientPackage(), UGameplayEffect::StaticClass(), FName("DynamicEquipGE"));
-	UGameplayEffect* DynamicGE = NewObject<UGameplayEffect>(GetTransientPackage(), UniqueGEName);
-	DynamicGE->DurationPolicy = EGameplayEffectDurationType::Infinite;
-	
-	for (const FTSA_StatModifier& Mod : Fragment->Modifiers)
-	{
-		if (!Mod.Attribute.IsValid()) continue; // 防漏填
-
-		FGameplayModifierInfo ModInfo;
-		ModInfo.Attribute = Mod.Attribute;
-		ModInfo.ModifierOp = Mod.ModifierOp; 
-		
-		float AdditiveValue = GetAdditiveValue(Mod.AttributeScales, ASC); // 计算属性加成
-		float FinalValue = Mod.Value + AdditiveValue; // 计算最终值
-		
-		FScalableFloat ScalableFloat;
-		ScalableFloat.SetValue(FinalValue);
-		ModInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(ScalableFloat);
-
-		DynamicGE->Modifiers.Add(ModInfo);
-	}
-	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
-	FActiveGameplayEffectHandle AppliedHandle = ASC->ApplyGameplayEffectToSelf(DynamicGE, 1.0f, Context);
+	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Fragment->EquipEffect, 1.0f, ASC->MakeEffectContext());
+	FActiveGameplayEffectHandle AppliedHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	ItemEffectHandles[Item].ActiveEffectHandles.Add(AppliedHandle);
+}
+
+void UTSA_EquipmentManagerComp::ApplyInstantOrDurationEffect(const TSubclassOf<UGameplayEffect>& EffectClass ,
+	UTSA_AbilitySystemComponent* ASC, float Duration)
+{
+	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(EffectClass, 1.0f, ASC->MakeEffectContext());
+	if (Duration>0.f)SpecHandle.Data.Get()->SetSetByCallerMagnitude(AbilityTags::SetByCaller::Duration, Duration);
+	FActiveGameplayEffectHandle AppliedHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void UTSA_EquipmentManagerComp::ApplyAllEffectOfProp(UTSA_InventoryComponent* Inventory,UTSA_InventoryItem* Item,int32 SlotIndex,UTSA_AbilitySystemComponent* ASC)
+{
+	UTSA_ItemDataAsset* PropDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
+	if (!IsValid(PropDataAsset)) return;
+	if (const UTSA_InstantStatFragment* InstantStatFragment = PropDataAsset->FindFragment<UTSA_InstantStatFragment>())
+	{
+		ApplyInstantOrDurationEffect(InstantStatFragment->InstantEffect, ASC, 0.f);
+	}
+	if (const UTSA_DurationBuffFragment* DurationStatFragment = PropDataAsset->FindFragment<UTSA_DurationBuffFragment>())
+	{
+		ApplyInstantOrDurationEffect(DurationStatFragment->DurationEffect, ASC, DurationStatFragment->Duration);
+	}
+	Inventory->ConsumeItemStack(SlotIndex,1);
+}
+
+void UTSA_EquipmentManagerComp::ApplyUsingPropGE(float InTime,UTSA_AbilitySystemComponent* ASC)
+{
+	if (OccupyProgressBarClass)
+	{
+		OccupyProgressBar = CreateWidget<UTSA_OccupyProgressBar>(GetWorld(), OccupyProgressBarClass);
+		OccupyProgressBar->AddToViewport(2);
+		OccupyProgressBar->SetupOccupyProgressBar(FText::FromString(TEXT("使用道具")),InTime);
+	}
+	if (PropUsingGEClass)
+	{
+		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(PropUsingGEClass, 1, ASC->MakeEffectContext());
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(AbilityTags::SetByCaller::Duration, InTime);
+		
+		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
 }
 
 void UTSA_EquipmentManagerComp::GenerateCurrentArmor(float BaseArmor, UTSA_AbilitySystemComponent* ASC)

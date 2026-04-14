@@ -25,7 +25,7 @@ void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStr
 	const FTSA_ItemManifest& ItemManifest = ItemManifestStruct.Get<FTSA_ItemManifest>();
 	FTSA_ItemDataRow ItemData;
 	UTSA_ItemUtils::GetItemStaticDataFromManifestStruct(ItemManifestStruct, ItemData);
-	if (UTSA_ItemDataAsset* ItemDataAsset = ItemData.ItemDataAsset.LoadSynchronous())
+	if (UTSA_ItemDataAsset* ItemDataAsset = ItemData.ItemDataAsset.Get())
 	{
 		// 是否为护甲
 		if (const UTSA_ArmorFragment* ArmorFragment = ItemDataAsset->FindFragment<UTSA_ArmorFragment>())
@@ -33,10 +33,13 @@ void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStr
 			FString CurrentArmor;
 			float ArmorValue = ItemManifest.GetStat(AttributeTags::Armor);
 			CurrentArmor.Append(GetAttributeString(UTSA_VitalAttributeSet::GetArmorAttribute(),GetValueString(EGameplayModOp::Additive,ArmorValue)));
-			UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
-			RichText->SetRichText(FText::FromString(CurrentArmor));
-			Box_Fragment->AddChild(RichText);
-			RichTexts.Add(RichText);
+			AddRichText(FText::FromString(CurrentArmor));
+		}
+		if (const UTSA_ConsumeFragment* ConsumeFragment = ItemDataAsset->FindFragment<UTSA_ConsumeFragment>())
+		{
+			FString Text = TEXT("启用时间: ");
+			Text.Append(FString::Printf(TEXT("%.1f秒"),ConsumeFragment->ConsumeTime));
+			AddRichText(FText::FromString(Text));
 		}
 		// 获取装备属性
 		if (const UTSA_EquipStatFragment* EquipStatFragment = ItemDataAsset->FindFragment<UTSA_EquipStatFragment>())
@@ -46,13 +49,31 @@ void UTSA_ItemDetailsWidget::SetUpItemDetails_Implementation(const FInstancedStr
 				FText AttributeText;
 				AnalyzeStatModifier(StatModifier,AttributeText);
 				if (AttributeText.IsEmpty()) continue;
-				UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
-				RichText->SetRichText(AttributeText);
-				Box_Fragment->AddChild(RichText);
-				RichTexts.Add(RichText);
+				AddRichText(AttributeText);
 			}
 		}
-		
+		if (const UTSA_InstantStatFragment* InstantStatFragment = ItemDataAsset->FindFragment<UTSA_InstantStatFragment>())
+		{
+			AddRichText(FText::FromString(TEXT("即时效果: ")));
+			for (const FTSA_StatModifier& StatModifier : InstantStatFragment->Modifiers)
+			{
+				FText AttributeText;
+				AnalyzeStatModifier(StatModifier,AttributeText);
+				if (AttributeText.IsEmpty()) continue;
+				AddRichText(AttributeText);
+			}
+		}
+		if (const UTSA_DurationBuffFragment* DurationBuffFragment = ItemDataAsset->FindFragment<UTSA_DurationBuffFragment>())
+		{
+			AddRichText(FText::FromString(FString(TEXT("持续效果："))+FString::Printf(TEXT("%.1f秒"),DurationBuffFragment->Duration)));
+			for (const FTSA_StatModifier& StatModifier : DurationBuffFragment->Modifiers)
+			{
+				FText AttributeText;
+				AnalyzeStatModifier(StatModifier,AttributeText);
+				if (AttributeText.IsEmpty()) continue;
+				AddRichText(AttributeText);
+			}
+		}
 	}
 }
 
@@ -131,5 +152,13 @@ FString UTSA_ItemDetailsWidget::GetValueString(const TEnumAsByte<EGameplayModOp:
 	if (ModifierOp==EGameplayModOp::Multiplicitive || ModifierOp==EGameplayModOp::Division)
 		return FString::Printf(TEXT("%.0f%%"),Value*100);
 	return FString::Printf(TEXT("+%.1f"),Value);
+}
+
+void UTSA_ItemDetailsWidget::AddRichText(const FText& Text)
+{
+	UTSA_ItemRichText* RichText = CreateWidget<UTSA_ItemRichText>(this, ItemRichTextClass);
+	RichText->SetRichText(Text);
+	Box_Fragment->AddChild(RichText);
+	RichTexts.Add(RichText);
 }
 

@@ -222,8 +222,11 @@ void UTSA_InventoryComponent::Client_ShowMessage_Implementation(const FText& Mes
 
 void UTSA_InventoryComponent::UseProp(UTSA_InventoryItem* Item, int32 SlotIndex)
 {
-	UTSA_ItemDataAsset* ItemDataAsset = UTSA_ItemUtils::GetItemDataAssetFromItem(Item);
-	
+	ATSA_AgentCharacter* Agent = Cast<ATSA_AgentCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (Agent)
+	{
+		Agent->GetEquipmentManagerComp()->UseProp(this,Item,SlotIndex);
+	}
 }
 
 void UTSA_InventoryComponent::EquipItem(UTSA_InventoryItem* Item, int32 SlotIndex)
