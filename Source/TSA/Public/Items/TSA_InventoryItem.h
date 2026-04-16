@@ -9,10 +9,9 @@
 
 #include "TSA_InventoryItem.generated.h"
 
+class UTSA_SlottedItem;
 class UTSA_InventoryComponent;
-/**
- * 
- */
+
 UCLASS()
 class TSA_API UTSA_InventoryItem : public UObject
 {
@@ -34,7 +33,9 @@ public:
 	// End of Getters and Setters
 	
 	const FName& GetItemID();
-
+	
+	TWeakObjectPtr<UTSA_SlottedItem> SlottedItem;
+	
 private:
 	UPROPERTY(VisibleAnywhere, meta = (BaseStruct = "/Script/TSA.TSA_ItmeManifestBase"), Replicated)
 	FInstancedStruct ItemManifest;

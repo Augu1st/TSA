@@ -23,6 +23,12 @@ class TSA_API UTSA_SlottedItem : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayConvertingAnimation();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopConvertingAnimation();
+	
 	bool IsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bStackable) { bIsStackable = bStackable; }
 	

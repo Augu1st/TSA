@@ -16,6 +16,8 @@
 #include "GameplayAbilities/Public/AbilitySystemBlueprintLibrary.h"
 #include "Systems/MessageSystem/TSA_MessageUtils.h"
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
+#include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
+#include "UI/Inventory/Spatial/TSA_InventoryGrid.h"
 
 
 UTSA_ResourceManagerComp::UTSA_ResourceManagerComp()
@@ -123,6 +125,11 @@ void UTSA_ResourceManagerComp::ConvertItem(ATSA_AgentCharacter* Agent)
 	Payload.EventTag = ConverterMode;
 	
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), ConverterMode, Payload);
+	
+	if (ItemInConverter->SlottedItem.IsValid())
+	{
+		ItemInConverter->SlottedItem->PlayConvertingAnimation();
+	}
 }
 
 void UTSA_ResourceManagerComp::OnConverterAddItem(UTSA_InventoryItem* Item, int32 SlotIndex)

@@ -51,8 +51,6 @@ protected:
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	
-	
-	
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayCursorInAnimation();
 	
@@ -71,8 +69,6 @@ private:
 	/* End of Widgets */	
 	
 	TWeakObjectPtr<UTSA_InventoryGrid> ParentGrid;
-	
-	
 	
 	UPROPERTY()
 	UTSA_SlottedItem* CurrentItemWidget = nullptr;

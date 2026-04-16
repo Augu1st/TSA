@@ -19,6 +19,11 @@ UTSA_CombatAttributeSet::UTSA_CombatAttributeSet()
 	InitPhysicalResistance(10.f);
 	InitEnergyResistance(10.f);
 	InitStructureResistance(0.f);
+	
+	InitStun(0.f);
+	InitBleed(0.f);
+	InitOverload(0.f);
+	InitOverheat(0.f);
 }
 
 void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -37,6 +42,11 @@ void UTSA_CombatAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, EnergyResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, StructureResistance, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Stun, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Bleed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Overload, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UTSA_CombatAttributeSet, Overheat, COND_None, REPNOTIFY_Always);
 }
 
 void UTSA_CombatAttributeSet::OnRep_CritRate(const FGameplayAttributeData& OldCritRate)
@@ -82,4 +92,24 @@ void UTSA_CombatAttributeSet::OnRep_EnergyResistance(const FGameplayAttributeDat
 void UTSA_CombatAttributeSet::OnRep_StructureResistance(const FGameplayAttributeData& OldStructureResistance)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, StructureResistance, OldStructureResistance)
+}
+
+void UTSA_CombatAttributeSet::OnRep_Stun(const FGameplayAttributeData& OldStun)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Stun, OldStun)
+}
+
+void UTSA_CombatAttributeSet::OnRep_Bleed(const FGameplayAttributeData& OldBleed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Bleed, OldBleed)
+}
+
+void UTSA_CombatAttributeSet::OnRep_Overload(const FGameplayAttributeData& OldOverload)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Overload, OldOverload)
+}
+
+void UTSA_CombatAttributeSet::OnRep_Overheat(const FGameplayAttributeData& OldOverheat)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UTSA_CombatAttributeSet, Overheat, OldOverheat)
 }

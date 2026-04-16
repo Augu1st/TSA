@@ -7,6 +7,7 @@
 #include "AbilitySystem/Component/TSA_AbilitySystemComponent.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
+#include "UI/HUD/TSA_HUD.h"
 
 UTSA_VitalAttributeSet::UTSA_VitalAttributeSet()
 {
@@ -73,6 +74,14 @@ void UTSA_VitalAttributeSet::PostAttributeChange(const FGameplayAttribute& Attri
 	{
 		SetArmorNetFlow(GetArmorRegenRate() - GetArmorConsumeRate());
 	}
+	else if (Attribute == GetArmorAttribute())
+	{
+		HandleArmorChange();
+	}
+	else if (Attribute==GetHealthAttribute())
+	{
+		// Handle Death
+	}
 }
 
 void UTSA_VitalAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -85,33 +94,83 @@ void UTSA_VitalAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	}
 	else if (Data.EvaluatedData.Attribute == GetArmorAttribute())
 	{
-		SetArmor(FMath::Clamp(GetArmor(), 0.f, GetMaxArmor()));
-		UTSA_AbilitySystemComponent* ASC = Cast<UTSA_AbilitySystemComponent>(GetOwningAbilitySystemComponent());
-		if (ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(ASC->GetAvatarActor()))
-		{
-			UTSA_EquipmentManagerComp* EquipmentManagerComp = AgentCharacter->FindComponentByClass<UTSA_EquipmentManagerComp>();
-			if (EquipmentManagerComp)
-			{
-				EquipmentManagerComp->UpdateArmor(GetArmor());
-			}
-		}
+		HandleArmorChange();
 	}
 	else if (Data.EvaluatedData.Attribute == GetHealthRegenRateAttribute() ||
 		Data.EvaluatedData.Attribute == GetHealthConsumeRateAttribute())
 	{
-		float CurrentRegen = GetHealthRegenRate();
-		float CurrentConsume = GetHealthConsumeRate();
-		
 		SetHealthNetFlow(GetHealthRegenRate() - GetHealthConsumeRate() );
-		float temp = GetHealthNetFlow();
-
 	}
 	else if (Data.EvaluatedData.Attribute == GetArmorRegenRateAttribute() ||
 		Data.EvaluatedData.Attribute == GetArmorConsumeRateAttribute())
 	{
 		SetArmorNetFlow(GetArmorRegenRate() - GetArmorConsumeRate());
 	}
+	else if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		ShowDamageFloatingText(Data, GetIncomingDamage());
+		HandleIncomingDamage();
+	}
+	else if (Data.EvaluatedData.Attribute == GetIncomingHealthDamageAttribute())
+	{
+		ShowDamageFloatingText(Data, GetIncomingHealthDamage());
+		HandleIncomingHealthDamage();
+	}
+}
+
+void UTSA_VitalAttributeSet::HandleArmorChange()
+{
+	UTSA_AbilitySystemComponent* ASC = Cast<UTSA_AbilitySystemComponent>(GetOwningAbilitySystemComponent());
+	if (ATSA_AgentCharacter* AgentCharacter = Cast<ATSA_AgentCharacter>(ASC->GetAvatarActor()))
+	{
+		UTSA_EquipmentManagerComp* EquipmentManagerComp = AgentCharacter->FindComponentByClass<UTSA_EquipmentManagerComp>();
+		if (EquipmentManagerComp)
+		{
+			EquipmentManagerComp->UpdateArmor(GetArmor());
+		}
+	}
+}
+
+void UTSA_VitalAttributeSet::HandleIncomingDamage()
+{
+	float Damage = GetIncomingDamage();
+	SetIncomingDamage(0.f);
 	
+	if (GetArmor() - Damage >= 0.f)
+	{
+		SetArmor(GetArmor() - Damage);
+	}
+	else
+	{
+		float LeftDamage = Damage - GetArmor();
+		SetArmor(0.f);
+		if (LeftDamage >= GetHealth())
+		{
+			SetHealth(0.f);
+		} 
+		else SetHealth(GetHealth()-LeftDamage);
+	}
+}
+
+void UTSA_VitalAttributeSet::HandleIncomingHealthDamage()
+{
+	float Damage = GetIncomingHealthDamage();
+	SetIncomingHealthDamage(0.f);
+	if (Damage >= GetHealth())
+	{
+		SetHealth(0.f);
+	}
+	else SetHealth(GetHealth()-Damage);
+}
+
+void UTSA_VitalAttributeSet::ShowDamageFloatingText(const FGameplayEffectModCallbackData& Data, float Damage)
+{
+	ACharacter* Character = Cast<ACharacter>(Data.Target.GetAvatarActor());
+	if (Character)
+	{
+		ATSA_HUD* HUD = Cast<ATSA_HUD>(GetWorld()->GetGameInstance()->GetFirstLocalPlayerController()->GetHUD());
+		HUD->SpawnDamageText(Damage,Character);
+	}
 }
 
 void UTSA_VitalAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)

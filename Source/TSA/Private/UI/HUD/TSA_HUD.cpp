@@ -16,7 +16,9 @@
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
 #include "UI/BondMenu/TSA_BondMenuController.h"
 #include "UI/BondMenu/TSA_BondMenu.h"
+#include "UI/HUD/TSA_DamageTextComponent.h"
 #include "UI/Inventory/SlottedItems/TSA_ContextMenu.h"
+#include "UI/Inventory/Spatial/TSA_QuickGrid.h"
 
 
 ATSA_HUD::ATSA_HUD()
@@ -27,6 +29,21 @@ void ATSA_HUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void ATSA_HUD::SpawnDamageText(float Damage, ACharacter* TargetCharacter)
+{
+	//IsValid会检查对象是否处于即将销毁状态
+	if (IsValid(TargetCharacter) && DamageTextComponentClass)
+	{
+		UTSA_DamageTextComponent* DamageText = NewObject<UTSA_DamageTextComponent>(
+			TargetCharacter,//外部对象
+			DamageTextComponentClass);//生成的对象类
+		DamageText->RegisterComponent();//注册组件，使得引擎可以管理
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);//依附于外部对象
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);//再脱离外部对象
+					DamageText->SetDamageText(Damage);//设置文本内容
+	}
 }
 
 void ATSA_HUD::CreateHUDWidget()
@@ -42,7 +59,6 @@ void ATSA_HUD::CreateHUDWidget()
 
 void ATSA_HUD::InitAttributesBindings()
 {
-	
 	APlayerController* PC = GetOwningPlayerController();
 	if (!PC) return;
 

@@ -11,6 +11,8 @@
 #include "TSA_EquipmentManagerComp.generated.h"
 
 
+class UTSA_QuickGrid;
+class UTSA_InventoryGrid;
 struct FAttributeBasedFloat;
 class UTSA_OccupyProgressBar;
 class UTSA_ItemDataAsset;
@@ -82,6 +84,8 @@ protected:
 	void ApplyUsingPropGE(float InTime,UTSA_AbilitySystemComponent* ASC);
 	void GenerateCurrentArmor(float BaseArmor,UTSA_AbilitySystemComponent* ASC);
 	
+	void CreateQuickGrid();
+	
 	UPROPERTY()
 	TObjectPtr<ATSA_AgentCharacter> Agent;
 	
@@ -99,7 +103,16 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UTSA_OccupyProgressBar> OccupyProgressBar;
-	
-	
 	/* End of Props */
+	
+	/* Quick Grid */
+	UPROPERTY(EditDefaultsOnly, Category = "TSA|QuickGrid")
+	int32 MaxQuickSlotCounts = 5;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "TSA|QuickGrid")
+	TSubclassOf<UTSA_QuickGrid> QuickGridClass;
+	
+	UPROPERTY()
+	TObjectPtr<UTSA_QuickGrid> QuickGrid_Module;
+	/* End of Quick Grid */
 };

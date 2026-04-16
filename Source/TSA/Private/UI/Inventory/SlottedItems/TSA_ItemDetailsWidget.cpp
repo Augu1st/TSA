@@ -11,7 +11,7 @@
 #include "AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h"
 #include "Characters/PlayerCharacters/TSA_AgentCharacter.h"
 #include "Components/VerticalBox.h"
-#include "Game/TSA_GameInstanceSys.h"
+#include "Game/GISubsystem/TSA_StaticDataSubsystem.h"
 #include "Game/States/TSA_TestGameState.h"
 #include "Items/DataAssets/TSA_ItemDataAsset.h"
 #include "Items/DataAssets/TSA_ItemFragment.h"
@@ -133,7 +133,7 @@ FString UTSA_ItemDetailsWidget::GetAttributeString(const FGameplayAttribute& Att
 {
 	FString AttributeString;
 	AttributeString.Append(ValueString);
-	if (UTSA_GameInstanceSys* GameInstanceSys = GetWorld()->GetGameInstance()->GetSubsystem<UTSA_GameInstanceSys>())
+	if (UTSA_StaticDataSubsystem* GameInstanceSys = GetWorld()->GetGameInstance()->GetSubsystem<UTSA_StaticDataSubsystem>())
 	{
 		if (GameInstanceSys->AttributeStrings.Contains(Attribute))
 		{

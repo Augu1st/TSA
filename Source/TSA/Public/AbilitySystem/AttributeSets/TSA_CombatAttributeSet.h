@@ -95,6 +95,34 @@ public:
 	void OnRep_StructureResistance(const FGameplayAttributeData& OldStructureResistance);
 	/* End of Resist */
 	
+	/* Debuff */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Stun)
+	FGameplayAttributeData Stun; // 眩晕
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Stun)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Bleed)
+	FGameplayAttributeData Bleed; // 流血
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Bleed)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Overload)
+	FGameplayAttributeData Overload; // 过载
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Overload)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Overheat)
+	FGameplayAttributeData Overheat; // 过热
+	ATTRIBUTE_ACCESSORS(UTSA_CombatAttributeSet, Overheat)
+	
+	UFUNCTION()
+	void OnRep_Stun(const FGameplayAttributeData& OldStun);
+	
+	UFUNCTION()
+	void OnRep_Bleed(const FGameplayAttributeData& OldBleed);
+	
+	UFUNCTION()
+	void OnRep_Overload(const FGameplayAttributeData& OldOverload);
+	
+	UFUNCTION()
+	void OnRep_Overheat(const FGameplayAttributeData& OldOverheat);
 };
 
 

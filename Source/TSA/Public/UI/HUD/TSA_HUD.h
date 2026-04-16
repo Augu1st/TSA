@@ -8,6 +8,8 @@
 #include "AbilitySystem/DataAssets/TSA_AttributeData.h"
 #include "TSA_HUD.generated.h"
 
+class UTSA_QuickGrid;
+class UTSA_DamageTextComponent;
 class UTSA_ContextMenu;
 class ATSA_AgentCharacter;
 class UTSA_InventoryComponent;
@@ -51,6 +53,9 @@ public:
 	TSubclassOf<UTSA_ContextMenu> GetContextMenuClass() const { return ContextMenuClass; }
 	void SetContextMenu(UTSA_ContextMenu* NewContextMenu) { ContextMenu = NewContextMenu; }
 	UTSA_ContextMenu* GetContextMenu() const { return ContextMenu; }
+	
+	// Damage Text
+	void SpawnDamageText(float Damage, ACharacter* TargetCharacter);
 	
 	FOnAttributeChanged OnAttributeChanged;
 	
@@ -130,4 +135,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UTSA_ContextMenu> ContextMenu;
 	/* End of Context Menu */
+	
+	/* Damage Text */
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UTSA_DamageTextComponent> DamageTextComponentClass;
+	/* End of Damage Text */
 };

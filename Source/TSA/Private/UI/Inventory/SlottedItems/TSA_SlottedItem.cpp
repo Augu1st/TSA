@@ -33,6 +33,7 @@ void UTSA_SlottedItem::SetImageBrush(const FSlateBrush& Brush) const
 void UTSA_SlottedItem::SetInventoryItem(UTSA_InventoryItem* Item)
 {
 	InventoryItem = Item;
+	Item->SlottedItem = this;
 	FTSA_ItemDataRow ItemDataRow;
 	UTSA_ItemUtils::GetItemStaticDataFromItem(Item, ItemDataRow);
 	const FInstancedStruct& ItemManifestStruct = Item->GetItemManifestStruct();

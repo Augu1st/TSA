@@ -18,6 +18,7 @@
 #include "Systems/EquipmentSystem/TSA_EquipmentManagerComp.h"
 #include "Systems/EquipmentSystem/TSA_ResourceManagerComp.h"
 #include "Systems/InventorySystem/Components/TSA_InventoryComponent.h"
+#include "UI/Inventory/SlottedItems/TSA_SlottedItem.h"
 #include "Utils/TSA_ItemUtils.h"
 
 
@@ -162,6 +163,11 @@ void ATSA_AgentCharacter::ConsumeItemInConverter()
 	if (ConverterInventoryComp)
 	{
 		ConverterInventoryComp->ConsumeItemStack(0,1);
+		UTSA_InventoryItem* Item = ConverterInventoryComp->GetItemAtIndex(0);
+		if (IsValid(Item) && Item->SlottedItem.IsValid())
+		{
+			Item->SlottedItem->StopConvertingAnimation();
+		}
 	}
 }
 

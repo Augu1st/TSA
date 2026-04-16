@@ -301,10 +301,10 @@ void UTSA_InventoryComponent::MoveItem(int32 SourceIndex, UTSA_InventoryComponen
 		else
 		{
 			// 先检查互相是否能接受对方的物品类型
-			FTSA_SlotAvailabilityResult SwapTest1 = TargetComp->HasRoomForItem(PayloadManifest);
-			FTSA_SlotAvailabilityResult SwapTest2 = this->HasRoomForItem(TargetManifest);
-
-			if (SwapTest1.TotalRoomToFill > 0 && SwapTest2.TotalRoomToFill > 0)
+			const FGameplayTag& SourceItemCategory = UTSA_ItemUtils::GetItemCategoryFromItem(SourceItem);
+			const FGameplayTag& TargetItemCategory = UTSA_ItemUtils::GetItemCategoryFromItem(TargetItem);
+			
+			if (MatchItemCategory(TargetItemCategory) && TargetComp->MatchItemCategory(SourceItemCategory))
 			{
 				// 互相删掉旧的
 				this->RemoveItem(SourceItem, SourceIndex);

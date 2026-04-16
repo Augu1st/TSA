@@ -102,9 +102,19 @@ namespace AttributeTags
 
 namespace CombatTags
  {
- 	namespace Attack
+ 	namespace Damage
  	{
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PhysicalDamage,"Combat.Damage.Physical.Damage","物理伤害");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cutting,"Combat.Damage.Physical.Cutting","切割");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Impact,"Combat.Damage.Physical.Impact","冲击");
  		
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyDamage,"Combat.Damage.Energy.Damage","能量伤害");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Electricity,"Combat.Damage.Energy.Electricity","电能");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Heat,"Combat.Damage.Energy.Heat","热能");
+ 		
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(StructureDamage,"Combat.Damage.Structure.Damage","结构伤害");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Decompose,"Combat.Damage.Structure.Dissolve","分解");
+ 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Particle,"Combat.Damage.Structure.Particle","粒子");
  	}
  }
 
@@ -133,4 +143,23 @@ namespace EventTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnergyToMatter,"Event.Converter.EnergyToMatter","能量转换成物质");		
 	}
 
+}
+
+namespace InputTags
+{
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_1,"Input.Key.1","1键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_2,"Input.Key.2","2键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_3,"Input.Key.3","3键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_4,"Input.Key.4","4键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_5,"Input.Key.5","5键");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_Q,"Input.Key.Q","Q键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_E,"Input.Key.E","E键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_R,"Input.Key.R","R键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_T,"Input.Key.T","T键");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_Z,"Input.Key.Z","Z键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_X,"Input.Key.X","X键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_C,"Input.Key.C","C键");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Key_V,"Input.Key.V","V键");
 }

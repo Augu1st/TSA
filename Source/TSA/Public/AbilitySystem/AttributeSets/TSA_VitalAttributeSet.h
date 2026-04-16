@@ -25,6 +25,12 @@ public:
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
+	void HandleArmorChange();
+	void HandleIncomingDamage();
+	void HandleIncomingHealthDamage();
+	
+	void ShowDamageFloatingText(const FGameplayEffectModCallbackData& Data,float Damage);
+	
 	/* Health */
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_Health)
 	FGameplayAttributeData Health;
@@ -98,5 +104,15 @@ public:
 	UFUNCTION()
 	void OnRep_ArmorNetFlow(const FGameplayAttributeData& OldArmorNetFlow);
 	/* End of Armor */
+	
+	/* Damage */
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, IncomingDamage)
+	
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayAttributeData IncomingHealthDamage;
+	ATTRIBUTE_ACCESSORS(UTSA_VitalAttributeSet, IncomingHealthDamage)
+	/* End of Damage */
 };
 

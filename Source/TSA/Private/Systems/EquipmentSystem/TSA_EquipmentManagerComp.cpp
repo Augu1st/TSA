@@ -20,6 +20,8 @@
 #include "Systems/MessageSystem/TSA_UIMessageSubsystem.h"
 #include "Utils/TSA_ItemUtils.h"
 #include "UI/CommonWidgets/TSA_OccupyProgressBar.h"
+#include "UI/HUD/TSA_HUD.h"
+#include "UI/Inventory/Spatial/TSA_QuickGrid.h"
 
 UTSA_EquipmentManagerComp::UTSA_EquipmentManagerComp()
 {
@@ -54,6 +56,7 @@ void UTSA_EquipmentManagerComp::BeginPlay()
 		ModuleInventoryComp->OnItemAdded.AddDynamic(this, &UTSA_EquipmentManagerComp::OnModuleEquipped);
 		ModuleInventoryComp->OnItemRemoved.AddDynamic(this, &UTSA_EquipmentManagerComp::OnModuleUnequipped);
 	}
+	CreateQuickGrid();
 }
 
 void UTSA_EquipmentManagerComp::UpdateArmor(float BaseArmor)
@@ -296,6 +299,18 @@ void UTSA_EquipmentManagerComp::GenerateCurrentArmor(float BaseArmor, UTSA_Abili
 	DynamicGE->Modifiers.Add(ModInfo);
 	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
 	ASC->ApplyGameplayEffectToSelf(DynamicGE, 1.0f, Context);
+}
+
+void UTSA_EquipmentManagerComp::CreateQuickGrid()
+{
+	if (!IsValid(QuickGridClass) || !IsValid(Agent)) return;
+	
+	UTSA_InventoryComponent* ModuleComp = Agent->GetEquipmentInventoryByCategory(ItemTags::Category::Equipment_Module);
+	if (!IsValid(ModuleComp)) return;
+	
+	QuickGrid_Module = CreateWidget<UTSA_QuickGrid>(GetWorld(), QuickGridClass);
+	QuickGrid_Module->InitQuickGrid(ModuleComp, MaxQuickSlotCounts);
+	QuickGrid_Module->AddToViewport(1);
 }
 
 

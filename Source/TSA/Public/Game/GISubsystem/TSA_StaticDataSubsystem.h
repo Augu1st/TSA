@@ -6,13 +6,13 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/DataTable/TSA_AttributeDataRow.h"
-#include "TSA_GameInstanceSys.generated.h"
+#include "TSA_StaticDataSubsystem.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable)
-class TSA_API UTSA_GameInstanceSys : public UGameInstanceSubsystem
+class TSA_API UTSA_StaticDataSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
@@ -24,6 +24,7 @@ public:
 	
 	const FTSA_AttributeDataRow* FindAttributeDataRow(const FGameplayTag& AttributeTag);
 	
+	/* Attribute Data */
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "TSA|Attribute")
 	TSoftObjectPtr<UDataTable> AttributeDataTable;
 	
@@ -32,5 +33,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "TSA|Item Details")
 	TMap<FGameplayAttribute,FString> AttributeStrings;
+	/* End of Attribute Data */
 	
+	/* Input Data  */
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "TSA|Input")
+	UDataTable* InputDataTable;
+	/* End of Input Data */
 };

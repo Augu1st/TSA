@@ -14,46 +14,61 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="315b7f47-e2de-46f1-947e-019ce405a728" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/CommonWidgets/TSA_OccupyProgressBar.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/CommonWidgets/TSA_OccupyProgressBar.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/ExecCalc/TSA_ExecCalc_Damage.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/Game/GISubsystem/TSA_UIAsyncLoadSubSystem.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/HUD/TSA_DamageTextComponent.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/GridSlots/TSA_QuickSlot.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/Spatial/TSA_QuickGrid.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/ExecCalc/TSA_ExecCalc_Damage.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/Game/GISubsystem/TSA_UIAsyncLoadSubSystem.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/Types/TSA_InputTypes.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/HUD/TSA_DamageTextComponent.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/GridSlots/TSA_QuickSlot.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/Spatial/TSA_QuickGrid.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSA.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSA.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprint/Actors/Containers/DA_RandItemPool.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Actors/Containers/DA_RandItemPool.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Actors/Items/BP_TestActor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Actors/Items/BP_TestActor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Actors/Items/BP_TestActor1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Actors/Items/BP_TestActor1.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprint/Characters/AgentCharacter/BP_TSA_AgentCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Characters/AgentCharacter/BP_TSA_AgentCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/GAS/GE/Agent/InitAttributes/GE_InitVitalAtr_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/GAS/GE/Agent/InitAttributes/GE_InitVitalAtr_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/GAS/GE/Equipment/Armor/GE_TSA_ArmorDefault.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataAsset/Equipment/Armor/Armor001/Armor001.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Items/DataAsset/Equipment/Armor/Armor001/Armor001.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataAsset/Equipment/Armor/Armor001/DA_Armor_001.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Items/DataAsset/Equipment/Armor/Armor001/DA_Armor_001.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataAsset/Equipment/Module/DA_M_AutoFixAnt.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R1.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R2.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R3.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R4.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R5.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R6.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_Collection_R7.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Equipments/Armors/DT_ArmorTest.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Equipments/Modules/DT_Module_Test.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprint/UI/Inventory/WBP_TSA_MainInventory.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/UI/Inventory/WBP_TSA_MainInventory.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Document/Design/~$属性表.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Document/Design/属性表.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Document/Design/属性计算.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Document/Design/战斗系统.xmind" beforeDir="false" afterPath="$PROJECT_DIR$/Document/Design/战斗系统.xmind" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/GAS/NewBlueprint.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/GAS/NewBlueprint.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/GAS/NewBlueprint1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/GAS/NewBlueprint1.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Game/BP_TSA_GameInstanceSys.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Collection/DT_C_R7.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Equipment/Armors/DT_A_Test.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Equipment/Modules/DT_M_Test.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Items/DataTable/Prop/DT_P_Test.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/Maps/TestMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/UI/HUD/BP_TSA_HUD.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/UI/HUD/BP_TSA_HUD.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/UI/HUD/WBP_TSA_HUDWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/UI/HUD/WBP_TSA_HUDWidget.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprint/UI/Inventory/SlottedItems/WBP_TSA_SlottedItem.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprint/UI/Inventory/SlottedItems/WBP_TSA_SlottedItem.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/PhysicsMaterials/PM_Character.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Document/Data/属性表.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Document/Data/属性表.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_CombatAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_CombatAttributeSet.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_VitalAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_VitalAttributeSet.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Characters/PlayerCharacters/TSA_AgentCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Characters/PlayerCharacters/TSA_AgentCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Game/TSA_GameInstanceSys.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Game/GISubsystem/TSA_StaticDataSubsystem.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Systems/EquipmentSystem/TSA_EquipmentManagerComp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Systems/EquipmentSystem/TSA_EquipmentManagerComp.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Systems/EquipmentSystem/TSA_ResourceManagerComp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Systems/EquipmentSystem/TSA_ResourceManagerComp.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Systems/InventorySystem/Components/TSA_InventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Systems/InventorySystem/Components/TSA_InventoryComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Systems/InventorySystem/Containers/TSA_Container.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Systems/InventorySystem/Containers/TSA_Container.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Private/TSA_GameplayTags.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/TSA_GameplayTags.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/UI/HUD/TSA_HUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/HUD/TSA_HUD.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/Utils/TSA_ItemUtils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/Utils/TSA_ItemUtils.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/Items/DataAssets/TSA_ItemFragment.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/Items/DataAssets/TSA_ItemFragment.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_SlottedItem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_SlottedItem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_VitalAttributeSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/Game/TSA_GameInstanceSys.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/Game/GISubsystem/TSA_StaticDataSubsystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/Items/TSA_InventoryItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/Items/TSA_InventoryItem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Public/Systems/EquipmentSystem/TSA_EquipmentManagerComp.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/Systems/EquipmentSystem/TSA_EquipmentManagerComp.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/TSA/Public/TSA_GameplayTags.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/TSA_GameplayTags.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_ItemDetailsWidget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/Utils/TSA_ItemUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/Utils/TSA_ItemUtils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/UI/HUD/TSA_HUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/HUD/TSA_HUD.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/GridSlots/TSA_GridSlot.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/GridSlots/TSA_GridSlot.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_SlottedItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_SlottedItem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TSA.uproject.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/TSA.uproject.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,7 +98,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://9" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../UE5/UE_5.6/Engine/Source/Developer/Windows/LiveCoding/Private/External/LC_Commands.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../UE5/UE_5.6/Engine/Source/Runtime/Core/Public/Containers/Map.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../UE5/UE_5.6/Engine/Source/Runtime/Core/Public/Containers/Set.h" root0="FORCE_HIGHLIGHTING" />
@@ -121,9 +136,10 @@
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_CoreAttributeSet.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/AttributeSets/TSA_ResourceAttributeSet.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/Component/TSA_AbilitySystemComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/AbilitySystem/ExecCalc/TSA_ExecCalc_Damage.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Characters/Enemy/TSA_EnemyBase.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Game/GISubsystem/TSA_UIAsyncLoadSubSystem.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Game/GameModes/TSA_MainGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Game/TSA_GameInstanceSys.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Items/DataAssets/TSA_ItemFragment.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Items/TSA_BondTags.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/Items/TSA_ItemActor.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -138,8 +154,11 @@
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/BondMenu/TSA_BondTip.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/CommonWidgets/TSA_OccupyProgressBar.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/CommonWidgets/TSA_ProgressBar.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/HUD/TSA_DamageTextComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/GridSlots/TSA_QuickSlot.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_ContextMenu.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/SlottedItems/TSA_ItemRichText.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/Inventory/Spatial/TSA_QuickGrid.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Private/UI/WidgetController/TSA_WidgetController.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/Abilities/Converter/TSA_GA_ConvertItem.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/Abilities/TSA_AbilityTags.h" root0="FORCE_HIGHLIGHTING" />
@@ -147,9 +166,10 @@
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_CoreAttributeSet.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/AttributeSets/TSA_ResourceAttributeSet.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/Component/TSA_AbilitySystemComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/AbilitySystem/ExecCalc/TSA_ExecCalc_Damage.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Characters/Enemy/TSA_EnemyBase.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Game/GISubsystem/TSA_UIAsyncLoadSubSystem.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Game/GameModes/TSA_MainGameMode.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Game/TSA_GameInstanceSys.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Items/DataAssets/TSA_ItemFragment.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Items/TSA_BondTags.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/Items/TSA_ItemActor.h" root0="FORCE_HIGHLIGHTING" />
@@ -164,8 +184,11 @@
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/BondMenu/TSA_BondTip.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/CommonWidgets/TSA_OccupyProgressBar.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/CommonWidgets/TSA_ProgressBar.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/HUD/TSA_DamageTextComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/GridSlots/TSA_QuickSlot.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_ContextMenu.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/SlottedItems/TSA_ItemRichText.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/Inventory/Spatial/TSA_QuickGrid.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/TSA/Public/UI/WidgetController/TSA_WidgetController.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
@@ -342,6 +365,10 @@
       <workItem from="1776049771616" duration="2756000" />
       <workItem from="1776072225183" duration="15018000" />
       <workItem from="1776133655862" duration="12507000" />
+      <workItem from="1776177975414" duration="1534000" />
+      <workItem from="1776219977282" duration="22307000" />
+      <workItem from="1776256309621" duration="2445000" />
+      <workItem from="1776317129639" duration="20993000" />
     </task>
     <servers />
   </component>

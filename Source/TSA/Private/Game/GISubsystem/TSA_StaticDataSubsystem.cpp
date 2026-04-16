@@ -1,7 +1,7 @@
 ﻿// Dark Trace Studio Works
 
 
-#include "Game/TSA_GameInstanceSys.h"
+#include "Game/GISubsystem/TSA_StaticDataSubsystem.h"
 
 #include "AbilitySystem/AttributeSets/TSA_CombatAttributeSet.h"
 #include "AbilitySystem/AttributeSets/TSA_CoreAttributeSet.h"
@@ -10,7 +10,7 @@
 #include "AbilitySystem/DataTable/TSA_AttributeDataRow.h"
 #include "TSA/TSA.h"
 
-bool UTSA_GameInstanceSys::InitAttributeInfo()
+bool UTSA_StaticDataSubsystem::InitAttributeInfo()
 {
 	if (!AttributeDataTable.IsNull())
 	{
@@ -25,7 +25,7 @@ bool UTSA_GameInstanceSys::InitAttributeInfo()
 	return false;
 }
 
-void UTSA_GameInstanceSys::Initialize(FSubsystemCollectionBase& Collection)
+void UTSA_StaticDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	
@@ -36,7 +36,7 @@ void UTSA_GameInstanceSys::Initialize(FSubsystemCollectionBase& Collection)
 	SetAttributeStrings();
 }
 
-void UTSA_GameInstanceSys::SetAttributeStrings()
+void UTSA_StaticDataSubsystem::SetAttributeStrings()
 {
 	AttributeStrings.Reserve(40);
 	// Vital Set
@@ -79,7 +79,7 @@ void UTSA_GameInstanceSys::SetAttributeStrings()
 	AttributeStrings.Add(UTSA_ResourceAttributeSet::GetSearchSpeedAttribute(),"<Speed>"+FString(TEXT("搜索速度"))+"</>");
 }
 
-const FTSA_AttributeDataRow* UTSA_GameInstanceSys::FindAttributeDataRow(const FGameplayTag& AttributeTag)
+const FTSA_AttributeDataRow* UTSA_StaticDataSubsystem::FindAttributeDataRow(const FGameplayTag& AttributeTag)
 {
 	return AttributeDataRows.Find(AttributeTag);
 }
